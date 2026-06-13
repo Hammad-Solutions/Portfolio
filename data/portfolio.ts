@@ -29,8 +29,8 @@ export const portfolioData = {
     },
     {
       id: "previous-portfolio",
-      title: "Previous Simple Portfolio",
-      description: "My previous personal developer portfolio, designed with clean HTML, CSS, and interactive JavaScript features for a lightweight representation.",
+      title: "Portfolio",
+      description: "My personal developer portfolio, designed with clean HTML, CSS, and interactive JavaScript features for a lightweight representation.",
       tags: ["HTML", "CSS", "JavaScript", "Responsive Design"],
       image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/hammad-solutions.github.io"
@@ -40,7 +40,7 @@ export const portfolioData = {
       title: "Student Management System",
       description: "A comprehensive C++ application with file handling for managing student records. Features include admin logic, teacher and student modules, file management, and secure data storage.",
       tags: ["C++", "File Handling", "OOP", "Data Structures"],
-      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop",
+      image: "https://cdn4.slideserve.com/9079189/student-information-system-n.jpg",
       github: "https://github.com/Hammad-Solutions/Student-Management-System-Cpp-File-Handling"
     },
     {
