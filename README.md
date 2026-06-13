@@ -1,6 +1,6 @@
 # 🌌 Agent OS: Next-Gen Developer Portfolio & AI Interface
 
-An immersive, high-class interactive developer portfolio built for **Muhammad Hammad**—Software Developer & Software Engineering Student. This project showcases projects, skills, and professional experience through a hybrid visual-terminal interface powered by advanced WebGL canvas animations and an embedded NLP RAG AI Assistant.
+An immersive, high-class interactive developer portfolio I built to showcase my projects, skills, and professional experience as a Software Engineering student and developer. The application features a hybrid visual-terminal interface powered by advanced WebGL canvas animations and includes an embedded NLP RAG AI Assistant that acts as my digital support agent.
 
 ---
 
