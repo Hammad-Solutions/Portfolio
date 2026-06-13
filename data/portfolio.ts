@@ -20,11 +20,27 @@ export const portfolioData = {
   ],
   projects: [
     {
+      id: "ai-portfolio",
+      title: "Autonomous AI-Agent & Developer Interface",
+      description: "A premium next-generation developer portfolio featuring an integrated NLP RAG AI Chatbot, dual-mode Visual UI and interactive Hacker Terminal, dynamic volumetric 3D Skills Globe, and seamless physics-based animations.",
+      tags: ["Next.js", "AI (RAG)", "Three.js (WebGL)", "Framer Motion", "GSAP"],
+      image: "/ai_portfolio_cover.png",
+      github: "https://github.com/Hammad-Solutions/Portfolio"
+    },
+    {
+      id: "previous-portfolio",
+      title: "Previous Simple Portfolio",
+      description: "My previous personal developer portfolio, designed with clean HTML, CSS, and interactive JavaScript features for a lightweight representation.",
+      tags: ["HTML", "CSS", "JavaScript", "Responsive Design"],
+      image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=600&auto=format&fit=crop",
+      github: "https://github.com/Hammad-Solutions/hammad-solutions.github.io"
+    },
+    {
       id: "student-management",
       title: "Student Management System",
       description: "A comprehensive C++ application with file handling for managing student records. Features include admin logic, teacher and student modules, file management, and secure data storage.",
       tags: ["C++", "File Handling", "OOP", "Data Structures"],
-      image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=600&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/Student-Management-System-Cpp-File-Handling"
     },
     {
@@ -32,23 +48,8 @@ export const portfolioData = {
       title: "Bank Management System",
       description: "A complete Bank Management System in C++ using File Handling. Includes account creation, deposit, withdrawal, balance inquiry, and fund transfer between accounts.",
       tags: ["C++", "File Handling", "Data Management", "OOP"],
-      image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=600&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/Bank-Management-System-Cpp-File-Handling"
-    },
-    {
-      id: "ai-portfolio",
-      title: "Autonomous AI-Agent & Developer Interface",
-      description: "A premium next-generation developer portfolio featuring an integrated NLP RAG AI Chatbot, dual-mode Visual UI and interactive Hacker Terminal, dynamic volumetric 3D Skills Globe, and seamless physics-based animations.",
-      tags: ["Next.js", "AI (RAG)", "Three.js (WebGL)", "Framer Motion", "GSAP"],
-      image: "/ai_portfolio_cover.png",
-      github: "https://github.com/Hammad-Solutions/hammad-solutions.github.io"
-    },
-    {
-      id: "weather-app",
-      title: "WeatherApp with API Integration",
-      description: "A real-time weather application featuring location-based forecasts, interactive weather data visualization, and seamless API integration for accurate weather.",
-      tags: ["React.js", "API Integration", "JavaScript"],
-      image: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=600&auto=format&fit=crop"
     },
     {
       id: "hotel-management",
@@ -59,11 +60,18 @@ export const portfolioData = {
       github: "https://github.com/Hammad-Solutions/Hotel-Management-System-CPP"
     },
     {
+      id: "weather-app",
+      title: "WeatherApp with API Integration",
+      description: "A real-time weather application featuring location-based forecasts, interactive weather data visualization, and seamless API integration for accurate weather.",
+      tags: ["React.js", "API Integration", "JavaScript"],
+      image: "https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=600&auto=format&fit=crop"
+    },
+    {
       id: "collaborative-team-work",
       title: "For Collaborative Team Work",
       description: "A collaborative repository showcasing team coordination, Git workflow practices, and standard HTML structures.",
       tags: ["HTML", "Git", "Collaboration"],
-      image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/For-collaborative-Team-Work"
     }
   ]
