@@ -1,36 +1,134 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌌 Agent OS: Next-Gen Developer Portfolio & AI Interface
 
-## Getting Started
+An immersive, high-class interactive developer portfolio built for **Muhammad Hammad**—Software Developer & Software Engineering Student. This project showcases projects, skills, and professional experience through a hybrid visual-terminal interface powered by advanced WebGL canvas animations and an embedded NLP RAG AI Assistant.
 
-First, run the development server:
+---
 
+## ✨ Key Features
+
+- **🎮 Dual-Interface System**:
+  - **Visual Mode**: A premium, sleek glassmorphic modern UI with smooth GSAP animations, fluid transitions, and responsive grid layouts.
+  - **Hacker Terminal Mode**: A fully interactive, retro-futuristic command-line interface (CLI). Execute commands like `help`, `about`, `projects`, `clear`, and interact directly with the file structure.
+- **🤖 Embedded RAG AI Assistant ("Agent OS")**:
+  - Powered by **Groq Cloud (Llama-3.1-8b-instant)**.
+  - Uses localized Retrieval-Augmented Generation (RAG) constraints to answer questions strictly about Hammad's skills, qualifications, project repository links, and availability.
+  - Hardened with system-instruction injection guards to prevent prompt-injection and general-purpose LLM overrides.
+- **✨ Dynamic Volumetric 3D Skills Globe**:
+  - An interactive, touch-responsive, auto-rotating 3D Tag Sphere presenting key technical competencies using standard WebGL Canvas.
+- **🌌 Immersive Canvas Backgrounds**:
+  - Select and switch between several premium dynamic backgrounds in real-time, including:
+    - *Matrix Rain*: Classic terminal digital rain effect.
+    - *Constellations*: Node-based interactive mouse-tracking network.
+    - *Developer Graph*: Animated node networking modeling system dependencies.
+    - *Stardust & Dust Background*: Deep space ambient particle effects.
+    - *Obsidian Core*: Volumetric energy particle storm.
+- **✉️ Direct SMTP Contact Channel**:
+  - Integrated contact form utilizing Next.js Server Actions and NodeMailer for automated email notifications directly to the developer.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies Used |
+| :--- | :--- |
+| **Framework** | Next.js 15 (App Router), React 19, TypeScript |
+| **Styling** | Tailwind CSS, CSS Modules, Vanilla CSS |
+| **Animations** | GSAP, Framer Motion, HTML5 Canvas API, WebGL |
+| **AI / NLP** | Groq SDK, Llama 3.1 LLM, Custom System Directives |
+| **Backend / SMTP** | Next.js API Routes, NodeMailer |
+| **Package Manager** | npm |
+
+---
+
+## 🚀 Getting Started
+
+### 📋 Prerequisites
+
+Ensure you have the following installed on your system:
+- **Node.js** (v18.x or higher recommended)
+- **npm** (v9.x or higher)
+
+### ⚙️ Environment Configuration
+
+1. Duplicate the `.env.example` file and rename it to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+2. Open `.env.local` and supply your API credentials:
+   ```env
+   # Groq AI Keys
+   GROQ_API_KEY=your_groq_api_key_here
+
+   # Nodemailer SMTP Configuration
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=465
+   SMTP_USER=your_sender_email@gmail.com
+   SMTP_PASSWORD=your_16_character_app_password
+   CONTACT_RECEIVER_EMAIL=your_destination_email@gmail.com
+   ```
+
+### 📦 Installation
+
+Install all required node packages and dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 💻 Running Locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Start the local development server:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser to experience the application.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🏗️ Production Build
 
-## Learn More
+Generate the optimized production bundle:
+```bash
+npm run build
+```
+Start the production server:
+```bash
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📂 Project Directory Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+├── app/                  # Next.js App Router (pages & API endpoints)
+│   ├── api/              # API Routes (Contact, AI Assistant)
+│   ├── layout.tsx        # Global Layout config
+│   ├── page.tsx          # Main Entry point (Hybrid Portfolio Interface)
+│   └── globals.css       # Core design system tokens and styles
+├── components/           # Reusable React components
+│   ├── canvas/           # High-performance Canvas & WebGL Backgrounds
+│   │   ├── Constellation.tsx
+│   │   ├── SkillsGlobe.tsx
+│   │   ├── MatrixRainBackground.tsx
+│   │   └── ...
+│   └── ui/               # Modular page sections (About, Projects, Contact, CLI Terminal)
+├── data/                 # Static data configurations (portfolio info, projects details)
+│   └── portfolio.ts
+├── lib/                  # Helper utilities and server functions
+│   └── rag.ts            # AI Agent OS processing and Groq logic
+├── public/               # Static assets, logos, and icons
+├── tsconfig.json         # TypeScript configuration
+└── next.config.ts        # Next.js bundler settings
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔒 Security & Optimization
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **AI Safety**: The system instructions explicitly constrain `Agent OS` from executing untrusted user prompt overrides, protecting it from being utilized for unauthorized general-purpose computing/chat tasks.
+- **Static Assets**: Large images are optimized utilizing the native Next.js `<Image />` component for automatic format converting (WebP) and lazy-loading.
+- **Modular Bundling**: Dynamic canvas libraries are lazy-loaded when appropriate to improve initial page load performance metrics.
+
+---
+
+## 📄 License
+
+This project is personal intellectual property. Feel free to explore the code for reference and learning.
