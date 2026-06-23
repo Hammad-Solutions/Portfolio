@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -167,7 +167,23 @@ const fragmentShader = `
 export default function SkillsGlobe() {
   const groupRef = useRef<THREE.Group>(null);
   const shaderRef = useRef<THREE.ShaderMaterial>(null);
-  const { mouse } = useThree();
+  const { mouse, gl } = useThree();
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const el = gl.domElement;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.05 } // Trigger when at least 5% is visible
+    );
+    observer.observe(el);
+    return () => {
+      observer.unobserve(el);
+      observer.disconnect();
+    };
+  }, [gl]);
 
   const skillList = [
     { name: "REACT", icon: <ReactIcon /> },
@@ -212,6 +228,7 @@ export default function SkillsGlobe() {
   }), []);
 
   useFrame((state) => {
+    if (!isVisible) return;
     const time = state.clock.getElapsedTime();
 
     if (shaderRef.current) {
@@ -269,6 +286,7 @@ export default function SkillsGlobe() {
           name={node.name}
           position={node.pos}
           icon={node.icon}
+          isVisible={isVisible}
         />
       ))}
     </group>
@@ -279,14 +297,16 @@ interface SkillNodeItemProps {
   name: string;
   position: THREE.Vector3;
   icon: React.ReactNode;
+  isVisible: boolean;
 }
 
-function SkillNodeItem({ name, position, icon }: SkillNodeItemProps) {
+function SkillNodeItem({ name, position, icon, isVisible }: SkillNodeItemProps) {
   const [hovered, setHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const nodeRef = useRef<THREE.Group>(null);
 
   useFrame((state) => {
+    if (!isVisible) return;
     if (nodeRef.current && containerRef.current) {
       // Get the world position of the node
       const worldPos = new THREE.Vector3();

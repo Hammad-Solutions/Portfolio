@@ -9,6 +9,8 @@ interface ProjectCardProps {
   tags: string[];
   image: string;
   github?: string;
+  glowColor?: string;
+  onOpenDetails: () => void;
 }
 
 const GithubIcon = () => (
@@ -26,9 +28,8 @@ const GithubIcon = () => (
   </svg>
 );
 
-export default function ProjectCard({ id, index, title, description, tags, image, github }: ProjectCardProps) {
+export default function ProjectCard({ id, index, title, description, tags, image, github, glowColor = "#FFFFFF", onOpenDetails }: ProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
   const arrowRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -40,38 +41,27 @@ export default function ProjectCard({ id, index, title, description, tags, image
     const y = e.clientY - rect.top;
 
     // Calculate rotation angles
-    const rotX = ((y - rect.height / 2) / (rect.height / 2)) * -5; // max -5deg
-    const rotY = ((x - rect.width / 2) / (rect.width / 2)) * 5; // max 5deg
+    const rotX = ((y - rect.height / 2) / (rect.height / 2)) * -5;
+    const rotY = ((x - rect.width / 2) / (rect.width / 2)) * 5;
 
     gsap.to(card, {
       rotateX: rotX,
       rotateY: rotY,
       transformPerspective: 1000,
-      borderColor: "#EDEDED", // Alabaster
-      boxShadow: "0 10px 30px -15px rgba(255, 255, 255, 0.08)",
-      backgroundColor: "rgba(255, 255, 255, 0.04)", // var(--glass-hover)
+      borderColor: "rgba(255, 255, 255, 0.08)",
+      boxShadow: "0 15px 30px rgba(0, 0, 0, 0.25)",
+      backgroundColor: "rgba(255, 255, 255, 0.018)",
       duration: 0.3,
       ease: "power2.out"
     });
-
-    // Move the radial glow tracker (monochrome soft white glow)
-    if (glowRef.current) {
-      gsap.to(glowRef.current, {
-        opacity: 0.06,
-        left: x,
-        top: y,
-        duration: 0.2,
-        ease: "power2.out"
-      });
-    }
 
     // Animate arrow
     if (arrowRef.current) {
       gsap.to(arrowRef.current, {
         x: 3,
         y: -3,
-        color: "#EDEDED",
-        borderColor: "rgba(255, 255, 255, 0.2)",
+        color: glowColor,
+        borderColor: `${glowColor}44`,
         duration: 0.2
       });
     }
@@ -84,26 +74,19 @@ export default function ProjectCard({ id, index, title, description, tags, image
     gsap.to(card, {
       rotateX: 0,
       rotateY: 0,
-      borderColor: "#262626", // var(--glass-border)
+      borderColor: "var(--glass-border)",
       boxShadow: "none",
-      backgroundColor: "rgba(255, 255, 255, 0.02)", // var(--glass-bg)
+      backgroundColor: "var(--glass-bg)",
       duration: 0.5,
       ease: "power2.out"
     });
-
-    if (glowRef.current) {
-      gsap.to(glowRef.current, {
-        opacity: 0,
-        duration: 0.5
-      });
-    }
 
     if (arrowRef.current) {
       gsap.to(arrowRef.current, {
         x: 0,
         y: 0,
-        color: "#EDEDED", // var(--text-primary)
-        borderColor: "#262626", // var(--glass-border)
+        color: "#EDEDED",
+        borderColor: "var(--glass-border)",
         duration: 0.3
       });
     }
@@ -112,9 +95,7 @@ export default function ProjectCard({ id, index, title, description, tags, image
   const shortCode = id.split("-")[0].toUpperCase();
 
   const handleClick = () => {
-    if (github) {
-      window.open(github, "_blank", "noopener,noreferrer");
-    }
+    onOpenDetails();
   };
 
   return (
@@ -123,17 +104,11 @@ export default function ProjectCard({ id, index, title, description, tags, image
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
-      className={`relative flex flex-col justify-between border border-[#262626] bg-[#121212]/30 p-6 rounded-2xl h-[400px] overflow-hidden select-none transition-all duration-300 shadow-sm group ${
+      className={`relative flex flex-col justify-between border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-md p-6 rounded-2xl h-[400px] overflow-hidden select-none transition-all duration-300 shadow-sm group ${
         github ? "cursor-pointer" : "cursor-default"
       }`}
       style={{ transformStyle: "preserve-3d" }}
     >
-      {/* Dynamic Glow Background */}
-      <div
-        ref={glowRef}
-        className="absolute w-[200px] h-[200px] rounded-full bg-white opacity-0 blur-[120px] pointer-events-none -translate-x-1/2 -translate-y-1/2"
-      />
-
       <div className="flex flex-col flex-1" style={{ transform: "translateZ(30px)" }}>
         {/* Top Header */}
         <div className="flex justify-between items-center mb-4">
@@ -142,13 +117,13 @@ export default function ProjectCard({ id, index, title, description, tags, image
           </span>
           <div className="flex items-center gap-2">
             {github && (
-              <div className="text-[#737373] group-hover:text-[#10B981] transition-colors duration-300 flex items-center justify-center p-1.5 border border-[#262626] rounded-full hover:border-[#10B981]">
+              <div className="text-[#737373] group-hover:text-[#10B981] transition-colors duration-300 flex items-center justify-center p-1.5 border border-[var(--glass-border)] rounded-full hover:border-[#10B981]">
                 <GithubIcon />
               </div>
             )}
             <div 
               ref={arrowRef}
-              className={`w-8 h-8 rounded-full border border-[#262626] flex items-center justify-center text-xs font-semibold text-[#EDEDED] transition-colors ${
+              className={`w-8 h-8 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-xs font-semibold text-[#EDEDED] transition-colors ${
                 github ? "group-hover:border-[#10B981] group-hover:text-[#10B981]" : ""
               }`}
             >
@@ -168,8 +143,12 @@ export default function ProjectCard({ id, index, title, description, tags, image
         </div>
 
         {/* Project Info */}
-        <h3 className="text-lg font-bold mb-2 tracking-tight text-[#EDEDED] leading-tight">{title}</h3>
-        <p className="text-[#737373] text-xs leading-relaxed line-clamp-2">
+        <h3 className="text-lg font-bold mb-2 tracking-tight text-[#EDEDED] leading-tight">
+          <span className="soft-skill-title">
+            {title}
+          </span>
+        </h3>
+        <p className="text-[#a3a3a3] text-sm leading-relaxed line-clamp-2">
           {description}
         </p>
       </div>
@@ -179,7 +158,20 @@ export default function ProjectCard({ id, index, title, description, tags, image
         style={{ transform: "translateZ(20px)" }}
       >
         {tags.map((tag) => (
-          <span key={tag} className="text-[10px] font-mono text-[#EDEDED] bg-[#121212]/50 px-2 py-0.5 rounded-md border border-[#262626]">
+          <span 
+            key={tag} 
+            className="text-[10px] font-mono text-[#EDEDED] bg-[#121212]/50 px-2 py-0.5 rounded-md border border-[var(--glass-border)] transition-all duration-300 hover:text-white hover:-translate-y-0.5 cursor-default select-none"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = `${glowColor}66`;
+              e.currentTarget.style.boxShadow = `0 0 10px ${glowColor}25`;
+              e.currentTarget.style.backgroundColor = `${glowColor}0a`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "var(--glass-border)";
+              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.backgroundColor = "rgba(18, 18, 18, 0.5)";
+            }}
+          >
             {tag}
           </span>
         ))}

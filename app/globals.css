@@ -7,9 +7,9 @@
   --bg-surface: #121212;       /* Slightly lighter onyx for cards/sections */
   
   /* Glassmorphism Elements */
-  --glass-bg: rgba(255, 255, 255, 0.02);    /* Translucent card fill */
-  --glass-border: #262626;                  /* Subtle Charcoal crisp edge */
-  --glass-hover: rgba(255, 255, 255, 0.04);  /* Muted hover highlight */
+  --glass-bg: rgba(255, 255, 255, 0.022);   /* Translucent glassy background */
+  --glass-border: rgba(255, 255, 255, 0.08); /* Crisp glass border */
+  --glass-hover: rgba(255, 255, 255, 0.04);  /* Subtle glass hover transition */
   
   /* Typography */
   --text-primary: #EDEDED;     /* Crisp Alabaster (reduces glare) */
@@ -34,6 +34,16 @@
   
   --font-sans: "Plus Jakarta Sans", "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+}
+
+section {
+  scroll-snap-align: start;
+  scroll-margin-top: 90px;
 }
 
 body {
@@ -70,18 +80,91 @@ body {
   background: var(--text-primary);
 }
 
-/* Infinite Marquee Keyframe */
+/* Infinite Marquee Keyframes */
 @keyframes marquee {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-33.333%); }
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-33.333%); }
+  100% { transform: translateX(0); }
 }
 
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 25s linear infinite;
+  animation: marquee 35s linear infinite;
 }
 
-.animate-marquee:hover {
+.animate-marquee-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee-reverse 30s linear infinite;
+}
+
+.animate-marquee:hover,
+.animate-marquee-reverse:hover {
   animation-play-state: paused;
 }
+
+/* Hero CTA glow pulse */
+@keyframes btnGlowPulse {
+  0%, 100% { box-shadow: 0 0 0px rgba(16,185,129,0); }
+  50% { box-shadow: 0 0 28px rgba(16,185,129,0.35), 0 0 55px rgba(16,185,129,0.12); }
+}
+
+.btn-glow-pulse {
+  animation: btnGlowPulse 2.8s ease-in-out infinite;
+}
+
+/* Shimmer sweep on button */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Underline reveal on hover for soft skills card title & project titles */
+.soft-skill-title {
+  position: relative;
+  display: inline-block;
+}
+.soft-skill-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2.5px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: var(--text-primary);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .soft-skill-title::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Underline reveal on hover for bento card titles */
+.bento-title-highlight {
+  position: relative;
+  display: inline-block;
+}
+.bento-title-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 2.5px;
+  background: linear-gradient(90deg, var(--accent-color, #10B981), #3B82F6);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bento-card-hover-trigger:hover .bento-title-highlight::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+

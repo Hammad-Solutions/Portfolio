@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Canvas } from "@react-three/fiber";
+import { Sprout } from "lucide-react";
 import SkillsGlobe from "../canvas/SkillsGlobe";
 
 const tagContainerVariants = {
@@ -45,12 +46,12 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" className="py-24 px-6 md:px-12 max-w-6xl mx-auto relative z-10 border-t border-[var(--glass-border)] bg-transparent">
+    <section id="skills" className="py-24 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 border-t border-[var(--glass-border)] bg-transparent">
       <motion.span
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-xs font-mono tracking-widest text-[#3B82F6] uppercase block mb-3 font-bold"
+        className="text-[10px] font-mono tracking-[0.25em] text-[#3B82F6] uppercase block mb-3 font-black"
       >
         02 // CAPABILITIES
       </motion.span>
@@ -65,7 +66,7 @@ export default function Skills() {
           >
             Skills & Technologies
           </motion.h2>
-          <p className="text-[#737373] text-sm md:text-base max-w-xl">
+          <p className="text-[#a3a3a3] text-base md:text-[1.05rem] leading-relaxed max-w-xl">
             A dynamic, volumetric 3D representation of my technical capabilities. Hover over any node to inspect details.
           </p>
         </div>
@@ -91,7 +92,7 @@ export default function Skills() {
         </Canvas>
       </motion.div>
 
-      {/* Currently Learning Panel (Frameless & Transparent) */}
+      {/* Currently Learning Panel */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -100,7 +101,8 @@ export default function Skills() {
       >
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-base">🌱</span>
+            {/* SVG icon replacing the emoji */}
+            <Sprout size={16} className="text-[#3B82F6]" strokeWidth={2} />
             <span className="text-xs font-mono font-bold text-[#3B82F6] tracking-widest uppercase">CURRENTLY FOCUSING ON</span>
           </div>
           <h4 className="text-lg font-bold text-[#EDEDED]">Expanding My Technical Horizon</h4>
@@ -117,8 +119,13 @@ export default function Skills() {
             <motion.span
               key={topic}
               variants={tagVariants}
-              whileHover={{ scale: 1.05, y: -2 }}
-              className="px-4 py-2 border border-white/10 rounded-xl text-xs font-mono text-[#EDEDED] bg-transparent hover:bg-white/5 hover:border-white/30 transition-colors cursor-default"
+              whileHover={{ 
+                scale: 1.05, 
+                y: -2,
+                borderColor: "rgba(59,130,246,0.6)",
+                boxShadow: "0 0 14px rgba(59,130,246,0.2)"
+              }}
+              className="px-4 py-2 border border-white/10 rounded-xl text-xs font-mono text-[#EDEDED] bg-transparent hover:bg-white/5 transition-all duration-300 cursor-default"
             >
               {topic}
             </motion.span>

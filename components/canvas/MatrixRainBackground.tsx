@@ -32,22 +32,35 @@ export default function MatrixRainBackground() {
 
     const draw = () => {
       // Draw semi-transparent background to create trail effect
-      ctx.fillStyle = "rgba(10, 10, 10, 0.12)";
+      ctx.fillStyle = "rgba(10, 10, 10, 0.11)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Muted steel gray with slight blue undertone at low opacity to blend with background
-      ctx.fillStyle = "rgba(201, 190, 33, 0.09)";
       ctx.font = `${fontSize}px monospace`;
+
+      // Cycle colors to match our theme: Emerald green, Teal, Blue, Purple
+      const colors = [
+        "rgba(16, 185, 129, 0.24)", // Emerald
+        "rgba(20, 184, 166, 0.24)", // Teal
+        "rgba(59, 130, 246, 0.22)",  // Blue
+        "rgba(168, 85, 247, 0.20)"  // Purple
+      ];
 
       for (let i = 0; i < drops.length; i++) {
         const text = chars[Math.floor(Math.random() * chars.length)];
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
+        // Draw a bright glowing white character at the leading head of each stream
+        if (Math.random() > 0.985) {
+          ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+        } else {
+          ctx.fillStyle = colors[i % colors.length];
+        }
+
         ctx.fillText(text, x, y);
 
         // Reset drop to top randomly
-        if (y > canvas.height && Math.random() > 0.98) {
+        if (y > canvas.height && Math.random() > 0.978) {
           drops[i] = 0;
         }
 
@@ -55,10 +68,23 @@ export default function MatrixRainBackground() {
       }
     };
 
-    const interval = setInterval(draw, 33); // ~30 FPS
+    let lastTime = performance.now();
+    let frameId: number;
+
+    const tick = (now: number) => {
+      frameId = requestAnimationFrame(tick);
+      const elapsed = now - lastTime;
+      // Target ~30 FPS (~33.3ms interval)
+      if (elapsed >= 33) {
+        lastTime = now - (elapsed % 33);
+        draw();
+      }
+    };
+
+    frameId = requestAnimationFrame(tick);
 
     return () => {
-      clearInterval(interval);
+      cancelAnimationFrame(frameId);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
