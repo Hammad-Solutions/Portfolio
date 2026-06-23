@@ -126,6 +126,27 @@ export default function Contact() {
         transition={{ type: "spring", stiffness: 50, damping: 15 }}
         className="p-8 md:p-10 border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-xl rounded-2xl shadow-lg"
       >
+        {/* Trust Signals */}
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+          {[
+            { icon: "⚡", text: "Response within 24 hours" },
+            { icon: "🔒", text: "NDA available on request" },
+            { icon: "📍", text: "Pakistan · Available Globally (Remote)" },
+          ].map((item, i) => (
+            <motion.span
+              key={item.text}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08, duration: 0.4 }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono text-[#a3a3a3] border border-[var(--glass-border)] bg-[var(--glass-bg)] rounded-full backdrop-blur-sm"
+            >
+              <span>{item.icon}</span>
+              {item.text}
+            </motion.span>
+          ))}
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2">

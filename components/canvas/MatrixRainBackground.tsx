@@ -31,18 +31,19 @@ export default function MatrixRainBackground() {
     window.addEventListener("resize", handleResize);
 
     const draw = () => {
-      // Draw semi-transparent background to create trail effect
-      ctx.fillStyle = "rgba(10, 10, 10, 0.11)";
+      // Lower opacity = longer trails = more visible rain effect
+      ctx.fillStyle = "rgba(10, 10, 10, 0.062)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.font = `${fontSize}px monospace`;
 
-      // Cycle colors to match our theme: Emerald green, Teal, Blue, Purple
+      // Theme-matched colors with boosted opacity for visibility
       const colors = [
-        "rgba(16, 185, 129, 0.24)", // Emerald
-        "rgba(20, 184, 166, 0.24)", // Teal
-        "rgba(59, 130, 246, 0.22)",  // Blue
-        "rgba(168, 85, 247, 0.20)"  // Purple
+        "rgba(16, 185, 129, 0.55)",  // Emerald (primary)
+        "rgba(20, 184, 166, 0.50)",  // Teal
+        "rgba(59, 130, 246, 0.45)",  // Blue
+        "rgba(16, 185, 129, 0.40)",  // Emerald dim
+        "rgba(20, 184, 166, 0.35)",  // Teal dim
       ];
 
       for (let i = 0; i < drops.length; i++) {
@@ -50,9 +51,9 @@ export default function MatrixRainBackground() {
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        // Draw a bright glowing white character at the leading head of each stream
-        if (Math.random() > 0.985) {
-          ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+        // 10% chance: bright glowing white "stream head" character
+        if (Math.random() > 0.90) {
+          ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
         } else {
           ctx.fillStyle = colors[i % colors.length];
         }
@@ -60,7 +61,7 @@ export default function MatrixRainBackground() {
         ctx.fillText(text, x, y);
 
         // Reset drop to top randomly
-        if (y > canvas.height && Math.random() > 0.978) {
+        if (y > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
 

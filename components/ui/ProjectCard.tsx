@@ -11,6 +11,7 @@ interface ProjectCardProps {
   github?: string;
   glowColor?: string;
   onOpenDetails: () => void;
+  featured?: boolean;
 }
 
 const GithubIcon = () => (
@@ -28,7 +29,7 @@ const GithubIcon = () => (
   </svg>
 );
 
-export default function ProjectCard({ id, index, title, description, tags, image, github, glowColor = "#FFFFFF", onOpenDetails }: ProjectCardProps) {
+export default function ProjectCard({ id, index, title, description, tags, image, github, glowColor = "#FFFFFF", onOpenDetails, featured = false }: ProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const arrowRef = useRef<HTMLDivElement>(null);
 
@@ -104,78 +105,153 @@ export default function ProjectCard({ id, index, title, description, tags, image
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
-      className={`relative flex flex-col justify-between border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-md p-6 rounded-2xl h-[400px] overflow-hidden select-none transition-all duration-300 shadow-sm group ${
-        github ? "cursor-pointer" : "cursor-default"
+      className={`relative border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-md rounded-2xl overflow-hidden select-none transition-all duration-300 shadow-sm group ${
+        featured
+          ? "flex flex-col md:flex-row cursor-pointer"
+          : "flex flex-col justify-between p-6 h-[400px] cursor-pointer"
       }`}
       style={{ transformStyle: "preserve-3d" }}
     >
-      <div className="flex flex-col flex-1" style={{ transform: "translateZ(30px)" }}>
-        {/* Top Header */}
-        <div className="flex justify-between items-center mb-4">
-          <span className="mono-text text-[#737373] text-xs font-semibold">
-            {String(index).padStart(2, "0")} // {shortCode}
-          </span>
-          <div className="flex items-center gap-2">
-            {github && (
-              <div className="text-[#737373] group-hover:text-[#10B981] transition-colors duration-300 flex items-center justify-center p-1.5 border border-[var(--glass-border)] rounded-full hover:border-[#10B981]">
-                <GithubIcon />
-              </div>
-            )}
-            <div 
-              ref={arrowRef}
-              className={`w-8 h-8 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-xs font-semibold text-[#EDEDED] transition-colors ${
-                github ? "group-hover:border-[#10B981] group-hover:text-[#10B981]" : ""
-              }`}
+      {featured ? (
+        /* Featured hero card: image left, content right (on md+) */
+        <>
+          <div className="relative md:w-1/2 h-[220px] md:h-auto overflow-hidden">
+            <img
+              src={image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop"}
+              alt={title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-90"
+              loading="lazy"
+            />
+            {/* Overlay gradient */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0A0A0A]/80 hidden md:block" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/80 to-transparent md:hidden" />
+            {/* Featured badge */}
+            <div
+              className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase tracking-wider text-black"
+              style={{ background: glowColor }}
             >
-              ↗
+              Featured Project
             </div>
           </div>
-        </div>
+          <div className="flex flex-col justify-between p-7 md:w-1/2" style={{ transform: "translateZ(30px)" }}>
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <span className="mono-text text-[#737373] text-xs font-semibold">
+                  {String(index).padStart(2, "0")} // {shortCode}
+                </span>
+                <div className="flex items-center gap-2">
+                  {github && (
+                    <div className="text-[#737373] group-hover:text-[#10B981] transition-colors duration-300 flex items-center justify-center p-1.5 border border-[var(--glass-border)] rounded-full hover:border-[#10B981]">
+                      <GithubIcon />
+                    </div>
+                  )}
+                  <div
+                    ref={arrowRef}
+                    className="w-8 h-8 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-xs font-semibold text-[#EDEDED] transition-colors group-hover:border-[#10B981] group-hover:text-[#10B981]"
+                  >
+                    ↗
+                  </div>
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold mb-3 tracking-tight text-[#EDEDED] leading-tight">
+                {title}
+              </h3>
+              <p className="text-[#a3a3a3] text-sm leading-relaxed line-clamp-4 mb-4">
+                {description}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[10px] font-mono text-[#EDEDED] bg-[#121212]/50 px-2 py-0.5 rounded-md border border-[var(--glass-border)] transition-all duration-300 hover:text-white hover:-translate-y-0.5 cursor-default select-none"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = `${glowColor}66`;
+                    e.currentTarget.style.boxShadow = `0 0 10px ${glowColor}25`;
+                    e.currentTarget.style.backgroundColor = `${glowColor}0a`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "var(--glass-border)";
+                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.backgroundColor = "rgba(18, 18, 18, 0.5)";
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        /* Standard card layout */
+        <>
+          <div className="flex flex-col flex-1" style={{ transform: "translateZ(30px)" }}>
+            {/* Top Header */}
+            <div className="flex justify-between items-center mb-4">
+              <span className="mono-text text-[#737373] text-xs font-semibold">
+                {String(index).padStart(2, "0")} // {shortCode}
+              </span>
+              <div className="flex items-center gap-2">
+                {github && (
+                  <div className="text-[#737373] group-hover:text-[#10B981] transition-colors duration-300 flex items-center justify-center p-1.5 border border-[var(--glass-border)] rounded-full hover:border-[#10B981]">
+                    <GithubIcon />
+                  </div>
+                )}
+                <div
+                  ref={arrowRef}
+                  className={`w-8 h-8 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-xs font-semibold text-[#EDEDED] transition-colors ${
+                    github ? "group-hover:border-[#10B981] group-hover:text-[#10B981]" : ""
+                  }`}
+                >
+                  ↗
+                </div>
+              </div>
+            </div>
 
-        {/* Project Visual Image */}
-        <div className="w-full h-36 rounded-xl overflow-hidden mb-4 relative border border-[#262626]/50">
-          <img 
-            src={image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop"} 
-            alt={title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale contrast-110 opacity-60 group-hover:opacity-100 group-hover:grayscale-0"
-            loading="lazy"
-          />
-        </div>
+            {/* Project Visual Image */}
+            <div className="w-full h-36 rounded-xl overflow-hidden mb-4 relative border border-[#262626]/50">
+              <img
+                src={image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop"}
+                alt={title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale contrast-110 opacity-60 group-hover:opacity-100 group-hover:grayscale-0"
+                loading="lazy"
+              />
+            </div>
 
-        {/* Project Info */}
-        <h3 className="text-lg font-bold mb-2 tracking-tight text-[#EDEDED] leading-tight">
-          <span className="soft-skill-title">
-            {title}
-          </span>
-        </h3>
-        <p className="text-[#a3a3a3] text-sm leading-relaxed line-clamp-2">
-          {description}
-        </p>
-      </div>
+            {/* Project Info */}
+            <h3 className="text-lg font-bold mb-2 tracking-tight text-[#EDEDED] leading-tight">
+              <span className="soft-skill-title">{title}</span>
+            </h3>
+            <p className="text-[#a3a3a3] text-sm leading-relaxed line-clamp-2">
+              {description}
+            </p>
+          </div>
 
-      <div 
-        className="flex flex-wrap gap-2 mt-4 relative z-10"
-        style={{ transform: "translateZ(20px)" }}
-      >
-        {tags.map((tag) => (
-          <span 
-            key={tag} 
-            className="text-[10px] font-mono text-[#EDEDED] bg-[#121212]/50 px-2 py-0.5 rounded-md border border-[var(--glass-border)] transition-all duration-300 hover:text-white hover:-translate-y-0.5 cursor-default select-none"
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = `${glowColor}66`;
-              e.currentTarget.style.boxShadow = `0 0 10px ${glowColor}25`;
-              e.currentTarget.style.backgroundColor = `${glowColor}0a`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "var(--glass-border)";
-              e.currentTarget.style.boxShadow = "none";
-              e.currentTarget.style.backgroundColor = "rgba(18, 18, 18, 0.5)";
-            }}
+          <div
+            className="flex flex-wrap gap-2 mt-4 relative z-10"
+            style={{ transform: "translateZ(20px)" }}
           >
-            {tag}
-          </span>
-        ))}
-      </div>
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-mono text-[#EDEDED] bg-[#121212]/50 px-2 py-0.5 rounded-md border border-[var(--glass-border)] transition-all duration-300 hover:text-white hover:-translate-y-0.5 cursor-default select-none"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = `${glowColor}66`;
+                  e.currentTarget.style.boxShadow = `0 0 10px ${glowColor}25`;
+                  e.currentTarget.style.backgroundColor = `${glowColor}0a`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "var(--glass-border)";
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.backgroundColor = "rgba(18, 18, 18, 0.5)";
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -48,8 +48,33 @@ export default function Projects() {
         Here are some of my projects that demonstrate my ability to solve real-world problems through code.
       </p>
 
-      {/* Bento Grid layout */}
-      <motion.div 
+      {/* Featured Hero Project — first project spans full width */}
+      {(portfolioData.projects as unknown as Project[]).slice(0, 1).map((project, idx) => (
+        <motion.div
+          key={project.id}
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ type: "spring", stiffness: 55, damping: 14 }}
+          className="mb-6"
+        >
+          <ProjectCard
+            id={project.id}
+            index={idx + 1}
+            title={project.title}
+            description={project.description}
+            tags={project.tags}
+            image={project.image}
+            github={project.github}
+            glowColor={getGlowColor(project.tags)}
+            onOpenDetails={() => setSelectedProject(project)}
+            featured
+          />
+        </motion.div>
+      ))}
+
+      {/* Remaining Projects Grid */}
+      <motion.div
         variants={{
           hidden: {},
           visible: {
@@ -63,7 +88,7 @@ export default function Projects() {
         viewport={{ once: true, margin: "-100px" }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {(portfolioData.projects as unknown as Project[]).map((project, idx) => (
+        {(portfolioData.projects as unknown as Project[]).slice(1).map((project, idx) => (
           <motion.div
             key={project.id}
             variants={{
@@ -80,9 +105,9 @@ export default function Projects() {
               }
             }}
           >
-            <ProjectCard 
+            <ProjectCard
               id={project.id}
-              index={idx + 1}
+              index={idx + 2}
               title={project.title}
               description={project.description}
               tags={project.tags}

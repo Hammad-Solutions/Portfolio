@@ -67,7 +67,7 @@ export default function Skills() {
             Skills & Technologies
           </motion.h2>
           <p className="text-[#a3a3a3] text-base md:text-[1.05rem] leading-relaxed max-w-xl">
-            A dynamic, volumetric 3D representation of my technical capabilities. Hover over any node to inspect details.
+            13 technologies I ship with daily — visualized as a volumetric 3D knowledge map. Each node represents a tool I&apos;ve used in production. <span className="text-[#3B82F6]">Hover any node</span> to inspect my proficiency depth.
           </p>
         </div>
       </div>

@@ -150,7 +150,7 @@ export default function About() {
   const [activeTab, setActiveTab] = useState<"story" | "timeline">("story");
 
   return (
-    <section id="about" className="py-24 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 border-t border-[var(--glass-border)] bg-transparent">
+    <section id="about" className="pt-12 pb-24 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 border-t border-[var(--glass-border)] bg-transparent">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
         {/* Left column: Text Content / Tabs */}
@@ -214,26 +214,45 @@ export default function About() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.25 }}
-                className="space-y-6 text-[#d4d4d4] text-base md:text-[1.075rem] !leading-[1.8]"
+                className="space-y-6 text-[#d4d4d4] text-sm md:text-[0.95rem] !leading-[1.7]"
               >
                 <p className="text-[var(--text-primary)] text-lg font-medium">
                   Passionate about creating digital experiences that matter
                 </p>
-                <div>
-                  <ScrollRevealText 
-                    text="As a passionate Software Developer and a final-year Software Engineering student at Air University Islamabad, I specialize in building clean and efficient applications using React.js, Next.js, and Node.js. My journey in software development has been driven by a genuine interest in solving real-world problems."
-                  />
-                </div>
-                <div>
-                  <ScrollRevealText 
-                    text="My project portfolio demonstrates my ability to tackle complex challenges, from developing a real-time WeatherApp using API integration to creating an IoT-based Smart Helmet for worker safety. I'm proficient in both front-end and back-end development and have a strong understanding of modern software design principles."
-                  />
-                </div>
-                <div>
-                  <ScrollRevealText 
-                    text="Currently, I'm expanding my skills in Android App Development with React Native and exploring Software Architecture & Cloud Computing."
-                  />
-                </div>
+                <ul className="space-y-4">
+                  <li className="flex gap-3">
+                    <span className="text-[#10B981] mt-1 font-bold">▹</span>
+                    <div>
+                      <ScrollRevealText 
+                        text="Final-year Software Engineering student at Air University Islamabad, specializing in React.js, Next.js, and Node.js for clean, scalable applications."
+                      />
+                    </div>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-[#3B82F6] mt-1 font-bold">▹</span>
+                    <div>
+                      <ScrollRevealText 
+                        text="Proven ability to tackle complex challenges, from real-time API integrations (WeatherApp) to hardware-software systems (IoT Smart Helmet)."
+                      />
+                    </div>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-[#A855F7] mt-1 font-bold">▹</span>
+                    <div>
+                      <ScrollRevealText 
+                        text="Proficient across the full stack with a strong foundation in modern software design principles and clean architecture."
+                      />
+                    </div>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-[#14B8A6] mt-1 font-bold">▹</span>
+                    <div>
+                      <ScrollRevealText 
+                        text="Currently expanding expertise in Android App Development (React Native), Cloud Computing, and advanced Software Architecture."
+                      />
+                    </div>
+                  </li>
+                </ul>
 
                 {/* Quick traits tags */}
                 <motion.div 

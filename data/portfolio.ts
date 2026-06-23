@@ -35,7 +35,7 @@ export const portfolioData = {
     {
       id: "ai-portfolio",
       title: "Autonomous AI-Agent & Developer Interface",
-      description: "A premium next-generation developer portfolio featuring an integrated NLP RAG AI Chatbot, dual-mode Visual UI and interactive Hacker Terminal, dynamic volumetric 3D Skills Globe, and seamless physics-based animations.",
+      description: "The portfolio you're viewing right now. A next-generation developer site featuring an integrated RAG AI Chatbot that answers questions about my experience in real-time, a volumetric 3D Skills Globe built with custom GLSL shaders, and seamless physics-based animations — all serving as a live proof-of-concept of my full-stack capabilities.",
       tags: ["Next.js", "AI (RAG)", "Three.js (WebGL)", "Framer Motion", "GSAP"],
       image: "/ai_portfolio_cover.png",
       github: "https://github.com/Hammad-Solutions/Portfolio",
@@ -47,7 +47,7 @@ export const portfolioData = {
     {
       id: "previous-portfolio",
       title: "Portfolio",
-      description: "My personal developer portfolio, designed with clean HTML, CSS, and interactive JavaScript features for a lightweight representation.",
+      description: "My original personal portfolio, purpose-built in pure HTML, CSS and vanilla JavaScript — no frameworks, no dependencies. Achieved glassmorphic card layouts, smooth page transitions, and full responsiveness using only custom CSS variables and media query sheets.",
       tags: ["HTML", "CSS", "JavaScript", "Responsive Design"],
       image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/hammad-solutions.github.io",
@@ -58,7 +58,7 @@ export const portfolioData = {
     {
       id: "student-management",
       title: "Student Management System",
-      description: "A comprehensive C++ application with file handling for managing student records. Features include admin logic, teacher and student modules, file management, and secure data storage.",
+      description: "A C++ console application managing student records with full admin/teacher/student role separation. Implements atomic file-stream staging to handle record updates without index mismatch — mimicking database CRUD operations using flat text files and STL.",
       tags: ["C++", "File Handling", "OOP", "Data Structures"],
       image: "https://cdn4.slideserve.com/9079189/student-information-system-n.jpg",
       github: "https://github.com/Hammad-Solutions/Student-Management-System-Cpp-File-Handling",
@@ -69,7 +69,7 @@ export const portfolioData = {
     {
       id: "bank-management",
       title: "Bank Management System",
-      description: "A complete Bank Management System in C++ using File Handling. Includes account creation, deposit, withdrawal, balance inquiry, and fund transfer between accounts.",
+      description: "A full-featured bank management system in C++ with account creation, deposits, withdrawals, balance inquiry, and fund transfers. Implements strict ACID-style transaction rollback using binary file I/O and stream validation to prevent data corruption.",
       tags: ["C++", "File Handling", "Data Management", "OOP"],
       image: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/Bank-Management-System-Cpp-File-Handling",
@@ -91,7 +91,7 @@ export const portfolioData = {
     {
       id: "weather-app",
       title: "WeatherApp with API Integration",
-      description: "A real-time weather application featuring location-based forecasts, interactive weather data visualization, and seamless API integration for accurate weather.",
+      description: "Real-time weather application serving live 10-day location-based forecasts via the OpenWeatherMap REST API. Built robust error boundary handling for failed lookups and undefined locations — zero unhandled promise rejections across all tested edge cases.",
       tags: ["React.js", "API Integration", "JavaScript"],
       image: "https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=600&auto=format&fit=crop",
       architecture: ["React.js Context", "OpenWeatherMap API", "CSS Grid Forecast Cards"],

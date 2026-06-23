@@ -5,11 +5,17 @@ import { Canvas } from "@react-three/fiber";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import gsap from "gsap";
 import MatrixRainBackground from "../components/canvas/MatrixRainBackground";
+import HeroParticles from "../components/canvas/HeroParticles";
 import About from "../components/ui/About";
 import Skills from "../components/ui/Skills";
 import Projects from "../components/ui/Projects";
 import Contact from "../components/ui/Contact";
 import Marquee from "../components/ui/Marquee";
+import FloatingCTA from "../components/ui/FloatingCTA";
+import MagneticButton from "../components/ui/MagneticButton";
+import MorphingBlob from "../components/ui/MorphingBlob";
+import RadialStat from "../components/ui/RadialStat";
+import SocialProof from "../components/ui/SocialProof";
 import { getBotResponse } from "../lib/rag";
 import styles from "./page.module.css";
 
@@ -354,6 +360,34 @@ export default function Home() {
     });
   };
 
+  const handleScrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    
+    const target = document.getElementById(id);
+    if (!target) return;
+    
+    const needsModeSwitch = mode !== "visual";
+    if (needsModeSwitch) {
+      setMode("visual");
+    }
+    
+    setTimeout(() => {
+      // Find sticky navbar height dynamically
+      const navbar = document.querySelector(`.${styles.navbar}`);
+      const navbarHeight = navbar ? navbar.getBoundingClientRect().height : 70;
+      
+      // Calculate target element position with offset
+      const elementPosition = target.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - 16;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }, needsModeSwitch ? 150 : 0);
+  };
+
   if (!mounted) return null;
 
   return (
@@ -518,7 +552,10 @@ export default function Home() {
               transition={{ duration: 0.4 }}
             >
               {/* Hero Section — Bento Grid */}
-              <section id="home" className="py-24 px-6 md:px-12 w-full max-w-[1440px] mx-auto relative z-10">
+              <section id="home" className="pt-8 pb-16 px-6 md:px-12 w-full max-w-[1440px] mx-auto relative z-10">
+                {/* Ambient hero layers */}
+                <MorphingBlob />
+                <HeroParticles />
                 <motion.div
                   variants={containerVariants}
                   initial="hidden"
@@ -531,16 +568,19 @@ export default function Home() {
                     className={styles.profileCard}
                   >
                     {/* Pulsing Status Badge */}
-                    <div
-                      className="mb-6 mx-auto self-center flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[10px] text-emerald-400 font-mono tracking-widest font-semibold uppercase relative overflow-hidden select-none"
+                    <a
+                      href="#contact"
+                      title="Currently accepting 1-2 new client projects"
+                      className="mb-6 mx-auto self-center flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[10px] text-emerald-400 font-mono tracking-widest font-semibold uppercase relative overflow-hidden select-none hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300 group"
                       style={{ backdropFilter: "blur(4px)" }}
                     >
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                       </span>
-                      Available for Work
-                    </div>
+                      Open to Projects
+                      <span className="group-hover:translate-x-0.5 transition-transform duration-200">↗</span>
+                    </a>
 
                     {/* Main Title */}
                     <h1 className={styles.heading}>
@@ -554,9 +594,9 @@ export default function Home() {
                       <TypewriterRoles />
                     </div>
 
-                    {/* Bio text */}
-                    <p className="text-[#d4d4d4] text-base md:text-[1.1rem] !leading-[1.8] max-w-2xl">
-                      Passionate about building clean, scalable, and efficient applications using React.js, Next.js, and Node.js. Specializing in creating seamless web experiences and solving real-world problems through code.
+                    {/* Bio text — outcome-driven */}
+                    <p className="text-[#d4d4d4] text-base md:text-[1.05rem] !leading-[1.8] max-w-2xl">
+                      I turn complex problems into products users love — shipped fast, built to scale. Full-stack dev with 4+ years shipping React, Next.js &amp; Node.js across web, AI, and IoT systems.
                     </p>
                   </BentoCard>
 
@@ -585,15 +625,32 @@ export default function Home() {
                         <h5 className="text-sm font-bold text-[#EDEDED] leading-tight">BS Software Engineering</h5>
                         <span className="text-[10px] font-mono text-[#10B981] font-semibold">Air University Islamabad</span>
                       </div>
-                      <div className={styles.statsGrid}>
-                        <div className={styles.statItem}>
-                          <span className={styles.statNumber}>04+</span>
-                          <span className={styles.statLabel}>Years Coding</span>
-                        </div>
-                        <div className={styles.statItem}>
-                          <span className={styles.statNumber}>15+</span>
-                          <span className={styles.statLabel}>Projects</span>
-                        </div>
+                      {/* Radial stats */}
+                      <div className="flex items-end justify-around gap-2 pt-2">
+                        <RadialStat
+                          value={80}
+                          displayValue="04+"
+                          label="Years"
+                          sublabel="Coding"
+                          color="#10B981"
+                          delay={0}
+                        />
+                        <RadialStat
+                          value={75}
+                          displayValue="15+"
+                          label="Projects"
+                          sublabel="Shipped"
+                          color="#3B82F6"
+                          delay={0.15}
+                        />
+                        <RadialStat
+                          value={60}
+                          displayValue="3+"
+                          label="Stacks"
+                          sublabel="Active"
+                          color="#A855F7"
+                          delay={0.3}
+                        />
                       </div>
                     </div>
                   </BentoCard>
@@ -611,27 +668,31 @@ export default function Home() {
                     <div className="flex flex-col justify-between h-full gap-4 w-full">
                       <div className="flex flex-col gap-2.5 w-full">
                         <a href="#contact" className="w-full">
-                          <motion.button
-                            whileHover={{ borderColor: "#10B981", boxShadow: "0 0 20px rgba(16,185,129,0.25)" }}
-                            whileTap={{ scale: 0.98 }}
-                            className={`${styles.btnSecondary} w-full text-center py-2 font-bold text-[11px]`}
-                          >
-                            Get In Touch
-                          </motion.button>
+                          <MagneticButton className="w-full">
+                            <motion.button
+                              whileHover={{ borderColor: "#10B981", boxShadow: "0 0 20px rgba(16,185,129,0.25)" }}
+                              whileTap={{ scale: 0.98 }}
+                              className={`${styles.btnSecondary} w-full text-center py-2 font-bold text-[11px]`}
+                            >
+                              Get In Touch
+                            </motion.button>
+                          </MagneticButton>
                         </a>
                         <a href="/resume.pdf" download="Muhammad_Hammad_Resume.pdf" className="w-full">
-                          <motion.button
-                            whileHover={{ 
-                              borderColor: "#3B82F6", 
-                              boxShadow: "0 0 20px rgba(59,130,246,0.25)",
-                              backgroundColor: "rgba(59,130,246,0.05)"
-                            }}
-                            whileTap={{ scale: 0.98 }}
-                            className={`${styles.btnSecondary} w-full flex items-center justify-center gap-2 py-2 font-bold text-[11px]`}
-                          >
-                            <DownloadIcon />
-                            Download CV
-                          </motion.button>
+                          <MagneticButton className="w-full">
+                            <motion.button
+                              whileHover={{ 
+                                borderColor: "#3B82F6", 
+                                boxShadow: "0 0 20px rgba(59,130,246,0.25)",
+                                backgroundColor: "rgba(59,130,246,0.05)"
+                              }}
+                              whileTap={{ scale: 0.98 }}
+                              className={`${styles.btnSecondary} w-full flex items-center justify-center gap-2 py-2 font-bold text-[11px]`}
+                            >
+                              <DownloadIcon />
+                              Download CV
+                            </motion.button>
+                          </MagneticButton>
                         </a>
                       </div>
                       <div className="flex gap-2 justify-center mt-2">
@@ -716,9 +777,13 @@ export default function Home() {
               {/* Infinite Running Marquee Text Banner */}
               <Marquee />
 
+              {/* Floating CTA */}
+              <FloatingCTA />
+
               {/* Rest of the Portfolio page sections */}
               <About />
               <Skills />
+              <SocialProof />
               <Projects />
               <Contact />
             </motion.div>
@@ -803,15 +868,84 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* Minimal Copyright Footer */}
+        {/* Enhanced 3-Column Footer */}
         <footer className={styles.footer}>
-          <div className={styles.footerContent}>
-            <span className={styles.footerLogo}>
-              DESIGNED & CODED BY MUHAMMAD HAMMAD
-            </span>
-            <span className={styles.footerCopy}>
-              © {new Date().getFullYear()} ALL RIGHTS RESERVED.
-            </span>
+          <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+            {/* Top gradient border */}
+            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[var(--glass-border)] to-transparent mb-10" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              {/* Left: Brand */}
+              <div>
+                <span className="font-mono text-xs font-black tracking-[0.2em] text-[#EDEDED] uppercase block mb-2">
+                  Muhammad Hammad
+                </span>
+                <p className="text-[11px] text-[#525252] leading-relaxed max-w-xs">
+                  Full-stack developer specializing in React, Next.js &amp; AI-integrated applications. Open to freelance &amp; full-time roles.
+                </p>
+                <div className="flex gap-3 mt-4">
+                  {[
+                    { href: "https://github.com/Hammad-Solutions", label: "GitHub", color: "#10B981" },
+                    { href: "https://linkedin.com/in/hammad-solution", label: "LinkedIn", color: "#A855F7" },
+                    { href: "mailto:m6784104@gmail.com", label: "Email", color: "#3B82F6" },
+                  ].map((s) => (
+                    <a
+                      key={s.label}
+                      href={s.href}
+                      target={s.href.startsWith("http") ? "_blank" : undefined}
+                      rel="noreferrer"
+                      aria-label={s.label}
+                      className="text-[10px] font-mono text-[#525252] hover:text-[#EDEDED] transition-colors duration-300 underline underline-offset-2"
+                    >
+                      {s.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+              {/* Center: Nav */}
+              <div className="md:flex md:justify-center">
+                <div>
+                  <span className="text-[9px] font-mono font-bold tracking-[0.2em] text-[#525252] uppercase block mb-3">Navigate</span>
+                  <nav className="flex flex-col gap-2">
+                    {["home", "about", "skills", "projects", "contact"].map((link) => (
+                      <a
+                        key={link}
+                        href={`#${link}`}
+                        className="text-[11px] font-mono text-[#737373] hover:text-[#10B981] transition-colors duration-300 capitalize tracking-wide"
+                      >
+                        {link}
+                      </a>
+                    ))}
+                  </nav>
+                </div>
+              </div>
+              {/* Right: CTA */}
+              <div className="md:flex md:justify-end">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                    </span>
+                    <span className="text-[10px] font-mono text-[#10B981] font-semibold uppercase tracking-widest">Open to Work</span>
+                  </div>
+                  <p className="text-[11px] text-[#525252] mb-3 max-w-[200px]">
+                    Currently accepting 1-2 new client projects.
+                  </p>
+                  <a
+                    href="mailto:m6784104@gmail.com"
+                    className="text-[11px] font-mono text-[#EDEDED] hover:text-[#10B981] transition-colors duration-300 underline underline-offset-2"
+                  >
+                    m6784104@gmail.com
+                  </a>
+                </div>
+              </div>
+            </div>
+            {/* Bottom bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-6 border-t border-[var(--glass-border)]">
+              <span className={styles.footerLogo}>DESIGNED &amp; CODED BY MUHAMMAD HAMMAD</span>
+              <span className="text-[9px] font-mono text-[#525252]">BUILT WITH NEXT.JS · THREE.JS · FRAMER MOTION</span>
+              <span className={styles.footerCopy}>© {new Date().getFullYear()} ALL RIGHTS RESERVED.</span>
+            </div>
           </div>
         </footer>
 
