@@ -173,10 +173,10 @@ export default function About() {
           </motion.h2>
 
           {/* Interactive Navigation Tab switch */}
-          <div className="flex border-b border-[var(--glass-border)] mb-8 select-none">
+          <div className="flex border-b border-[var(--glass-border)] mb-8 select-none w-full">
             <button
               onClick={() => setActiveTab("story")}
-              className={`px-6 py-2.5 text-xs font-mono font-bold tracking-wider relative transition-colors duration-300 cursor-pointer ${
+              className={`flex-1 sm:flex-initial px-3 sm:px-6 py-2.5 text-[10px] sm:text-xs font-mono font-bold tracking-wider relative transition-colors duration-300 cursor-pointer whitespace-nowrap ${
                 activeTab === "story" ? "text-[#10B981]" : "text-[#737373] hover:text-[#EDEDED]"
               }`}
             >
@@ -191,7 +191,7 @@ export default function About() {
             </button>
             <button
               onClick={() => setActiveTab("timeline")}
-              className={`px-6 py-2.5 text-xs font-mono font-bold tracking-wider relative transition-colors duration-300 cursor-pointer ${
+              className={`flex-1 sm:flex-initial px-3 sm:px-6 py-2.5 text-[10px] sm:text-xs font-mono font-bold tracking-wider relative transition-colors duration-300 cursor-pointer whitespace-nowrap ${
                 activeTab === "timeline" ? "text-[#3B82F6]" : "text-[#737373] hover:text-[#EDEDED]"
               }`}
             >

@@ -271,7 +271,7 @@ export default function SkillsGlobe() {
       <mesh>
         <sphereGeometry args={[radius + 0.035, 64, 64]} />
         <meshBasicMaterial
-          color="#034141ff"
+          color="#034141"
           transparent
           opacity={0.02}
           blending={THREE.AdditiveBlending}
