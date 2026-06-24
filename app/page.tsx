@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useSpring, useMotionValue, useTransform } from "framer-motion";
 import gsap from "gsap";
 import MatrixRainBackground from "../components/canvas/MatrixRainBackground";
 import HeroParticles from "../components/canvas/HeroParticles";
@@ -18,6 +18,8 @@ import RadialStat from "../components/ui/RadialStat";
 import SocialProof from "../components/ui/SocialProof";
 import { getBotResponse } from "../lib/rag";
 import styles from "./page.module.css";
+import CustomCursor from "../components/ui/CustomCursor";
+import PageLoader, { usePageLoader } from "../components/ui/PageLoader";
 
 // Custom Inline SVG Icons
 const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -219,17 +221,44 @@ function HeroAvatar() {
 interface BentoCardProps {
   children: React.ReactNode;
   className?: string;
-  variants?: any;
+  variants?: import("framer-motion").Variants;
   innerClassName?: string;
+  style?: React.CSSProperties | any;
 }
 
-function BentoCard({ children, className = "", variants, innerClassName = "flex flex-col justify-between h-full w-full relative z-10" }: BentoCardProps) {
+function BentoCard({ children, className = "", variants, innerClassName = "flex flex-col justify-between h-full w-full relative z-10 min-w-0", style }: BentoCardProps) {
+  const x = useMotionValue(0.5);
+  const y = useMotionValue(0.5);
+
+  const rotateX = useTransform(y, [0, 1], [4, -4]);
+  const rotateY = useTransform(x, [0, 1], [-4, 4]);
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    x.set(event.clientX - rect.left > 0 ? (event.clientX - rect.left) / rect.width : 0);
+    y.set(event.clientY - rect.top > 0 ? (event.clientY - rect.top) / rect.height : 0);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0.5);
+    y.set(0.5);
+  };
+
   return (
     <motion.div
       variants={variants}
       className={`${styles.bentoCard} bento-card-hover-trigger ${className}`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformPerspective: 1200,
+        transformStyle: "preserve-3d",
+        ...style
+      }}
     >
-      <div className={innerClassName}>
+      <div className={innerClassName} style={{ transform: "translateZ(30px)" }}>
         {children}
       </div>
     </motion.div>
@@ -251,6 +280,13 @@ export default function Home() {
     restDelta: 0.001
   });
 
+  // Fluid Parallax offsets for Bento Grid
+  const bentoY1 = useTransform(scrollYProgress, [0, 0.2], [0, -10]);
+  const bentoY2 = useTransform(scrollYProgress, [0, 0.2], [0, -30]);
+  const bentoY3 = useTransform(scrollYProgress, [0, 0.2], [0, -20]);
+  const bentoY4 = useTransform(scrollYProgress, [0, 0.2], [0, -40]);
+  const bentoY5 = useTransform(scrollYProgress, [0, 0.2], [0, -15]);
+
   const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<"visual" | "terminal">("visual");
   const [activeSection, setActiveSection] = useState("home");
@@ -269,6 +305,7 @@ export default function Home() {
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -391,12 +428,14 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div className={styles.container}>
-      {/* Glowing Scroll Progress Bar */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#10B981] via-[#14B8A6] to-[#3B82F6] origin-[0%] z-[9999]"
-        style={{ scaleX }}
-      />
+    <PageLoader>
+      <div className={`${styles.container} w-full max-w-full overflow-x-hidden`}>
+        <CustomCursor />
+        {/* Glowing Scroll Progress Bar */}
+        <motion.div
+          className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#10B981] via-[#14B8A6] to-[#3B82F6] origin-[0%] z-[9999]"
+          style={{ scaleX }}
+        />
 
       {/* 1. Tactical CSS Film Grain Overlay */}
       <div className={styles.noiseOverlay} />
@@ -448,7 +487,7 @@ export default function Home() {
             <div className="flex bg-[#262626] rounded-full p-1 relative select-none items-center">
               <button
                 onClick={() => setMode("visual")}
-                className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${mode === "visual" ? "text-[#000000]" : "text-[#737373] hover:text-[#EDEDED]"
+                className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${mode === "visual" ? "text-[#000000]" : "text-[#a3a3a3] hover:text-[#EDEDED]"
                   }`}
               >
                 VISUAL
@@ -464,7 +503,7 @@ export default function Home() {
 
               <button
                 onClick={() => setMode("terminal")}
-                className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${mode === "terminal" ? "text-[#000000]" : "text-[#737373] hover:text-[#EDEDED]"
+                className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${mode === "terminal" ? "text-[#000000]" : "text-[#a3a3a3] hover:text-[#EDEDED]"
                   }`}
               >
                 <span className="hidden sm:inline">SUPPORT BOT</span>
@@ -546,13 +585,14 @@ export default function Home() {
           {mode === "visual" ? (
             <motion.div
               key="visual-layout"
+              className="w-full max-w-full overflow-x-hidden"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.4 }}
             >
               {/* Hero Section — Bento Grid */}
-              <section id="home" className="pt-8 pb-16 px-6 md:px-12 w-full max-w-[1440px] mx-auto relative z-10">
+              <section id="home" className="pt-8 pb-16 w-full max-w-[1440px] mx-auto relative z-10">
                 {/* Ambient hero layers */}
                 <MorphingBlob />
                 <HeroParticles />
@@ -566,6 +606,7 @@ export default function Home() {
                   <BentoCard 
                     variants={itemVariants}
                     className={styles.profileCard}
+                    style={{ y: bentoY1 }}
                   >
                     {/* Pulsing Status Badge */}
                     <a
@@ -584,7 +625,7 @@ export default function Home() {
 
                     {/* Main Title */}
                     <h1 className={styles.heading}>
-                      <span className={`${styles.gradientText} bento-title-highlight`} style={{ "--accent-color": "#10B981" } as any}>
+                      <span className={`${styles.gradientText} bento-title-highlight`} style={{ "--accent-color": "#10B981" } as React.CSSProperties}>
                         Muhammad Hammad
                       </span>
                     </h1>
@@ -604,7 +645,8 @@ export default function Home() {
                   <BentoCard 
                     variants={itemVariants}
                     className={styles.avatarCard}
-                    innerClassName="flex items-center justify-center h-full w-full relative z-10"
+                    innerClassName="flex items-center justify-center h-full w-full relative z-10 min-w-0"
+                    style={{ y: bentoY2 }}
                   >
                     <HeroAvatar />
                   </BentoCard>
@@ -613,15 +655,16 @@ export default function Home() {
                   <BentoCard 
                     variants={itemVariants}
                     className={styles.statsCard}
+                    style={{ y: bentoY3 }}
                   >
                     <h4 className="text-[10px] font-mono font-bold text-[#10B981] tracking-widest uppercase mb-4">
-                      <span className="bento-title-highlight" style={{ "--accent-color": "#10B981" } as any}>
-                        // METRICS
+                      <span className="bento-title-highlight" style={{ "--accent-color": "#10B981" } as React.CSSProperties}>
+                        {"//"} METRICS
                       </span>
                     </h4>
                     <div className="flex flex-col justify-between h-full gap-4">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#737373] block uppercase tracking-wider">EDUCATION</span>
+                        <span className="text-[10px] font-mono text-[#a3a3a3] block uppercase tracking-wider">EDUCATION</span>
                         <h5 className="text-sm font-bold text-[#EDEDED] leading-tight">BS Software Engineering</h5>
                         <span className="text-[10px] font-mono text-[#10B981] font-semibold">Air University Islamabad</span>
                       </div>
@@ -659,73 +702,76 @@ export default function Home() {
                   <BentoCard 
                     variants={itemVariants}
                     className={styles.actionsCard}
+                    style={{ y: bentoY4 }}
                   >
-                    <h4 className="text-[10px] font-mono font-bold text-[#3B82F6] tracking-widest uppercase mb-4">
-                      <span className="bento-title-highlight" style={{ "--accent-color": "#3B82F6" } as any}>
-                        // CONNECT
-                      </span>
-                    </h4>
-                    <div className="flex flex-col justify-between h-full gap-4 w-full">
-                      <div className="flex flex-col gap-2.5 w-full">
-                        <a href="#contact" className="w-full">
-                          <MagneticButton className="w-full">
-                            <motion.button
-                              whileHover={{ borderColor: "#10B981", boxShadow: "0 0 20px rgba(16,185,129,0.25)" }}
-                              whileTap={{ scale: 0.98 }}
-                              className={`${styles.btnSecondary} w-full text-center py-2 font-bold text-[11px]`}
-                            >
-                              Get In Touch
-                            </motion.button>
-                          </MagneticButton>
-                        </a>
-                        <a href="/resume.pdf" download="Muhammad_Hammad_Resume.pdf" className="w-full">
-                          <MagneticButton className="w-full">
-                            <motion.button
-                              whileHover={{ 
-                                borderColor: "#3B82F6", 
-                                boxShadow: "0 0 20px rgba(59,130,246,0.25)",
-                                backgroundColor: "rgba(59,130,246,0.05)"
-                              }}
-                              whileTap={{ scale: 0.98 }}
-                              className={`${styles.btnSecondary} w-full flex items-center justify-center gap-2 py-2 font-bold text-[11px]`}
-                            >
-                              <DownloadIcon />
-                              Download CV
-                            </motion.button>
-                          </MagneticButton>
-                        </a>
-                      </div>
-                      <div className="flex gap-2 justify-center mt-2">
-                        <motion.a
-                          href="https://github.com/Hammad-Solutions"
-                          target="_blank"
-                          rel="noreferrer"
-                          whileHover={{ borderColor: "#10B981", color: "#10B981", boxShadow: "0 0 10px rgba(16,185,129,0.2)" }}
-                          className={styles.socialIcon}
-                          style={{ width: "2.3rem", height: "2.3rem" }}
-                        >
-                          <GithubIcon />
-                        </motion.a>
+                    <div className="flex flex-col h-full w-full">
+                      <h4 className="text-[10px] font-mono font-bold text-[#3B82F6] tracking-widest uppercase mb-4 shrink-0">
+                        <span className="bento-title-highlight" style={{ "--accent-color": "#3B82F6" } as React.CSSProperties}>
+                          {"//"} CONNECT
+                        </span>
+                      </h4>
+                      <div className="flex flex-col justify-center items-center flex-1 gap-6 w-full pb-4">
+                        <div className="flex flex-col gap-3 w-full px-2 sm:px-6">
+                          <a href="#contact" className="w-full">
+                            <MagneticButton className="w-full">
+                              <motion.button
+                                whileHover={{ borderColor: "#10B981", boxShadow: "0 0 20px rgba(16,185,129,0.25)" }}
+                                whileTap={{ scale: 0.98 }}
+                                className={`${styles.btnSecondary} w-full text-center py-2.5 font-bold text-[11px]`}
+                              >
+                                Get In Touch
+                              </motion.button>
+                            </MagneticButton>
+                          </a>
+                          <a href="/Muhammad Hammad.docx" download="Muhammad Hammad.docx" className="w-full">
+                            <MagneticButton className="w-full">
+                              <motion.button
+                                whileHover={{ 
+                                  borderColor: "#3B82F6", 
+                                  boxShadow: "0 0 20px rgba(59,130,246,0.25)",
+                                  backgroundColor: "rgba(59,130,246,0.05)"
+                                }}
+                                whileTap={{ scale: 0.98 }}
+                                className={`${styles.btnSecondary} w-full flex items-center justify-center gap-2 py-2.5 font-bold text-[11px]`}
+                              >
+                                <DownloadIcon />
+                                Download CV
+                              </motion.button>
+                            </MagneticButton>
+                          </a>
+                        </div>
+                        <div className="flex gap-3 justify-center">
+                          <motion.a
+                            href="https://github.com/Hammad-Solutions"
+                            target="_blank"
+                            rel="noreferrer"
+                            whileHover={{ borderColor: "#10B981", color: "#10B981", boxShadow: "0 0 10px rgba(16,185,129,0.2)" }}
+                            className={styles.socialIcon}
+                            style={{ width: "2.5rem", height: "2.5rem" }}
+                          >
+                            <GithubIcon />
+                          </motion.a>
 
-                        <motion.a
-                          href="https://linkedin.com/in/hammad-solution"
-                          target="_blank"
-                          rel="noreferrer"
-                          whileHover={{ borderColor: "#C084FC", color: "#C084FC", boxShadow: "0 0 10px rgba(192,132,252,0.2)" }}
-                          className={styles.socialIcon}
-                          style={{ width: "2.3rem", height: "2.3rem" }}
-                        >
-                          <LinkedinIcon />
-                        </motion.a>
+                          <motion.a
+                            href="https://linkedin.com/in/hammad-solution"
+                            target="_blank"
+                            rel="noreferrer"
+                            whileHover={{ borderColor: "#C084FC", color: "#C084FC", boxShadow: "0 0 10px rgba(192,132,252,0.2)" }}
+                            className={styles.socialIcon}
+                            style={{ width: "2.5rem", height: "2.5rem" }}
+                          >
+                            <LinkedinIcon />
+                          </motion.a>
 
-                        <motion.a
-                          href="mailto:m6784104@gmail.com"
-                          whileHover={{ borderColor: "#10B981", color: "#10B981", boxShadow: "0 0 10px rgba(16,185,129,0.2)" }}
-                          className={styles.socialIcon}
-                          style={{ width: "2.3rem", height: "2.3rem" }}
-                        >
-                          <MailIcon />
-                        </motion.a>
+                          <motion.a
+                            href="mailto:m6784104@gmail.com"
+                            whileHover={{ borderColor: "#10B981", color: "#10B981", boxShadow: "0 0 10px rgba(16,185,129,0.2)" }}
+                            className={styles.socialIcon}
+                            style={{ width: "2.5rem", height: "2.5rem" }}
+                          >
+                            <MailIcon />
+                          </motion.a>
+                        </div>
                       </div>
                     </div>
                   </BentoCard>
@@ -734,40 +780,100 @@ export default function Home() {
                   <BentoCard 
                     variants={itemVariants}
                     className={styles.techCard}
+                    style={{ y: bentoY5 }}
                   >
-                    <h4 className="text-[10px] font-mono font-bold text-[#14B8A6] tracking-widest uppercase mb-4">
-                      <span className="bento-title-highlight" style={{ "--accent-color": "#14B8A6" } as any}>
-                        // STACK
-                      </span>
-                    </h4>
-                    <div className="flex flex-col justify-between h-full gap-4">
-                      <span className="text-[11px] font-mono text-[#737373] block uppercase tracking-wider leading-relaxed">
-                        Client interfaces, state machines, and cloud runtimes.
-                      </span>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { name: "Next.js", color: "#14B8A6" },
-                          { name: "React",   color: "#3B82F6" },
-                          { name: "Node.js", color: "#10B981" },
-                          { name: "C++",     color: "#A855F7" }
-                        ].map((tech) => (
-                          <span 
-                            key={tech.name}
-                            className="px-2 py-0.5 text-[9px] font-mono text-[#EDEDED] bg-[#121212]/50 rounded-md border border-[#262626] transition-all duration-300 cursor-default hover:text-white"
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.borderColor = `${tech.color}66`;
-                              e.currentTarget.style.boxShadow = `0 0 10px ${tech.color}25`;
-                              e.currentTarget.style.backgroundColor = `${tech.color}0a`;
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor = "#262626";
-                              e.currentTarget.style.boxShadow = "none";
-                              e.currentTarget.style.backgroundColor = "rgba(18, 18, 18, 0.5)";
-                            }}
-                          >
-                            {tech.name}
-                          </span>
-                        ))}
+                    <div className="flex flex-col h-full w-full">
+                      <h4 className="text-[10px] font-mono font-bold text-[#14B8A6] tracking-widest uppercase mb-5 shrink-0">
+                        <span className="bento-title-highlight" style={{ "--accent-color": "#14B8A6" } as React.CSSProperties}>
+                          {"//"} ARCHITECTURE
+                        </span>
+                      </h4>
+                      <div className="flex flex-col flex-1 justify-center gap-5 w-full">
+                        
+                        {/* Tier 1: Client */}
+                        <div className="space-y-2.5">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#14B8A6] animate-pulse shadow-[0_0_8px_#14B8A6]"></span>
+                            <span className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">Client</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {[{ name: "Next.js", color: "#EDEDED", border: "#14B8A6" }, { name: "React", color: "#3B82F6", border: "#3B82F6" }, { name: "Framer", color: "#ec4899", border: "#ec4899" }].map(t => (
+                              <span 
+                                key={t.name} 
+                                className="px-2.5 py-1 text-[10px] font-mono text-[#a3a3a3] bg-[#0A0A0A] rounded-md border border-[#262626] transition-colors duration-300 select-none cursor-default"
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.borderColor = `${t.border}66`;
+                                  e.currentTarget.style.color = t.border;
+                                  e.currentTarget.style.backgroundColor = `${t.border}0a`;
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.borderColor = "#262626";
+                                  e.currentTarget.style.color = "#a3a3a3";
+                                  e.currentTarget.style.backgroundColor = "#0A0A0A";
+                                }}
+                              >
+                                {t.name}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Tier 2: Server */}
+                        <div className="space-y-2.5">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                            <span className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">Server</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {[{ name: "Node.js", color: "#10B981", border: "#10B981" }, { name: "Express", color: "#EDEDED", border: "#a3a3a3" }, { name: "MongoDB", color: "#10B981", border: "#10B981" }].map(t => (
+                              <span 
+                                key={t.name} 
+                                className="px-2.5 py-1 text-[10px] font-mono text-[#a3a3a3] bg-[#0A0A0A] rounded-md border border-[#262626] transition-colors duration-300 select-none cursor-default"
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.borderColor = `${t.border}66`;
+                                  e.currentTarget.style.color = t.border;
+                                  e.currentTarget.style.backgroundColor = `${t.border}0a`;
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.borderColor = "#262626";
+                                  e.currentTarget.style.color = "#a3a3a3";
+                                  e.currentTarget.style.backgroundColor = "#0A0A0A";
+                                }}
+                              >
+                                {t.name}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Tier 3: Systems */}
+                        <div className="space-y-2.5">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#A855F7]"></span>
+                            <span className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">Systems</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {[{ name: "C++", color: "#A855F7", border: "#A855F7" }, { name: "Python", color: "#eab308", border: "#eab308" }, { name: "Java", color: "#ef4444", border: "#ef4444" }].map(t => (
+                              <span 
+                                key={t.name} 
+                                className="px-2.5 py-1 text-[10px] font-mono text-[#a3a3a3] bg-[#0A0A0A] rounded-md border border-[#262626] transition-colors duration-300 select-none cursor-default"
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.borderColor = `${t.border}66`;
+                                  e.currentTarget.style.color = t.border;
+                                  e.currentTarget.style.backgroundColor = `${t.border}0a`;
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.borderColor = "#262626";
+                                  e.currentTarget.style.color = "#a3a3a3";
+                                  e.currentTarget.style.backgroundColor = "#0A0A0A";
+                                }}
+                              >
+                                {t.name}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
                       </div>
                     </div>
                   </BentoCard>
@@ -805,7 +911,7 @@ export default function Home() {
                     <div className="w-3 h-3 rounded-full bg-[#f59e0b] opacity-80" />
                     <div className="w-3 h-3 rounded-full bg-[#10b981] opacity-80" />
                   </div>
-                  <span className="font-mono text-[10px] text-[#737373] tracking-widest uppercase">agent_support_chat // v1.0</span>
+                  <span className="font-mono text-[10px] text-[#a3a3a3] tracking-widest uppercase">agent_support_chat // v1.0</span>
                   <div className="w-10" />
                 </div>
 
@@ -814,7 +920,7 @@ export default function Home() {
                   {chatHistory.map((msg) => (
                     <div key={msg.id} className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className={`font-bold uppercase tracking-wider ${msg.sender === "bot" ? "text-[#3B82F6]" : "text-[#737373]"}`}>
+                        <span className={`font-bold uppercase tracking-wider ${msg.sender === "bot" ? "text-[#3B82F6]" : "text-[#a3a3a3]"}`}>
                           {msg.sender === "bot" ? "[AGENT OS]" : "[USER]"}
                         </span>
                       </div>
@@ -828,7 +934,7 @@ export default function Home() {
                   {isTyping && (
                     <div className="space-y-1">
                       <span className="font-bold text-[#3B82F6] uppercase tracking-wider">[AGENT OS]</span>
-                      <div className="flex items-center pl-4 border-l border-[#262626] gap-1 text-[#737373]">
+                      <div className="flex items-center pl-4 border-l border-[#262626] gap-1 text-[#a3a3a3]">
                         <span>Thinking</span>
                         <span className="w-1.5 h-3.5 bg-[#3B82F6] animate-pulse inline-block" />
                       </div>
@@ -843,7 +949,7 @@ export default function Home() {
                     <button
                       key={pill.label}
                       onClick={() => sendMessage(pill.prompt)}
-                      className="px-3 py-1 rounded-full border border-[#262626] hover:border-[#3B82F6]/50 bg-[#121212]/50 hover:bg-[#3B82F6]/5 text-[10px] font-mono text-[#737373] hover:text-[#EDEDED] transition-all duration-300 cursor-pointer select-none"
+                      className="px-3 py-1 rounded-full border border-[#262626] hover:border-[#3B82F6]/50 bg-[#121212]/50 hover:bg-[#3B82F6]/5 text-[10px] font-mono text-[#a3a3a3] hover:text-[#EDEDED] transition-all duration-300 cursor-pointer select-none"
                     >
                       {pill.label}
                     </button>
@@ -910,7 +1016,7 @@ export default function Home() {
                       <a
                         key={link}
                         href={`#${link}`}
-                        className="text-[11px] font-mono text-[#737373] hover:text-[#10B981] transition-colors duration-300 capitalize tracking-wide"
+                        className="text-[11px] font-mono text-[#a3a3a3] hover:text-[#10B981] transition-colors duration-300 capitalize tracking-wide"
                       >
                         {link}
                       </a>
@@ -966,10 +1072,10 @@ export default function Home() {
                   <div className="w-2 h-2 rounded-full bg-[#f59e0b] opacity-80" />
                   <div className="w-2 h-2 rounded-full bg-[#10b981] opacity-80" />
                 </div>
-                <span className="font-mono text-[9px] text-[#737373] tracking-widest uppercase">agent_support_chat // v1.0</span>
+                <span className="font-mono text-[9px] text-[#a3a3a3] tracking-widest uppercase">agent_support_chat // v1.0</span>
                 <button
                   onClick={() => setIsChatOpen(false)}
-                  className="text-[#737373] hover:text-[#EDEDED] transition-colors bg-transparent border-none cursor-pointer p-0"
+                  className="text-[#a3a3a3] hover:text-[#EDEDED] transition-colors bg-transparent border-none cursor-pointer p-0"
                 >
                   <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -983,7 +1089,7 @@ export default function Home() {
                 {chatHistory.map((msg) => (
                   <div key={msg.id} className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className={`font-bold uppercase tracking-wider text-[9px] ${msg.sender === "bot" ? "text-[#3B82F6]" : "text-[#737373]"}`}>
+                      <span className={`font-bold uppercase tracking-wider text-[9px] ${msg.sender === "bot" ? "text-[#3B82F6]" : "text-[#a3a3a3]"}`}>
                         {msg.sender === "bot" ? "[AGENT OS]" : "[USER]"}
                       </span>
                     </div>
@@ -996,7 +1102,7 @@ export default function Home() {
                 {isTyping && (
                   <div className="space-y-1">
                     <span className="font-bold text-[#3B82F6] uppercase tracking-wider text-[9px]">[AGENT OS]</span>
-                    <div className="flex items-center pl-3 border-l border-[#262626] gap-1 text-[#737373] text-[11px] font-mono">
+                    <div className="flex items-center pl-3 border-l border-[#262626] gap-1 text-[#a3a3a3] text-[11px] font-mono">
                       <span>Thinking</span>
                       <span className="w-1.5 h-3 bg-[#3B82F6] animate-pulse inline-block" />
                     </div>
@@ -1011,7 +1117,7 @@ export default function Home() {
                   <button
                     key={pill.label}
                     onClick={() => sendMessage(pill.prompt)}
-                    className="px-2.5 py-0.5 rounded-full border border-[#262626] hover:border-[#3B82F6]/55 bg-[#121212]/50 hover:bg-[#3B82F6]/5 text-[9px] font-mono text-[#737373] hover:text-[#EDEDED] transition-all duration-300 cursor-pointer"
+                    className="px-2.5 py-0.5 rounded-full border border-[#262626] hover:border-[#3B82F6]/55 bg-[#121212]/50 hover:bg-[#3B82F6]/5 text-[9px] font-mono text-[#a3a3a3] hover:text-[#EDEDED] transition-all duration-300 cursor-pointer"
                   >
                     {pill.label}
                   </button>
@@ -1097,6 +1203,7 @@ export default function Home() {
           </motion.button>
         </div>
       </div>
-    </div>
+      </div>
+    </PageLoader>
   );
 }

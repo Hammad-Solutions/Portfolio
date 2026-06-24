@@ -177,7 +177,7 @@ export default function About() {
             <button
               onClick={() => setActiveTab("story")}
               className={`flex-1 sm:flex-initial px-3 sm:px-6 py-2.5 text-[10px] sm:text-xs font-mono font-bold tracking-wider relative transition-colors duration-300 cursor-pointer whitespace-nowrap ${
-                activeTab === "story" ? "text-[#10B981]" : "text-[#737373] hover:text-[#EDEDED]"
+                activeTab === "story" ? "text-[#10B981]" : "text-[#a3a3a3] hover:text-[#EDEDED]"
               }`}
             >
               STORY & BACKGROUND
@@ -192,7 +192,7 @@ export default function About() {
             <button
               onClick={() => setActiveTab("timeline")}
               className={`flex-1 sm:flex-initial px-3 sm:px-6 py-2.5 text-[10px] sm:text-xs font-mono font-bold tracking-wider relative transition-colors duration-300 cursor-pointer whitespace-nowrap ${
-                activeTab === "timeline" ? "text-[#3B82F6]" : "text-[#737373] hover:text-[#EDEDED]"
+                activeTab === "timeline" ? "text-[#3B82F6]" : "text-[#a3a3a3] hover:text-[#EDEDED]"
               }`}
             >
               ACADEMIC & PROJECTS TIMELINE
@@ -302,7 +302,7 @@ export default function About() {
                     </span>
 
                     <h4 className="text-base font-bold text-[#EDEDED] leading-tight mb-1">{item.title}</h4>
-                    <span className="font-mono text-[9px] text-[#737373] uppercase tracking-wider block mb-2 font-semibold">{item.sub}</span>
+                    <span className="font-mono text-[9px] text-[#a3a3a3] uppercase tracking-wider block mb-2 font-semibold">{item.sub}</span>
                     <p className="text-[13px] text-[#a3a3a3] leading-relaxed max-w-xl">{item.desc}</p>
                   </motion.div>
                 ))}

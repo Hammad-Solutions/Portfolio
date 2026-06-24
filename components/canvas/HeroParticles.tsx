@@ -7,9 +7,11 @@ import * as THREE from "three";
 function Particles() {
   const ref = useRef<THREE.Points>(null);
 
+  const count = typeof window !== "undefined" && window.innerWidth < 768 ? 400 : 1600;
+
   const positions = useMemo(() => {
-    const arr = new Float32Array(1600 * 3);
-    for (let i = 0; i < 1600; i++) {
+    const arr = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
       arr[i * 3]     = (Math.random() - 0.5) * 22;
       arr[i * 3 + 1] = (Math.random() - 0.5) * 14;
       arr[i * 3 + 2] = (Math.random() - 0.5) * 4;
@@ -29,7 +31,9 @@ function Particles() {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          args={[positions, 3]}
+          count={count}
+          array={positions}
+          itemSize={3}
         />
       </bufferGeometry>
       <pointsMaterial

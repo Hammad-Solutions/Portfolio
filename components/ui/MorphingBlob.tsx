@@ -15,25 +15,21 @@ export default function MorphingBlob() {
         background:
           "radial-gradient(circle at 40% 40%, rgba(16,185,129,0.07) 0%, rgba(59,130,246,0.04) 50%, transparent 70%)",
         filter: "blur(60px)",
-        zIndex: 0,
+        zIndex: 2,
         borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
       }}
       animate={{
         borderRadius: [
           "60% 40% 30% 70% / 60% 30% 70% 40%",
           "30% 60% 70% 40% / 50% 60% 30% 60%",
-          "40% 60% 30% 70% / 40% 30% 70% 60%",
           "60% 40% 30% 70% / 60% 30% 70% 40%",
         ],
-        scale: [1, 1.06, 0.97, 1],
-        x: [0, 18, -10, 0],
-        y: [0, -14, 10, 0],
+        rotate: [0, 90, 0],
       }}
       transition={{
         duration: 16,
         repeat: Infinity,
-        ease: "easeInOut",
-        times: [0, 0.33, 0.66, 1],
+        ease: "linear",
       }}
     />
   );

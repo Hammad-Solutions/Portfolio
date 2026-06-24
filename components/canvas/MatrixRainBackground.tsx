@@ -18,44 +18,44 @@ export default function MatrixRainBackground() {
     };
     resizeCanvas();
 
-    const chars = "05".split("");
-    const fontSize = 13;
+    // Authentic Matrix character set - Binary only per request
+    const chars = "01".split("");
+    const isMobile = window.innerWidth < 768;
+    const fontSize = isMobile ? 14 : 18;
     let columns = Math.floor(canvas.width / fontSize);
     let drops: number[] = Array(columns).fill(1);
+
+    // Each column gets a random speed multiplier and "highlight" status
+    let columnHighlight: boolean[] = Array(columns).fill(false).map(() => Math.random() > 0.95);
 
     const handleResize = () => {
       resizeCanvas();
       columns = Math.floor(canvas.width / fontSize);
       drops = Array(columns).fill(1);
+      columnHighlight = Array(columns).fill(false).map(() => Math.random() > 0.95);
     };
     window.addEventListener("resize", handleResize);
 
     const draw = () => {
-      // Lower opacity = longer trails = more visible rain effect
-      ctx.fillStyle = "rgba(10, 10, 10, 0.062)";
+      // Lower opacity = longer, smoother trails (increased fade for shorter trails)
+      ctx.fillStyle = "rgba(5, 5, 5, 0.07)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.font = `${fontSize}px monospace`;
-
-      // Theme-matched colors with boosted opacity for visibility
-      const colors = [
-        "rgba(16, 185, 129, 0.55)",  // Emerald (primary)
-        "rgba(20, 184, 166, 0.50)",  // Teal
-        "rgba(59, 130, 246, 0.45)",  // Blue
-        "rgba(16, 185, 129, 0.40)",  // Emerald dim
-        "rgba(20, 184, 166, 0.35)",  // Teal dim
-      ];
 
       for (let i = 0; i < drops.length; i++) {
         const text = chars[Math.floor(Math.random() * chars.length)];
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        // 10% chance: bright glowing white "stream head" character
-        if (Math.random() > 0.90) {
-          ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+        // Head of the drop is always blazing white-green (subdued)
+        // The rest of the trail is pure neon green, varied slightly by column highlight
+        if (Math.random() > 0.92) {
+          ctx.fillStyle = "rgba(180, 255, 180, 0.55)"; // White-green head
         } else {
-          ctx.fillStyle = colors[i % colors.length];
+          ctx.fillStyle = columnHighlight[i]
+            ? "rgba(0, 255, 65, 0.30)" // Highlight column
+            : "rgba(0, 200, 40, 0.18)"; // Standard column
         }
 
         ctx.fillText(text, x, y);
@@ -63,6 +63,7 @@ export default function MatrixRainBackground() {
         // Reset drop to top randomly
         if (y > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
+          columnHighlight[i] = Math.random() > 0.95; // re-roll highlight on reset
         }
 
         drops[i]++;
@@ -91,9 +92,18 @@ export default function MatrixRainBackground() {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full block pointer-events-none"
-    />
+    <div className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+      {/* Background static radial glow for central terminal feel */}
+      <div
+        className="absolute inset-0 w-full h-full"
+        style={{
+          background: "radial-gradient(circle at 50% 50%, rgba(0, 255, 65, 0.025) 0%, transparent 60%)"
+        }}
+      />
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full block"
+      />
+    </div>
   );
 }

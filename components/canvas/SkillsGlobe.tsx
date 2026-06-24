@@ -3,6 +3,13 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
 
+// Suppress THREE.Clock deprecation warning from @react-three/fiber
+const originalWarn = console.warn;
+console.warn = (...args) => {
+  if (typeof args[0] === 'string' && args[0].includes('THREE.Clock')) return;
+  originalWarn(...args);
+};
+
 // High-fidelity brand SVG icons for the globe
 const ReactIcon = () => (
   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#61dafb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -271,7 +278,7 @@ export default function SkillsGlobe() {
       <mesh>
         <sphereGeometry args={[radius + 0.035, 64, 64]} />
         <meshBasicMaterial
-          color="#034141"
+          color={new THREE.Color(0x034141)}
           transparent
           opacity={0.02}
           blending={THREE.AdditiveBlending}

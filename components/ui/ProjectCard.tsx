@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import gsap from "gsap";
+import Image from "next/image";
 
 interface ProjectCardProps {
   id: string;
@@ -116,10 +117,11 @@ export default function ProjectCard({ id, index, title, description, tags, image
         /* Featured hero card: image left, content right (on md+) */
         <>
           <div className="relative md:w-1/2 h-[220px] md:h-auto overflow-hidden">
-            <img
+            <Image
               src={image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop"}
               alt={title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-90"
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-90"
               loading="lazy"
             />
             {/* Overlay gradient */}
@@ -136,12 +138,12 @@ export default function ProjectCard({ id, index, title, description, tags, image
           <div className="flex flex-col justify-between p-7 md:w-1/2" style={{ transform: "translateZ(30px)" }}>
             <div>
               <div className="flex justify-between items-center mb-4">
-                <span className="mono-text text-[#737373] text-xs font-semibold">
+                <span className="mono-text text-[#a3a3a3] text-xs font-semibold">
                   {String(index).padStart(2, "0")} // {shortCode}
                 </span>
                 <div className="flex items-center gap-2">
                   {github && (
-                    <div className="text-[#737373] group-hover:text-[#10B981] transition-colors duration-300 flex items-center justify-center p-1.5 border border-[var(--glass-border)] rounded-full hover:border-[#10B981]">
+                    <div className="text-[#a3a3a3] group-hover:text-[#10B981] transition-colors duration-300 flex items-center justify-center p-1.5 border border-[var(--glass-border)] rounded-full hover:border-[#10B981]">
                       <GithubIcon />
                     </div>
                   )}
@@ -188,12 +190,12 @@ export default function ProjectCard({ id, index, title, description, tags, image
           <div className="flex flex-col flex-1" style={{ transform: "translateZ(30px)" }}>
             {/* Top Header */}
             <div className="flex justify-between items-center mb-4">
-              <span className="mono-text text-[#737373] text-xs font-semibold">
+              <span className="mono-text text-[#a3a3a3] text-xs font-semibold">
                 {String(index).padStart(2, "0")} // {shortCode}
               </span>
               <div className="flex items-center gap-2">
                 {github && (
-                  <div className="text-[#737373] group-hover:text-[#10B981] transition-colors duration-300 flex items-center justify-center p-1.5 border border-[var(--glass-border)] rounded-full hover:border-[#10B981]">
+                  <div className="text-[#a3a3a3] group-hover:text-[#10B981] transition-colors duration-300 flex items-center justify-center p-1.5 border border-[var(--glass-border)] rounded-full hover:border-[#10B981]">
                     <GithubIcon />
                   </div>
                 )}
@@ -210,10 +212,11 @@ export default function ProjectCard({ id, index, title, description, tags, image
 
             {/* Project Visual Image */}
             <div className="w-full h-36 rounded-xl overflow-hidden mb-4 relative border border-[#262626]/50">
-              <img
+              <Image
                 src={image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop"}
                 alt={title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale contrast-110 opacity-60 group-hover:opacity-100 group-hover:grayscale-0"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale contrast-110 opacity-60 group-hover:opacity-100 group-hover:grayscale-0"
                 loading="lazy"
               />
             </div>

@@ -10,7 +10,7 @@
   background: transparent url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E') repeat;
   opacity: 0.045;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 9998;
   animation: noiseShift 0.2s steps(4) infinite;
 }
 
@@ -239,11 +239,14 @@
 }
 
 .heading {
-  font-size: clamp(2.2rem, 5.2vw, 4.2rem);
+  font-size: clamp(2rem, 8vw, 4.2rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.1;
   margin-bottom: 1rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .gradientText {
@@ -251,6 +254,9 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
+  max-width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .roleRow {
@@ -521,7 +527,10 @@
 @media (max-width: 768px) {
   .bentoContainer {
     grid-template-columns: 1fr;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
+  }
+  .bentoCard {
+    padding: 1.5rem;
   }
 }
 
@@ -535,6 +544,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  min-width: 0;
   transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 

@@ -38,6 +38,8 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 section {
@@ -53,6 +55,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  max-width: 100vw;
   min-height: 100vh;
   /* Premium fixed dark grid + radial soft gradient background */
   background-image: 
