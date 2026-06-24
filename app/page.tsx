@@ -585,7 +585,7 @@ export default function Home() {
           {mode === "visual" ? (
             <motion.div
               key="visual-layout"
-              className="w-full max-w-full overflow-x-hidden"
+              className="w-full max-w-full overflow-x-hidden pt-20"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
