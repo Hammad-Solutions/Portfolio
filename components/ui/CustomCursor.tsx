@@ -152,7 +152,6 @@ export default function CustomCursor() {
               border: cursorState === "hover" ? `1px solid rgba(255,255,255,0.15)` : `0px solid transparent`,
               backgroundColor: cursorState === "hover" ? "rgba(255,255,255,0.01)" : accentColor,
               backdropFilter: cursorState === "hover" ? "invert(1) hue-rotate(180deg)" : "none",
-              WebkitBackdropFilter: cursorState === "hover" ? "invert(1) hue-rotate(180deg)" : "none",
               opacity: cursorState === "text" ? 0.7 : 1,
               x: cursorState === "hover" ? -32 : cursorState === "text" ? -1 : -6,
               y: cursorState === "hover" ? -32 : cursorState === "text" ? -12 : -6,
