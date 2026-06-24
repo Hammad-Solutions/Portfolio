@@ -429,7 +429,7 @@ export default function Home() {
 
   return (
     <PageLoader>
-      <div className={`${styles.container} w-full max-w-full overflow-x-hidden`}>
+      <div className={`${styles.container} w-full max-w-full`}>
         <CustomCursor />
         {/* Glowing Scroll Progress Bar */}
         <motion.div
