@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Html, Loader } from "@react-three/drei";
+import * as THREE from "three";
 import { portfolioData, Project } from "../../data/portfolio";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 
 const ArchitectureDiagram = dynamic(() => import("./ArchitectureDiagram"), { ssr: false });
 
-// Map the first tag of each project to a glow color
 function getGlowColor(tags: readonly string[]): string {
   const firstTag = tags[0]?.toLowerCase() ?? "";
   if (firstTag.includes("next") || firstTag.includes("react") || firstTag.includes("javascript")) return "#14B8A6";
@@ -21,12 +25,148 @@ const GithubIcon = () => (
   </svg>
 );
 
+// Camera zoom and positioning script
+function CameraController({
+  activeNode,
+  projectsCount
+}: {
+  activeNode: number | null;
+  projectsCount: number;
+}) {
+  const { camera } = useThree();
+
+  useFrame(() => {
+    let targetX = 0;
+    let targetY = 0.4;
+    let targetZ = 8.0;
+
+    if (activeNode !== null) {
+      const angle = (activeNode / projectsCount) * Math.PI * 2;
+      const radius = 5.5;
+      // Focus camera closely on the selected node
+      targetX = Math.sin(angle) * (radius - 2.8);
+      targetZ = Math.cos(angle) * (radius - 2.8);
+      targetY = 0.05;
+    }
+
+    camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), 0.08);
+  });
+
+  return null;
+}
+
+// 3D Carousel component containing project card meshes
+function ProjectCarousel3D({
+  projects,
+  onSelectProject,
+  activeNode,
+  setActiveNode
+}: {
+  projects: Project[];
+  onSelectProject: (p: Project) => void;
+  activeNode: number | null;
+  setActiveNode: (n: number | null) => void;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+
+  useFrame((state) => {
+    if (groupRef.current && activeNode === null && hoveredNode === null) {
+      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.12;
+    }
+  });
+
+  const radius = 5.5;
+
+  return (
+    <group ref={groupRef}>
+      {projects.map((project, idx) => {
+        const angle = (idx / projects.length) * Math.PI * 2;
+        const x = Math.sin(angle) * radius;
+        const z = Math.cos(angle) * radius;
+        const color = getGlowColor(project.tags);
+
+        return (
+          <group
+            key={project.id}
+            position={[x, 0, z]}
+            rotation={[0, -angle, 0]}
+          >
+            <Html transform occlude distanceFactor={6.2} pointerEvents="auto">
+              <div
+                onMouseEnter={() => setHoveredNode(idx)}
+                onMouseLeave={() => setHoveredNode(null)}
+                onClick={() => {
+                  setActiveNode(idx);
+                  onSelectProject(project);
+                }}
+                className={`w-[260px] h-[350px] rounded-2xl border bg-black/85 backdrop-blur-md p-5 flex flex-col justify-between cursor-pointer select-none transition-all duration-500 hover:scale-105 ${
+                  activeNode === idx
+                    ? "border-[#10B981] shadow-[0_0_30px_rgba(16,185,129,0.3)]"
+                    : hoveredNode === idx
+                    ? "border-[#3B82F6] shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+                    : "border-white/10"
+                }`}
+              >
+                <div className="relative w-full h-[140px] rounded-lg overflow-hidden border border-white/5">
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    sizes="220px"
+                    className="object-cover opacity-75"
+                  />
+                  <div
+                    className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[7px] font-mono font-bold tracking-widest text-black"
+                    style={{ background: color }}
+                  >
+                    0{idx + 1}
+                  </div>
+                </div>
+                <div className="mt-3 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">
+                      // {project.id.split("-")[0].toUpperCase()}
+                    </h4>
+                    <h3 className="text-sm font-bold text-white mt-1 leading-snug line-clamp-1">
+                      {project.title}
+                    </h3>
+                    <p className="text-[10px] text-[#a3a3a3] mt-2 line-clamp-3 leading-relaxed">
+                      {project.description}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {project.tags.slice(0, 2).map((t) => (
+                      <span key={t} className="text-[8px] font-mono px-1.5 py-0.5 rounded border border-white/10 text-[#a3a3a3]">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </Html>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
 export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeNode, setActiveNode] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
   const projects = portfolioData.projects as unknown as Project[];
-  const featured = projects[0];
-  const rest = projects.slice(1);
-  const featuredColor = getGlowColor(featured.tags);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <section id="projects" className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10">
@@ -41,202 +181,104 @@ export default function Projects() {
 
       <div className="flex items-center gap-6 mb-12">
         <h2 className="text-4xl font-extrabold tracking-tight shrink-0 text-[var(--text-primary)]">
-          Featured Projects
+          Spatial Showcase
         </h2>
         <span className="font-mono text-[var(--text-secondary)] text-sm font-semibold tracking-wider shrink-0">
-          ({portfolioData.projects.length})
+          ({projects.length})
         </span>
       </div>
 
-      {/* ── Featured Project — compact 2-col editorial layout ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ type: "spring", stiffness: 55, damping: 14 }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-0 mb-14 group cursor-pointer overflow-hidden rounded-2xl border border-[var(--glass-border)]"
-        onClick={() => setSelectedProject(featured)}
-        style={{ borderColor: `${featuredColor}22` }}
-      >
-        {/* Left: Image */}
-        <div className="relative h-[240px] md:h-[320px] overflow-hidden">
-          <Image
-            src={featured.image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop"}
-            alt={featured.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-85"
-            priority
-          />
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0A0A0A]/90 hidden md:block" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/80 to-transparent md:hidden" />
-          {/* Featured pill */}
-          <div
-            className="absolute top-4 left-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-mono font-bold uppercase tracking-widest text-black"
-            style={{ background: featuredColor }}
-          >
-            <span>★</span> FEATURED
-          </div>
-        </div>
-
-        {/* Right: Meta */}
-        <div
-          className="flex flex-col justify-between p-7 md:p-8"
-          style={{ background: "rgba(10,10,10,0.55)" }}
-        >
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-mono text-[#a3a3a3] text-[10px] font-semibold tracking-widest">
-                01 // {featured.id.split("-")[0].toUpperCase()}
-              </span>
-              <div className="flex items-center gap-2">
-                {featured.github && (
-                  <a
-                    href={featured.github}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={e => e.stopPropagation()}
-                    className="text-[#a3a3a3] hover:text-[#10B981] transition-colors p-1.5 border border-[var(--glass-border)] rounded-full hover:border-[#10B981]"
-                  >
-                    <GithubIcon />
-                  </a>
-                )}
-                {featured.demo && (
-                  <a
-                    href={featured.demo}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={e => e.stopPropagation()}
-                    className="text-[10px] font-mono font-bold px-3 py-1 rounded-full border transition-all duration-300"
-                    style={{ borderColor: `${featuredColor}44`, color: featuredColor }}
-                  >
-                    Live ↗
-                  </a>
-                )}
-              </div>
+      {/* R3F WebGL Spatial Canvas for Desktop / CSS Scroll-Snap for Mobile */}
+      <div className="relative w-full h-[550px] rounded-3xl border border-white/10 bg-[#070707] overflow-hidden flex items-center justify-center">
+        {!isMobile ? (
+          <Suspense fallback={
+            <div className="text-xs font-mono text-neutral-400 flex flex-col items-center gap-3">
+              <span className="w-6 h-6 border-2 border-[#10B981] border-t-transparent rounded-full animate-spin"></span>
+              Initializing spatial coordinate grid...
             </div>
-            <h3 className="text-xl md:text-2xl font-bold tracking-tight text-[#EDEDED] leading-snug mb-3">
-              {featured.title}
-            </h3>
-            <p className="text-[#a3a3a3] text-sm leading-relaxed line-clamp-3 mb-5">
-              {featured.description}
-            </p>
-          </div>
-
-          {/* Tags + CTA */}
-          <div>
-            <div className="flex flex-wrap gap-1.5 mb-5">
-              {featured.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[9px] font-mono px-2 py-0.5 rounded-md border"
-                  style={{ borderColor: `${featuredColor}30`, color: featuredColor, background: `${featuredColor}0a` }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <button
-              className="text-[10px] font-mono font-bold text-[#a3a3a3] hover:text-[#EDEDED] transition-colors flex items-center gap-1.5 group/btn"
-              onClick={() => setSelectedProject(featured)}
-            >
-              <span>View Case Study</span>
-              <span className="transition-transform group-hover/btn:translate-x-0.5">→</span>
-            </button>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* ── Remaining Projects — compact 3-col grid ── */}
-      <motion.div
-        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.09 } } }}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-80px" }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-      >
-        {rest.map((project, idx) => {
-          const color = getGlowColor(project.tags);
-          return (
-            <motion.div
-              key={project.id}
-              variants={{
-                hidden: { opacity: 0, y: 30 },
-                visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 70, damping: 14 } }
-              }}
-              whileHover={{ y: -4 }}
-              onClick={() => setSelectedProject(project)}
-              className="relative border border-[var(--glass-border)] rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300"
-              style={{ background: "rgba(10,10,10,0.5)" }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = `${color}35`; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--glass-border)"; }}
-            >
-              {/* Image strip */}
-              <div className="relative h-[180px] overflow-hidden">
-                <Image
-                  src={project.image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop"}
-                  alt={project.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover grayscale contrast-110 opacity-50 group-hover:opacity-80 group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-                {/* Colour accent at top */}
+          }>
+            <Canvas camera={{ position: [0, 0.4, 8], fov: 45 }} className="w-full h-full">
+              <ambientLight intensity={0.4} />
+              <pointLight position={[10, 10, 10]} intensity={0.8} />
+              <ProjectCarousel3D
+                projects={projects}
+                onSelectProject={(p) => setSelectedProject(p)}
+                activeNode={activeNode}
+                setActiveNode={setActiveNode}
+              />
+              <CameraController activeNode={activeNode} projectsCount={projects.length} />
+            </Canvas>
+            <Loader />
+          </Suspense>
+        ) : (
+          /* Gracefully degraded Mobile CSS Scroll-Snap Container */
+          <div className="w-full h-full flex items-center overflow-x-auto snap-x snap-mandatory px-6 gap-6 hide-scrollbar py-6">
+            {projects.map((project, idx) => {
+              const color = getGlowColor(project.tags);
+              return (
                 <div
-                  className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ background: `linear-gradient(90deg, ${color}, transparent)` }}
-                />
-                {/* Bottom fade */}
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
-              </div>
-
-              {/* Content */}
-              <div className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-mono text-[10px] text-[#a3a3a3] tracking-widest uppercase">
-                    {String(idx + 2).padStart(2, "0")} // {project.id.split("-")[0].toUpperCase()}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    {project.github && (
-                      <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={e => e.stopPropagation()}
-                        className="text-[#a3a3a3] hover:text-[#10B981] transition-colors p-1 border border-[#262626] rounded-full hover:border-[#10B981]"
-                      >
-                        <GithubIcon />
-                      </a>
-                    )}
-                    <span className="text-[#a3a3a3] text-sm group-hover:text-[#EDEDED] transition-colors">↗</span>
+                  key={project.id}
+                  onClick={() => setSelectedProject(project)}
+                  className="snap-center shrink-0 w-[280px] h-[420px] rounded-2xl border border-white/10 bg-black/90 p-5 flex flex-col justify-between"
+                >
+                  <div className="relative w-full h-[180px] rounded-lg overflow-hidden border border-white/5">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      sizes="250px"
+                      className="object-cover opacity-80"
+                    />
+                    <div
+                      className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold tracking-widest text-black"
+                      style={{ background: color }}
+                    >
+                      0{idx + 1}
+                    </div>
+                  </div>
+                  <div className="flex-1 flex flex-col justify-between mt-4">
+                    <div>
+                      <h4 className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">
+                        // {project.id.split("-")[0].toUpperCase()}
+                      </h4>
+                      <h3 className="text-sm font-bold text-white mt-1 leading-snug line-clamp-1">
+                        {project.title}
+                      </h3>
+                      <p className="text-[11px] text-[#a3a3a3] mt-2 line-clamp-3 leading-relaxed">
+                        {project.description}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-4">
+                      {project.tags.slice(0, 3).map((t) => (
+                        <span key={t} className="text-[9px] font-mono px-2 py-0.5 rounded border border-white/10 text-[#a3a3a3]">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-                <h3 className="text-base font-bold text-[#EDEDED] mb-2 leading-snug">
-                  {project.title}
-                </h3>
-                <p className="text-[13px] text-[#a3a3a3] leading-relaxed line-clamp-2 mb-4">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {project.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[10px] font-mono px-2 py-0.5 rounded-md border"
-                      style={{ borderColor: `${color}30`, color: `${color}cc`, background: `${color}0a` }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
+      {/* SEO & Screen Reader Accessibility Layer */}
+      <div className="sr-only">
+        {projects.map((project) => (
+          <article key={project.id}>
+            <h3>{project.title}</h3>
+            <p>{project.description}</p>
+            <ul>
+              {project.tags.map((tag) => (
+                <li key={tag}>{tag}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
 
-      {/* ── Project Detail Modal ── */}
+      {/* ── Project Detail Case Study Modal ── */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
@@ -244,7 +286,10 @@ export default function Projects() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-[#0A0A0A]/85 backdrop-blur-md z-[999] flex items-center justify-center p-4 sm:p-6"
-            onClick={() => setSelectedProject(null)}
+            onClick={() => {
+              setSelectedProject(null);
+              setActiveNode(null);
+            }}
           >
             <motion.div
               initial={{ scale: 0.95, y: 20, opacity: 0 }}
@@ -254,9 +299,11 @@ export default function Projects() {
               className="bg-[#121212] border border-[var(--glass-border)] rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 relative shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col gap-6"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close */}
               <button
-                onClick={() => setSelectedProject(null)}
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveNode(null);
+                }}
                 className="absolute top-5 right-5 text-[#a3a3a3] hover:text-[#EDEDED] transition-colors p-1.5 border border-[#262626] rounded-full hover:border-[#EDEDED]/20 bg-[#0A0A0A]/50 cursor-pointer"
               >
                 <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none">
@@ -270,7 +317,6 @@ export default function Projects() {
                 <h3 className="text-2xl font-extrabold text-[#EDEDED] tracking-tight">{selectedProject.title}</h3>
               </div>
 
-              {/* Cover Image */}
               <div className="w-full h-48 sm:h-56 rounded-xl overflow-hidden relative border border-[#262626]/60">
                 <Image
                   src={selectedProject.image}
@@ -282,13 +328,11 @@ export default function Projects() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent opacity-60" />
               </div>
 
-              {/* Summary */}
               <div className="space-y-2">
                 <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// SUMMARY</h4>
                 <p className="text-sm text-[#d4d4d4] leading-relaxed">{selectedProject.description}</p>
               </div>
 
-              {/* Architecture */}
               <div className="space-y-2">
                 <h4 className="text-[10px] font-mono text-[#10B981] tracking-widest uppercase font-bold">// ARCHITECTURE & LAYERS</h4>
                 <div className="flex flex-wrap gap-2">
@@ -300,7 +344,6 @@ export default function Projects() {
                 </div>
               </div>
 
-              {/* RAG Architecture Diagram — only for ai-portfolio */}
               {selectedProject.id === "ai-portfolio" && (
                 <div className="space-y-2">
                   <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// SYSTEM ARCHITECTURE DIAGRAM</h4>
@@ -310,7 +353,6 @@ export default function Projects() {
                 </div>
               )}
 
-              {/* Impact Metrics */}
               {selectedProject.impact && (
                 <div className="space-y-2">
                   <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// OUTCOME & IMPACT</h4>
@@ -328,7 +370,6 @@ export default function Projects() {
                 </div>
               )}
 
-              {/* Challenges & Solutions */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl bg-[#ef4444]/5 border border-[#ef4444]/15 space-y-2">
                   <h5 className="text-[11px] font-mono text-red-400 font-bold uppercase tracking-wider">CHALLENGE</h5>
@@ -340,7 +381,6 @@ export default function Projects() {
                 </div>
               </div>
 
-              {/* Buttons */}
               <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-[#262626]/50">
                 {selectedProject.github && (
                   <a href={selectedProject.github} target="_blank" rel="noreferrer"

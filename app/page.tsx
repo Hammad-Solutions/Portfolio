@@ -10,8 +10,9 @@ import About from "../components/ui/About";
 import Skills from "../components/ui/Skills";
 import Projects from "../components/ui/Projects";
 import Contact from "../components/ui/Contact";
-import Marquee from "../components/ui/Marquee";
 import FloatingCTA from "../components/ui/FloatingCTA";
+import ScrollParticles from "../components/canvas/ScrollParticles";
+import CustomCursor from "../components/ui/CustomCursor";
 import MagneticButton from "../components/ui/MagneticButton";
 import MorphingBlob from "../components/ui/MorphingBlob";
 import RadialStat from "../components/ui/RadialStat";
@@ -199,13 +200,54 @@ interface BentoCardProps {
 }
 
 function BentoCard({ children, className = "", variants, innerClassName = "flex flex-col justify-between h-full w-full relative z-10 min-w-0", style }: BentoCardProps) {
+  const x = useMotionValue(0.5);
+  const y = useMotionValue(0.5);
+
+  const rotateX = useSpring(useTransform(y, [0, 1], [8, -8]), { stiffness: 220, damping: 25 });
+  const rotateY = useSpring(useTransform(x, [0, 1], [-8, 8]), { stiffness: 220, damping: 25 });
+
+  const glareX = useSpring(useTransform(x, [0, 1], [0, 100]), { stiffness: 220, damping: 25 });
+  const glareY = useSpring(useTransform(y, [0, 1], [0, 100]), { stiffness: 220, damping: 25 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    x.set(mouseX / rect.width);
+    y.set(mouseY / rect.height);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0.5);
+    y.set(0.5);
+  };
+
   return (
     <motion.div
       variants={variants}
-      className={`${styles.bentoCard} bento-card-hover-trigger ${className}`}
-      style={style}
+      className={`${styles.bentoCard} bento-card-hover-trigger ${className} overflow-hidden`}
+      style={{
+        ...style,
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+        perspective: 1000
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
-      <div className={innerClassName}>
+      {/* Glare effect overlay */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-300 z-20"
+        style={{
+          background: useTransform(
+            [glareX, glareY],
+            ([gx, gy]) => `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 65%)`
+          ),
+          mixBlendMode: "overlay"
+        }}
+      />
+      <div className={innerClassName} style={{ transform: "translateZ(15px)" }}>
         {children}
       </div>
     </motion.div>
@@ -400,6 +442,7 @@ export default function Home() {
 
   return (
     <PageLoader>
+      <CustomCursor />
       <div className={`${styles.container} w-full max-w-full`}>
         {/* Glowing Scroll Progress Bar */}
         <motion.div
@@ -410,7 +453,10 @@ export default function Home() {
       {/* 1. Tactical CSS Film Grain Overlay */}
       <div className={styles.noiseOverlay} />
 
-      {/* 2. Hacker Style Binary Rain Background */}
+      {/* 2. WebGL Particles Scroll Reacting Background */}
+      <ScrollParticles />
+
+      {/* 3. Hacker Style Binary Rain Background */}
       <div className={styles.canvasContainer}>
         <MatrixRainBackground />
       </div>
@@ -477,7 +523,10 @@ export default function Home() {
               </button>
 
               <button
-                onClick={() => setMode("terminal")}
+                onClick={() => {
+                  setMode("terminal");
+                  setIsChatOpen(true);
+                }}
                 className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${
                   mode === "terminal" ? "text-white font-medium" : "text-neutral-400 hover:text-white"
                 }`}
@@ -561,7 +610,7 @@ export default function Home() {
           {/* Hero Section — Bento Grid */}
           <section id="home" className="pt-8 pb-16 w-full max-w-[1440px] mx-auto relative z-10">
             {/* Floating Social Proof Badge */}
-            <div className="absolute top-4 right-6 hidden lg:flex items-center gap-2.5 p-3 px-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md z-20 select-none">
+            <div className="relative lg:absolute lg:top-10 lg:right-10 z-[50] max-w-sm flex items-center gap-2.5 p-3 px-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md select-none mx-auto lg:mx-0 mb-6 lg:mb-0">
               <FiveStars />
               <span className="text-[10px] text-[#EDEDED] font-mono leading-none">
                 <span className="italic font-medium">&quot;Translates complex technical requirements into elegant solutions.&quot;</span>
@@ -615,6 +664,18 @@ export default function Home() {
                 <p className="text-[#d4d4d4] text-base md:text-[1.05rem] !leading-[1.8] max-w-2xl">
                   I architect production systems that scale — from AI-augmented interfaces to real-time IoT telemetry. 4+ years shipping React, Next.js, Node.js &amp; C++ across enterprise web, embedded, and LLM-integrated platforms.
                 </p>
+                <div className="text-xs font-mono text-[#a3a3a3] mt-4 flex items-center gap-1.5 justify-start">
+                  <span>Don&apos;t want to read?</span>
+                  <button 
+                    onClick={() => {
+                      setIsChatOpen(true);
+                      setMode("terminal");
+                    }} 
+                    className="text-[#3B82F6] hover:text-[#60A5FA] underline font-bold cursor-pointer transition-colors"
+                  >
+                    Ask my AI agent to summarize my experience.
+                  </button>
+                </div>
               </BentoCard>
 
               {/* Card 2: Interactive Avatar Card */}
@@ -856,8 +917,7 @@ export default function Home() {
             </motion.div>
           </section>
 
-          {/* Infinite Running Marquee Text Banner */}
-          <Marquee />
+
 
           {/* Floating CTA */}
           <FloatingCTA />
