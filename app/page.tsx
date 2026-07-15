@@ -127,11 +127,11 @@ function TypewriterRoles() {
       <AnimatePresence mode="wait">
         <motion.span
           key={roleIndex}
-          initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
+          initial={{ opacity: 0, y: 10, filter: "blur(6px)", transform: "translate3d(0px, 10px, 0px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)", transform: "translate3d(0px, 0px, 0px)" }}
+          exit={{ opacity: 0, y: -10, filter: "blur(6px)", transform: "translate3d(0px, -10px, 0px)" }}
           transition={{ duration: 0.35, ease: "easeInOut" }}
-          style={{ color: role.color }}
+          style={{ color: role.color, willChange: "transform, filter, opacity" }}
           className="font-bold"
         >
           {role.text}
@@ -396,7 +396,11 @@ export default function Home() {
                 <a
                   key={link}
                   href={`#${link}`}
-                  className={`${styles.navLink} ${activeSection === link ? styles.navLinkActive : ""}`}
+                  className={`${styles.navLink} transition-all duration-300 ${
+                    activeSection === link 
+                      ? "text-white font-medium" 
+                      : "text-neutral-400 hover:text-white"
+                  }`}
                   onClick={(e) => {
                     if (mode !== "visual") {
                       e.preventDefault();
@@ -417,14 +421,15 @@ export default function Home() {
             <div className="flex bg-[#262626] rounded-full p-1 relative select-none items-center">
               <button
                 onClick={() => setMode("visual")}
-                className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${mode === "visual" ? "text-[#000000]" : "text-[#a3a3a3] hover:text-[#EDEDED]"
-                  }`}
+                className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${
+                  mode === "visual" ? "text-white font-medium" : "text-neutral-400 hover:text-white"
+                }`}
               >
                 VISUAL
                 {mode === "visual" && (
                   <motion.div
                     layoutId="activePill"
-                    className="absolute inset-0 bg-[#FFFFFF] rounded-full -z-10"
+                    className="absolute inset-0 bg-neutral-800 rounded-full -z-10"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     style={{ boxShadow: "0 0 12px rgba(16, 185, 129, 0.4)" }}
                   />
@@ -433,15 +438,16 @@ export default function Home() {
 
               <button
                 onClick={() => setMode("terminal")}
-                className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${mode === "terminal" ? "text-[#000000]" : "text-[#a3a3a3] hover:text-[#EDEDED]"
-                  }`}
+                className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${
+                  mode === "terminal" ? "text-white font-medium" : "text-neutral-400 hover:text-white"
+                }`}
               >
                 <span className="hidden sm:inline">SUPPORT BOT</span>
                 <span className="inline sm:hidden">BOT</span>
                 {mode === "terminal" && (
                   <motion.div
                     layoutId="activePill"
-                    className="absolute inset-0 bg-[#FFFFFF] rounded-full -z-10"
+                    className="absolute inset-0 bg-neutral-800 rounded-full -z-10"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     style={{ boxShadow: "0 0 12px rgba(59, 130, 246, 0.4)" }}
                   />
@@ -594,9 +600,9 @@ export default function Home() {
                     </h4>
                     <div className="flex flex-col justify-between h-full gap-4">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#a3a3a3] block uppercase tracking-wider">EDUCATION</span>
+                        <span className="text-[10px] font-mono text-emerald-400/80 block uppercase tracking-wider">EDUCATION</span>
                         <h5 className="text-sm font-bold text-[#EDEDED] leading-tight">BS Software Engineering</h5>
-                        <span className="text-[10px] font-mono text-[#10B981] font-semibold">Air University Islamabad</span>
+                        <span className="text-[10px] font-mono text-emerald-400 font-semibold">Air University Islamabad</span>
                       </div>
                       {/* Radial stats */}
                       <div className="flex items-end justify-around gap-2 pt-2">
@@ -724,7 +730,7 @@ export default function Home() {
                         <div className="space-y-2.5">
                           <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#14B8A6] animate-pulse shadow-[0_0_8px_#14B8A6]"></span>
-                            <span className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">Client</span>
+                            <span className="text-[9px] font-mono text-blue-400/80 uppercase tracking-widest">Client</span>
                           </div>
                           <div className="flex flex-wrap gap-1.5">
                             {[{ name: "Next.js", color: "#EDEDED", border: "#14B8A6" }, { name: "React", color: "#3B82F6", border: "#3B82F6" }, { name: "Framer", color: "#ec4899", border: "#ec4899" }].map(t => (
@@ -752,7 +758,7 @@ export default function Home() {
                         <div className="space-y-2.5">
                           <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
-                            <span className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">Server</span>
+                            <span className="text-[9px] font-mono text-emerald-400/80 uppercase tracking-widest">Server</span>
                           </div>
                           <div className="flex flex-wrap gap-1.5">
                             {[{ name: "Node.js", color: "#10B981", border: "#10B981" }, { name: "Express", color: "#EDEDED", border: "#a3a3a3" }, { name: "MongoDB", color: "#10B981", border: "#10B981" }].map(t => (
@@ -780,7 +786,7 @@ export default function Home() {
                         <div className="space-y-2.5">
                           <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#A855F7]"></span>
-                            <span className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">Systems</span>
+                            <span className="text-[9px] font-mono text-purple-400/80 uppercase tracking-widest">Systems</span>
                           </div>
                           <div className="flex flex-wrap gap-1.5">
                             {[{ name: "C++", color: "#A855F7", border: "#A855F7" }, { name: "Python", color: "#eab308", border: "#eab308" }, { name: "Java", color: "#ef4444", border: "#ef4444" }].map(t => (
