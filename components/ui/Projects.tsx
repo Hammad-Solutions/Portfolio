@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Html, Loader } from "@react-three/drei";
+import { Image as DreiImage, Text, Loader } from "@react-three/drei";
 import * as THREE from "three";
 import { portfolioData, Project } from "../../data/portfolio";
 import Image from "next/image";
@@ -37,12 +37,12 @@ function CameraController({
 
   useFrame(() => {
     let targetX = 0;
-    let targetY = 0.4;
-    let targetZ = 8.0;
+    let targetY = 0.2;
+    let targetZ = 9.0; // Pushed camera back to Z=9.0 for perfect readability
 
     if (activeNode !== null) {
       const angle = (activeNode / projectsCount) * Math.PI * 2;
-      const radius = 5.5;
+      const radius = 5.0;
       // Focus camera closely on the selected node
       targetX = Math.sin(angle) * (radius - 2.8);
       targetZ = Math.cos(angle) * (radius - 2.8);
@@ -53,6 +53,118 @@ function CameraController({
   });
 
   return null;
+}
+
+// Interactive holographic WebGL card component
+function WebGLProjectCard({
+  project,
+  idx,
+  activeNode,
+  hoveredNode,
+  setHoveredNode,
+  onClick
+}: {
+  project: Project;
+  idx: number;
+  activeNode: number | null;
+  hoveredNode: number | null;
+  setHoveredNode: (n: number | null) => void;
+  onClick: () => void;
+}) {
+  const color = getGlowColor(project.tags);
+  const isSelected = activeNode === idx;
+  const isHovered = hoveredNode === idx;
+
+  return (
+    <group
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHoveredNode(idx);
+      }}
+      onPointerOut={() => setHoveredNode(null)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+    >
+      {/* 1. Fully Transparent Background Card Backing */}
+      <mesh>
+        <planeGeometry args={[2.2, 3.2]} />
+        <meshBasicMaterial transparent opacity={0} material-side={THREE.FrontSide} />
+      </mesh>
+
+      {/* 2. Floating Thumbnail Image */}
+      <group position={[0, 0.65, 0.01]}>
+        <DreiImage
+          url={project.image}
+          transparent
+          opacity={isHovered || isSelected ? 0.95 : 0.45}
+          scale={[2.0, 1.25]}
+          material-side={THREE.FrontSide}
+        />
+      </group>
+
+      {/* 3. Category Monospace Subheading */}
+      <Text
+        position={[-1.0, -0.2, 0.02]}
+        anchorX="left"
+        fontSize={0.08}
+        color={color}
+        material-side={THREE.FrontSide}
+      >
+        {`// 0${idx + 1}`}
+      </Text>
+
+      {/* 4. Project Title Text */}
+      <Text
+        position={[-1.0, -0.42, 0.02]}
+        anchorX="left"
+        fontSize={0.13}
+        fontWeight="bold"
+        color="#FFFFFF"
+        maxWidth={2.0}
+        material-side={THREE.FrontSide}
+      >
+        {project.title}
+      </Text>
+
+      {/* 5. Outcome-focused Description */}
+      <Text
+        position={[-1.0, -0.85, 0.02]}
+        anchorX="left"
+        fontSize={0.085}
+        color="#a3a3a3"
+        maxWidth={2.0}
+        lineHeight={1.4}
+        material-side={THREE.FrontSide}
+      >
+        {project.description}
+      </Text>
+
+      {/* 6. Tags (Render first two tags) */}
+      <Text
+        position={[-1.0, -1.35, 0.02]}
+        anchorX="left"
+        fontSize={0.075}
+        color={color}
+        maxWidth={2.0}
+        material-side={THREE.FrontSide}
+      >
+        {project.tags.slice(0, 2).join(" · ")}
+      </Text>
+
+      {/* 7. Case Study Action Indicator */}
+      <Text
+        position={[-1.0, -1.52, 0.02]}
+        anchorX="left"
+        fontSize={0.07}
+        color="#EDEDED"
+        material-side={THREE.FrontSide}
+      >
+        {isSelected ? "Active Case Study" : "Click to view case study →"}
+      </Text>
+    </group>
+  );
 }
 
 // 3D Carousel component containing project card meshes
@@ -76,7 +188,7 @@ function ProjectCarousel3D({
     }
   });
 
-  const radius = 5.5;
+  const radius = 5.0; // Scaled down carousel radius for perfect visual framing
 
   return (
     <group ref={groupRef}>
@@ -84,7 +196,6 @@ function ProjectCarousel3D({
         const angle = (idx / projects.length) * Math.PI * 2;
         const x = Math.sin(angle) * radius;
         const z = Math.cos(angle) * radius;
-        const color = getGlowColor(project.tags);
 
         return (
           <group
@@ -92,59 +203,17 @@ function ProjectCarousel3D({
             position={[x, 0, z]}
             rotation={[0, -angle, 0]}
           >
-            <Html transform occlude distanceFactor={6.2} pointerEvents="auto">
-              <div
-                onMouseEnter={() => setHoveredNode(idx)}
-                onMouseLeave={() => setHoveredNode(null)}
-                onClick={() => {
-                  setActiveNode(idx);
-                  onSelectProject(project);
-                }}
-                className={`w-[260px] h-[350px] rounded-2xl border bg-black/85 backdrop-blur-md p-5 flex flex-col justify-between cursor-pointer select-none transition-all duration-500 hover:scale-105 ${
-                  activeNode === idx
-                    ? "border-[#10B981] shadow-[0_0_30px_rgba(16,185,129,0.3)]"
-                    : hoveredNode === idx
-                    ? "border-[#3B82F6] shadow-[0_0_20px_rgba(59,130,246,0.2)]"
-                    : "border-white/10"
-                }`}
-              >
-                <div className="relative w-full h-[140px] rounded-lg overflow-hidden border border-white/5">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    sizes="220px"
-                    className="object-cover opacity-75"
-                  />
-                  <div
-                    className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[7px] font-mono font-bold tracking-widest text-black"
-                    style={{ background: color }}
-                  >
-                    0{idx + 1}
-                  </div>
-                </div>
-                <div className="mt-3 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h4 className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">
-                      // {project.id.split("-")[0].toUpperCase()}
-                    </h4>
-                    <h3 className="text-sm font-bold text-white mt-1 leading-snug line-clamp-1">
-                      {project.title}
-                    </h3>
-                    <p className="text-[10px] text-[#a3a3a3] mt-2 line-clamp-3 leading-relaxed">
-                      {project.description}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mt-3">
-                    {project.tags.slice(0, 2).map((t) => (
-                      <span key={t} className="text-[8px] font-mono px-1.5 py-0.5 rounded border border-white/10 text-[#a3a3a3]">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Html>
+            <WebGLProjectCard
+              project={project}
+              idx={idx}
+              activeNode={activeNode}
+              hoveredNode={hoveredNode}
+              setHoveredNode={setHoveredNode}
+              onClick={() => {
+                setActiveNode(idx);
+                onSelectProject(project);
+              }}
+            />
           </group>
         );
       })}
@@ -197,7 +266,7 @@ export default function Projects() {
               Initializing spatial coordinate grid...
             </div>
           }>
-            <Canvas camera={{ position: [0, 0.4, 8], fov: 45 }} className="w-full h-full">
+            <Canvas camera={{ position: [0, 0.2, 9], fov: 45 }} className="w-full h-full">
               <ambientLight intensity={0.4} />
               <pointLight position={[10, 10, 10]} intensity={0.8} />
               <ProjectCarousel3D

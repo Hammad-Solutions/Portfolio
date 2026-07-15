@@ -324,12 +324,21 @@ export default function Home() {
     return () => observer.disconnect();
   }, [mounted]);
 
-  // Proactive lead capture 45-second timer hook
+  // Session-Aware Proactive Lead Capture 45-second Timer Hook
   useEffect(() => {
-    if (isChatOpen) return;
+    if (typeof window !== "undefined") {
+      const persistedInteraction = sessionStorage.getItem("hasInteracted");
+      if (persistedInteraction === "true") return;
+    }
+
+    if (isChatOpen) {
+      sessionStorage.setItem("hasInteracted", "true");
+      return;
+    }
 
     const timer = setTimeout(() => {
       setIsChatOpen(true);
+      sessionStorage.setItem("hasInteracted", "true");
       setChatHistory((prev) => {
         const alreadyHasProactive = prev.some(msg => msg.text.includes("looking at Hammad's architecture stack"));
         if (alreadyHasProactive) return prev;
@@ -1036,6 +1045,7 @@ export default function Home() {
                     onClick={() => {
                       setIsChatOpen(false);
                       setMode("visual");
+                      sessionStorage.setItem("hasInteracted", "true");
                     }}
                     className="text-[#a3a3a3] hover:text-[#EDEDED] transition-colors bg-transparent border-none cursor-pointer p-0"
                     aria-label="Close Chat"
