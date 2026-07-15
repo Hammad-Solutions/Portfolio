@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { portfolioData, Project } from "../../data/portfolio";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const ArchitectureDiagram = dynamic(() => import("./ArchitectureDiagram"), { ssr: false });
 
 // Map the first tag of each project to a glow color
 function getGlowColor(tags: readonly string[]): string {
@@ -26,7 +29,7 @@ export default function Projects() {
   const featuredColor = getGlowColor(featured.tags);
 
   return (
-    <section id="projects" className="py-24 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 border-t border-[var(--glass-border)]">
+    <section id="projects" className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10">
       <motion.span
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -40,7 +43,6 @@ export default function Projects() {
         <h2 className="text-4xl font-extrabold tracking-tight shrink-0 text-[var(--text-primary)]">
           Featured Projects
         </h2>
-        <div className="h-[1px] flex-1 bg-[var(--glass-border)]" />
         <span className="font-mono text-[var(--text-secondary)] text-sm font-semibold tracking-wider shrink-0">
           ({portfolioData.projects.length})
         </span>
@@ -62,6 +64,7 @@ export default function Projects() {
             src={featured.image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop"}
             alt={featured.title}
             fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-85"
             priority
           />
@@ -175,6 +178,7 @@ export default function Projects() {
                   src={project.image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop"}
                   alt={project.title}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover grayscale contrast-110 opacity-50 group-hover:opacity-80 group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
@@ -272,6 +276,7 @@ export default function Projects() {
                   src={selectedProject.image}
                   alt={selectedProject.title}
                   fill
+                  sizes="(max-width: 768px) 95vw, 600px"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent opacity-60" />
@@ -294,6 +299,16 @@ export default function Projects() {
                   ))}
                 </div>
               </div>
+
+              {/* RAG Architecture Diagram — only for ai-portfolio */}
+              {selectedProject.id === "ai-portfolio" && (
+                <div className="space-y-2">
+                  <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// SYSTEM ARCHITECTURE DIAGRAM</h4>
+                  <div className="p-4 rounded-xl bg-[#0A0A0A] border border-[#262626]">
+                    <ArchitectureDiagram />
+                  </div>
+                </div>
+              )}
 
               {/* Impact Metrics */}
               {selectedProject.impact && (

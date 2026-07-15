@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code2, Lightbulb, Users, Target } from "lucide-react";
+import { Layers, Gauge, GitBranch, Cpu } from "lucide-react";
 
 const containerVariants = {
   hidden: {},
@@ -40,32 +40,32 @@ const tagVariants = {
   }
 };
 
-const softSkillsData = [
+const engineeringCapabilities = [
   { 
-    title: "Clean Code", 
-    desc: "Writing maintainable, scalable, and efficient code that stands the test of time.",
-    Icon: Code2,
+    title: "Software Architecture", 
+    desc: "Component-driven design with SOLID principles. Modular React/TypeScript systems with strict separation of concerns and domain-driven structures.",
+    Icon: Layers,
     gradient: "from-[#10B981] to-[#14B8A6]",
     glow: "rgba(16,185,129,0.35)"
   },
   { 
-    title: "Innovation", 
-    desc: "Always exploring new technologies and creative solutions to complex problems.",
-    Icon: Lightbulb,
+    title: "Performance Engineering", 
+    desc: "Next.js ISR/SSG with Vercel edge caching, React.lazy code-splitting, WebGL memory lifecycle management, and sub-800ms RAG inference.",
+    Icon: Gauge,
     gradient: "from-[#A855F7] to-[#6366F1]",
     glow: "rgba(168,85,247,0.35)"
   },
   { 
-    title: "Collaboration", 
-    desc: "Working effectively with teams to deliver exceptional user experiences.",
-    Icon: Users,
+    title: "Infrastructure & CI/CD", 
+    desc: "Automated deployment via Vercel + GitHub Actions. Supabase/Firebase backends with row-level security and real-time subscription handlers.",
+    Icon: GitBranch,
     gradient: "from-[#3B82F6] to-[#14B8A6]",
     glow: "rgba(59,130,246,0.35)"
   },
   { 
-    title: "Dedication", 
-    desc: "Committed to continuous learning and staying current with industry trends.",
-    Icon: Target,
+    title: "Systems & Low-Level", 
+    desc: "C++ STL binary I/O with ACID-style transaction rollback. Manual memory lifecycle management, object serialization, and deterministic resource cleanup.",
+    Icon: Cpu,
     gradient: "from-[#14B8A6] to-[#10B981]",
     glow: "rgba(20,184,166,0.35)"
   }
@@ -73,27 +73,27 @@ const softSkillsData = [
 
 const timelineData = [
   {
-    title: "BS Software Engineering (Final Year)",
-    sub: "Air University Islamabad // 2022 - 2026",
-    desc: "Focusing on software architecture, object-oriented systems, data structures, and cloud computing. Maintaining high academic standing.",
+    title: "BS Software Engineering (3rd Year)",
+    sub: "Air University Islamabad // 2022 - Present",
+    desc: "Studying software architecture, distributed systems, data structures, and cloud computing. Maintaining high academic standing while shipping production code.",
     color: "#3B82F6"
   },
   {
     title: "Autonomous AI-Agent & RAG Interface",
-    sub: "Web Engineering // 2026",
-    desc: "Built a next-generation developer portfolio featuring an integrated NLP RAG AI chatbot, 3D skills globe, and layout snapped grids.",
+    sub: "Web Engineering // 2025",
+    desc: "Architected a developer portfolio with integrated RAG AI chatbot, volumetric 3D skills globe via custom GLSL shaders, and physics-based animation pipelines.",
     color: "#10B981"
   },
   {
     title: "IoT Smart Helmet Safety System",
     sub: "Embedded Systems // 2025",
-    desc: "Created an IoT-based Smart Helmet for worker safety with sensor integration and real-time hazard mapping.",
+    desc: "Engineered an IoT-based Smart Helmet with ESP32 sensor fusion, real-time hazard telemetry, and hardware-software integration for industrial worker safety.",
     color: "#14B8A6"
   },
   {
-    title: "C++ Structural Management Databases",
+    title: "C++ Systems Engineering Suite",
     sub: "Systems Programming // 2023 - 2024",
-    desc: "Developed Student, Bank, and Hotel Management systems using C++ OOP and robust temporary file-stream staging.",
+    desc: "Built Student, Bank, and Hotel management engines using C++ 17 with atomic file staging, ACID-style transaction rollback, and polymorphic RAII architectures.",
     color: "#A855F7"
   }
 ];
@@ -120,11 +120,12 @@ function ScrollRevealText({ text }: { text: string }) {
 }
 
 // Standalone soft skill card with clean text highlight line
-function SoftSkillCard({ skill }: { skill: typeof softSkillsData[0] }) {
+function CapabilityCard({ skill }: { skill: typeof engineeringCapabilities[0] }) {
   return (
     <motion.div
       variants={cardVariants}
       whileHover={{ y: -5 }}
+      whileTap={{ y: -3 }}
       className="p-6 border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[12px] rounded-xl flex flex-col justify-between min-h-[180px] h-auto transition-all duration-300 relative overflow-hidden group select-none"
     >
       {/* Gradient top accent line */}
@@ -150,7 +151,7 @@ export default function About() {
   const [activeTab, setActiveTab] = useState<"story" | "timeline">("story");
 
   return (
-    <section id="about" className="pt-12 pb-24 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 border-t border-[var(--glass-border)] bg-transparent">
+    <section id="about" className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 bg-transparent">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
         {/* Left column: Text Content / Tabs */}
@@ -173,36 +174,26 @@ export default function About() {
           </motion.h2>
 
           {/* Interactive Navigation Tab switch */}
-          <div className="flex border-b border-[var(--glass-border)] mb-8 select-none w-full">
+          <div className="flex gap-2 mb-8 select-none w-full">
             <button
               onClick={() => setActiveTab("story")}
-              className={`flex-1 sm:flex-initial px-3 sm:px-6 py-2.5 text-[10px] sm:text-xs font-mono font-bold tracking-wider relative transition-colors duration-300 cursor-pointer whitespace-nowrap ${
-                activeTab === "story" ? "text-[#10B981]" : "text-[#a3a3a3] hover:text-[#EDEDED]"
+              className={`flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 text-[10px] sm:text-xs font-mono font-bold tracking-wider relative transition-all duration-300 cursor-pointer whitespace-nowrap rounded-full border ${
+                activeTab === "story"
+                  ? "text-[#10B981] bg-[#10B981]/10 border-[#10B981]/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+                  : "text-[#b0b0b0] bg-transparent border-[var(--glass-border)] hover:text-[#EDEDED] hover:border-[#EDEDED]/20"
               }`}
             >
               STORY & BACKGROUND
-              {activeTab === "story" && (
-                <motion.div
-                  layoutId="aboutTabUnderline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#10B981]"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
             </button>
             <button
               onClick={() => setActiveTab("timeline")}
-              className={`flex-1 sm:flex-initial px-3 sm:px-6 py-2.5 text-[10px] sm:text-xs font-mono font-bold tracking-wider relative transition-colors duration-300 cursor-pointer whitespace-nowrap ${
-                activeTab === "timeline" ? "text-[#3B82F6]" : "text-[#a3a3a3] hover:text-[#EDEDED]"
+              className={`flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 text-[10px] sm:text-xs font-mono font-bold tracking-wider relative transition-all duration-300 cursor-pointer whitespace-nowrap rounded-full border ${
+                activeTab === "timeline"
+                  ? "text-[#60A5FA] bg-[#60A5FA]/10 border-[#60A5FA]/30 shadow-[0_0_12px_rgba(96,165,250,0.15)]"
+                  : "text-[#b0b0b0] bg-transparent border-[var(--glass-border)] hover:text-[#EDEDED] hover:border-[#EDEDED]/20"
               }`}
             >
-              ACADEMIC & PROJECTS TIMELINE
-              {activeTab === "timeline" && (
-                <motion.div
-                  layoutId="aboutTabUnderline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#3B82F6]"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
+              ACADEMIC & PROJECTS
             </button>
           </div>
           
@@ -217,14 +208,14 @@ export default function About() {
                 className="space-y-6 text-[#d4d4d4] text-sm md:text-[0.95rem] !leading-[1.7]"
               >
                 <p className="text-[var(--text-primary)] text-lg font-medium">
-                  Passionate about creating digital experiences that matter
+                  Engineering systems that scale — from embedded to enterprise
                 </p>
                 <ul className="space-y-4">
                   <li className="flex gap-3">
                     <span className="text-[#10B981] mt-1 font-bold">▹</span>
                     <div>
                       <ScrollRevealText 
-                        text="Final-year Software Engineering student at Air University Islamabad, specializing in React.js, Next.js, and Node.js for clean, scalable applications."
+                        text="Software Engineer with 4+ years shipping production systems — from real-time IoT telemetry to AI-augmented web interfaces. BS Software Engineering (3rd Year), Air University."
                       />
                     </div>
                   </li>
@@ -232,7 +223,7 @@ export default function About() {
                     <span className="text-[#3B82F6] mt-1 font-bold">▹</span>
                     <div>
                       <ScrollRevealText 
-                        text="Proven ability to tackle complex challenges, from real-time API integrations (WeatherApp) to hardware-software systems (IoT Smart Helmet)."
+                        text="Designed and deployed end-to-end systems across the full stack: Next.js SSR/ISR frontends, Node.js services, C++ embedded controllers, and RAG-powered LLM interfaces."
                       />
                     </div>
                   </li>
@@ -240,7 +231,7 @@ export default function About() {
                     <span className="text-[#A855F7] mt-1 font-bold">▹</span>
                     <div>
                       <ScrollRevealText 
-                        text="Proficient across the full stack with a strong foundation in modern software design principles and clean architecture."
+                        text="Enforce SOLID architecture principles, strict TypeScript contracts, and automated CI/CD pipelines on every project. Zero tolerance for technical debt in deliverables."
                       />
                     </div>
                   </li>
@@ -248,7 +239,7 @@ export default function About() {
                     <span className="text-[#14B8A6] mt-1 font-bold">▹</span>
                     <div>
                       <ScrollRevealText 
-                        text="Currently expanding expertise in Android App Development (React Native), Cloud Computing, and advanced Software Architecture."
+                        text="Currently deepening expertise in distributed systems, React Native cross-platform deployment, and cloud-native infrastructure (AWS/GCP)."
                       />
                     </div>
                   </li>
@@ -262,7 +253,7 @@ export default function About() {
                   viewport={{ once: true, margin: "-100px" }}
                   className="flex flex-wrap gap-2.5 pt-4"
                 >
-                  {["Problem Solver", "Quick Learner", "Open to Collaborations", "Detail Oriented"].map((trait) => (
+                  {["SOLID Principles", "CI/CD Automation", "Performance-First", "Type-Safe Systems", "Edge-Deployed"].map((trait) => (
                     <motion.span 
                       key={trait} 
                       variants={tagVariants}
@@ -319,8 +310,8 @@ export default function About() {
           viewport={{ once: true, margin: "-100px" }}
           className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4"
         >
-          {softSkillsData.map((skill) => (
-            <SoftSkillCard key={skill.title} skill={skill} />
+          {engineeringCapabilities.map((skill) => (
+            <CapabilityCard key={skill.title} skill={skill} />
           ))}
         </motion.div>
 

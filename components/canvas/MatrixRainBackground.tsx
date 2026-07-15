@@ -48,14 +48,13 @@ export default function MatrixRainBackground() {
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        // Head of the drop is always blazing white-green (subdued)
-        // The rest of the trail is pure neon green, varied slightly by column highlight
+        // Reduced opacity values to push the effect into the background
         if (Math.random() > 0.92) {
-          ctx.fillStyle = "rgba(180, 255, 180, 0.55)"; // White-green head
+          ctx.fillStyle = "rgba(180, 255, 180, 0.20)"; // Dimmer white-green head (was 0.55)
         } else {
           ctx.fillStyle = columnHighlight[i]
-            ? "rgba(0, 255, 65, 0.30)" // Highlight column
-            : "rgba(0, 200, 40, 0.18)"; // Standard column
+            ? "rgba(0, 255, 65, 0.12)" // Dimmer highlight column (was 0.30)
+            : "rgba(0, 200, 40, 0.06)"; // Dimmer standard column (was 0.18)
         }
 
         ctx.fillText(text, x, y);
@@ -97,7 +96,8 @@ export default function MatrixRainBackground() {
       <div
         className="absolute inset-0 w-full h-full"
         style={{
-          background: "radial-gradient(circle at 50% 50%, rgba(0, 255, 65, 0.025) 0%, transparent 60%)"
+          // Reduced the gradient opacity from 0.025 to 0.01
+          background: "radial-gradient(circle at 50% 50%, rgba(0, 255, 65, 0.01) 0%, transparent 60%)"
         }}
       />
       <canvas

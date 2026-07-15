@@ -31,7 +31,7 @@ const testimonial = {
   quote:
     "Hammad has an exceptional ability to translate complex technical requirements into elegant, working solutions. His attention to detail and understanding of modern web technologies, specifically React and Next.js, is truly outstanding. He consistently delivered high-quality code and exceeded project expectations.",
   name: "Muhammad Abdullah",
-  role: "Teacher / Supervisor",
+  role: "Technical Advisor",
   org: "Air University",
   initials: "MA",
   color: "#10B981",
@@ -41,7 +41,7 @@ export default function SocialProof() {
   return (
     <section
       id="social-proof"
-      className="py-20 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 border-t border-[var(--glass-border)]"
+      className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10"
     >
       {/* Section label */}
       <motion.span

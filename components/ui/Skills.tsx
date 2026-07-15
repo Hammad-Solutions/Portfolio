@@ -25,9 +25,9 @@ const tagVariants = {
 
 export default function Skills() {
   const learning = [
-    "Android App Development (React Native)",
-    "Advanced Next.js & Firebase",
-    "Software Architecture & Cloud Computing"
+    "React Native Cross-Platform Deployment",
+    "Advanced Next.js & Supabase Architecture",
+    "Cloud-Native Infrastructure (AWS/GCP)"
   ];
 
   const [cameraZ, setCameraZ] = useState(5.8);
@@ -46,7 +46,7 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" className="py-24 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 border-t border-[var(--glass-border)] bg-transparent">
+    <section id="skills" className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 bg-transparent">
       <motion.span
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}

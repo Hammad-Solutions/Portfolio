@@ -1,5 +1,4 @@
-import React, { useRef } from "react";
-import gsap from "gsap";
+import React from "react";
 import Image from "next/image";
 
 interface ProjectCardProps {
@@ -31,69 +30,6 @@ const GithubIcon = () => (
 );
 
 export default function ProjectCard({ id, index, title, description, tags, image, github, glowColor = "#FFFFFF", onOpenDetails, featured = false }: ProjectCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const arrowRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // Calculate rotation angles
-    const rotX = ((y - rect.height / 2) / (rect.height / 2)) * -5;
-    const rotY = ((x - rect.width / 2) / (rect.width / 2)) * 5;
-
-    gsap.to(card, {
-      rotateX: rotX,
-      rotateY: rotY,
-      transformPerspective: 1000,
-      borderColor: "rgba(255, 255, 255, 0.08)",
-      boxShadow: "0 15px 30px rgba(0, 0, 0, 0.25)",
-      backgroundColor: "rgba(255, 255, 255, 0.018)",
-      duration: 0.3,
-      ease: "power2.out"
-    });
-
-    // Animate arrow
-    if (arrowRef.current) {
-      gsap.to(arrowRef.current, {
-        x: 3,
-        y: -3,
-        color: glowColor,
-        borderColor: `${glowColor}44`,
-        duration: 0.2
-      });
-    }
-  };
-
-  const handleMouseLeave = () => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    gsap.to(card, {
-      rotateX: 0,
-      rotateY: 0,
-      borderColor: "var(--glass-border)",
-      boxShadow: "none",
-      backgroundColor: "var(--glass-bg)",
-      duration: 0.5,
-      ease: "power2.out"
-    });
-
-    if (arrowRef.current) {
-      gsap.to(arrowRef.current, {
-        x: 0,
-        y: 0,
-        color: "#EDEDED",
-        borderColor: "var(--glass-border)",
-        duration: 0.3
-      });
-    }
-  };
-
   const shortCode = id.split("-")[0].toUpperCase();
 
   const handleClick = () => {
@@ -102,16 +38,12 @@ export default function ProjectCard({ id, index, title, description, tags, image
 
   return (
     <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       className={`relative border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-md rounded-2xl overflow-hidden select-none transition-all duration-300 shadow-sm group ${
         featured
           ? "flex flex-col md:flex-row cursor-pointer"
           : "flex flex-col justify-between p-6 h-[400px] cursor-pointer"
       }`}
-      style={{ transformStyle: "preserve-3d" }}
     >
       {featured ? (
         /* Featured hero card: image left, content right (on md+) */
@@ -121,6 +53,7 @@ export default function ProjectCard({ id, index, title, description, tags, image
               src={image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop"}
               alt={title}
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-90"
               loading="lazy"
             />
@@ -135,7 +68,7 @@ export default function ProjectCard({ id, index, title, description, tags, image
               Featured Project
             </div>
           </div>
-          <div className="flex flex-col justify-between p-7 md:w-1/2" style={{ transform: "translateZ(30px)" }}>
+          <div className="flex flex-col justify-between p-7 md:w-1/2">
             <div>
               <div className="flex justify-between items-center mb-4">
                 <span className="mono-text text-[#a3a3a3] text-xs font-semibold">
@@ -148,7 +81,6 @@ export default function ProjectCard({ id, index, title, description, tags, image
                     </div>
                   )}
                   <div
-                    ref={arrowRef}
                     className="w-8 h-8 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-xs font-semibold text-[#EDEDED] transition-colors group-hover:border-[#10B981] group-hover:text-[#10B981]"
                   >
                     ↗
@@ -187,7 +119,7 @@ export default function ProjectCard({ id, index, title, description, tags, image
       ) : (
         /* Standard card layout */
         <>
-          <div className="flex flex-col flex-1" style={{ transform: "translateZ(30px)" }}>
+          <div className="flex flex-col flex-1">
             {/* Top Header */}
             <div className="flex justify-between items-center mb-4">
               <span className="mono-text text-[#a3a3a3] text-xs font-semibold">
@@ -200,10 +132,7 @@ export default function ProjectCard({ id, index, title, description, tags, image
                   </div>
                 )}
                 <div
-                  ref={arrowRef}
-                  className={`w-8 h-8 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-xs font-semibold text-[#EDEDED] transition-colors ${
-                    github ? "group-hover:border-[#10B981] group-hover:text-[#10B981]" : ""
-                  }`}
+                  className="w-8 h-8 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-xs font-semibold text-[#EDEDED] transition-colors group-hover:border-[#10B981] group-hover:text-[#10B981]"
                 >
                   ↗
                 </div>
@@ -216,6 +145,7 @@ export default function ProjectCard({ id, index, title, description, tags, image
                 src={image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop"}
                 alt={title}
                 fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale contrast-110 opacity-60 group-hover:opacity-100 group-hover:grayscale-0"
                 loading="lazy"
               />
@@ -232,7 +162,6 @@ export default function ProjectCard({ id, index, title, description, tags, image
 
           <div
             className="flex flex-wrap gap-2 mt-4 relative z-10"
-            style={{ transform: "translateZ(20px)" }}
           >
             {tags.map((tag) => (
               <span

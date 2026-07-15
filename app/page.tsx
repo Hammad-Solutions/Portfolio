@@ -18,7 +18,6 @@ import RadialStat from "../components/ui/RadialStat";
 import SocialProof from "../components/ui/SocialProof";
 import { getBotResponse } from "../lib/rag";
 import styles from "./page.module.css";
-import CustomCursor from "../components/ui/CustomCursor";
 import PageLoader, { usePageLoader } from "../components/ui/PageLoader";
 
 // Custom Inline SVG Icons
@@ -104,10 +103,10 @@ const itemVariants = {
 
 // Roles that cycle automatically
 const ROLES = [
-  { text: "Software Developer", color: "#10B981" },
-  { text: "Next.js Engineer",   color: "#14B8A6" },
-  { text: "Full-Stack Builder", color: "#3B82F6" },
-  { text: "UI/UX Enthusiast",   color: "#A855F7" },
+  { text: "Software Architect",        color: "#10B981" },
+  { text: "Full-Stack Engineer",       color: "#14B8A6" },
+  { text: "Systems Designer",          color: "#3B82F6" },
+  { text: "AI Integration Specialist", color: "#A855F7" },
 ];
 
 function TypewriterRoles() {
@@ -145,7 +144,6 @@ function TypewriterRoles() {
 function HeroAvatar() {
   const [imgSrc, setImgSrc] = useState("/profile.jpg");
   const [useFallback, setUseFallback] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
 
   const handleError = () => {
     if (imgSrc === "/profile.jpg") {
@@ -157,50 +155,8 @@ function HeroAvatar() {
     }
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const rotX = ((y - rect.height / 2) / (rect.height / 2)) * -12;
-    const rotY = ((x - rect.width / 2) / (rect.width / 2)) * 12;
-
-    gsap.to(card, {
-      rotateX: rotX,
-      rotateY: rotY,
-      transformPerspective: 800,
-      borderColor: "rgba(59, 130, 246, 0.45)",
-      boxShadow: "0 20px 40px -10px rgba(59, 130, 246, 0.25)",
-      duration: 0.3,
-      ease: "power2.out"
-    });
-  };
-
-  const handleMouseLeave = () => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    gsap.to(card, {
-      rotateX: 0,
-      rotateY: 0,
-      borderColor: "var(--glass-border)",
-      boxShadow: "0 15px 35px -15px rgba(0, 0, 0, 0.8)",
-      duration: 0.5,
-      ease: "power2.out"
-    });
-  };
-
   return (
-    <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className={styles.profilePhotoCard}
-      style={{ transformStyle: "preserve-3d" }}
-    >
+    <div className={styles.profilePhotoCard}>
       <div className={styles.scanline} />
       {!useFallback ? (
         <img
@@ -227,38 +183,13 @@ interface BentoCardProps {
 }
 
 function BentoCard({ children, className = "", variants, innerClassName = "flex flex-col justify-between h-full w-full relative z-10 min-w-0", style }: BentoCardProps) {
-  const x = useMotionValue(0.5);
-  const y = useMotionValue(0.5);
-
-  const rotateX = useTransform(y, [0, 1], [4, -4]);
-  const rotateY = useTransform(x, [0, 1], [-4, 4]);
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    x.set(event.clientX - rect.left > 0 ? (event.clientX - rect.left) / rect.width : 0);
-    y.set(event.clientY - rect.top > 0 ? (event.clientY - rect.top) / rect.height : 0);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0.5);
-    y.set(0.5);
-  };
-
   return (
     <motion.div
       variants={variants}
       className={`${styles.bentoCard} bento-card-hover-trigger ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformPerspective: 1200,
-        transformStyle: "preserve-3d",
-        ...style
-      }}
+      style={style}
     >
-      <div className={innerClassName} style={{ transform: "translateZ(30px)" }}>
+      <div className={innerClassName}>
         {children}
       </div>
     </motion.div>
@@ -430,7 +361,6 @@ export default function Home() {
   return (
     <PageLoader>
       <div className={`${styles.container} w-full max-w-full`}>
-        <CustomCursor />
         {/* Glowing Scroll Progress Bar */}
         <motion.div
           className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#10B981] via-[#14B8A6] to-[#3B82F6] origin-[0%] z-[9999]"
@@ -619,7 +549,7 @@ export default function Home() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                       </span>
-                      Open to Projects
+                      Accepting Select Engagements
                       <span className="group-hover:translate-x-0.5 transition-transform duration-200">↗</span>
                     </a>
 
@@ -637,7 +567,7 @@ export default function Home() {
 
                     {/* Bio text — outcome-driven */}
                     <p className="text-[#d4d4d4] text-base md:text-[1.05rem] !leading-[1.8] max-w-2xl">
-                      I turn complex problems into products users love — shipped fast, built to scale. Full-stack dev with 4+ years shipping React, Next.js &amp; Node.js across web, AI, and IoT systems.
+                      I architect production systems that scale — from AI-augmented interfaces to real-time IoT telemetry. 4+ years shipping React, Next.js, Node.js &amp; C++ across enterprise web, embedded, and LLM-integrated platforms.
                     </p>
                   </BentoCard>
 
@@ -1032,10 +962,10 @@ export default function Home() {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                     </span>
-                    <span className="text-[10px] font-mono text-[#10B981] font-semibold uppercase tracking-widest">Open to Work</span>
+                    <span className="text-[10px] font-mono text-[#10B981] font-semibold uppercase tracking-widest">Accepting Engagements</span>
                   </div>
                   <p className="text-[11px] text-[#525252] mb-3 max-w-[200px]">
-                    Currently accepting 1-2 new client projects.
+                    Currently accepting selective client engagements and consulting.
                   </p>
                   <a
                     href="mailto:m6784104@gmail.com"
@@ -1142,25 +1072,7 @@ export default function Home() {
         </AnimatePresence>
 
         {/* Floating Toggle Agent Action Button Container */}
-        <div className="fixed bottom-6 right-6 z-[100] flex items-center justify-end">
-          {/* Animated Speech Bubble */}
-          <AnimatePresence>
-            {mode === "visual" && !isChatOpen && (
-              <motion.div
-                onClick={() => setIsChatOpen(true)}
-                initial={{ opacity: 0, x: 20, scale: 0.9 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 20, scale: 0.9 }}
-                transition={{ delay: 1, duration: 0.4 }}
-                whileHover={{ scale: 1.05 }}
-                className="mr-2 px-4 py-2.5 bg-[#0A0A0A]/95 border border-[#3B82F6]/30 backdrop-blur-md text-[11px] font-mono font-semibold rounded-2xl rounded-br-none text-[#EDEDED] shadow-[0_0_25px_rgba(59,130,246,0.25)] flex items-center gap-2 cursor-pointer select-none"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
-                Ask me!
-              </motion.div>
-            )}
-          </AnimatePresence>
-
+        <div className="fixed right-4 bottom-24 md:right-6 md:bottom-6 z-[100] flex items-center justify-end pointer-events-none">
           {/* Floating Toggle Button */}
           <motion.button
             onClick={() => {
@@ -1186,7 +1098,7 @@ export default function Home() {
             }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="w-20 h-20 flex items-center justify-center cursor-pointer group relative bg-transparent border-none outline-none select-none"
+            className="w-20 h-20 flex items-center justify-center cursor-pointer group relative bg-transparent border-none outline-none select-none pointer-events-auto"
             aria-label="Toggle Agent Chat"
           >
             <img
@@ -1197,9 +1109,6 @@ export default function Home() {
                 : "drop-shadow-[0_0_15px_rgba(59,130,246,0.65)]"
                 }`}
             />
-
-            {/* Custom Tooltip */}
-
           </motion.button>
         </div>
       </div>
