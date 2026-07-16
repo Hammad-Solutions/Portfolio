@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Canvas } from "@react-three/fiber";
 import { Sprout } from "lucide-react";
 import dynamic from "next/dynamic";
 
-const SkillsGlobe = dynamic(() => import("../canvas/SkillsGlobe"), {
+const SkillsGlobeContainer = dynamic(() => import("./SkillsGlobeContainer"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex items-center justify-center text-xs font-mono text-neutral-500">
@@ -93,12 +92,7 @@ export default function Skills() {
         {/* Subtle radial backdrop gradient */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.035)_0%,transparent_70%)] pointer-events-none" />
 
-        <Canvas 
-          camera={{ position: [0, 0, cameraZ], fov: 45 }}
-          style={{ touchAction: "pan-y" }}
-        >
-          <SkillsGlobe />
-        </Canvas>
+        <SkillsGlobeContainer cameraZ={cameraZ} />
       </motion.div>
 
       {/* Currently Learning Panel */}

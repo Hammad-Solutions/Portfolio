@@ -165,28 +165,57 @@ function TypewriterRoles() {
 }
 
 function HeroAvatar() {
-  const [imgSrc, setImgSrc] = useState("/profile.jpg");
+  const [imgSrc, setImgSrc] = useState("/p6.png");
   const [useFallback, setUseFallback] = useState(false);
 
   const handleError = () => {
-    if (imgSrc === "/profile.jpg") {
-      setImgSrc("/profile.png");
-    } else if (imgSrc === "/profile.png") {
-      setImgSrc("/profile.jpeg");
-    } else {
-      setUseFallback(true);
-    }
+    setUseFallback(true);
   };
 
   return (
-    <div className={styles.profilePhotoCard}>
-      <div className={styles.scanline} />
+    <div
+      className={styles.profilePhotoCard}
+      style={{
+        background: 'transparent',
+        border: 'none',
+        boxShadow: 'none',
+        padding: '0px',
+        margin: '0px',
+        // Must be hidden so the bottom of the suit doesn't spill out
+        overflow: 'hidden',
+        position: 'absolute',
+        display: 'block',
+        width: '100%',
+        height: '100%'
+      }}
+    >
       {!useFallback ? (
         <img
           src={imgSrc}
           alt="Muhammad Hammad"
           onError={handleError}
           className={styles.profilePhotoImg}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+
+            // 1. LOCK TO TOP: This forces the flat cut-off line of your hair to perfectly align with the top border of the card.
+            objectPosition: 'top center',
+            background: 'transparent',
+            border: 'none',
+
+            // 2. SCALE ONLY: Since it's locked to the top, if the suit doesn't reach the bottom, just increase this to 1.1, 1.15, etc.
+            transform: 'scale(1.35)',
+
+            // 3. ZOOM DIRECTION: Forces the zoom to push downwards, keeping the head perfectly glued to the top.
+            transformOrigin: 'top center'
+          }}
         />
       ) : (
         <div className={styles.profilePhotoFallback}>
@@ -197,10 +226,11 @@ function HeroAvatar() {
   );
 }
 
+
 interface BentoCardProps {
   children: React.ReactNode;
   className?: string;
-  variants?: import("framer-motion").Variants;
+  variants?: any;
   innerClassName?: string;
   style?: React.CSSProperties | any;
 }
@@ -315,7 +345,7 @@ export default function Home() {
           }
         ];
       });
-    }, 30000);
+    }, 40000);
 
     return () => clearTimeout(timer);
   }, [isChatOpen]);

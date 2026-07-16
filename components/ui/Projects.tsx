@@ -31,12 +31,14 @@ function WebGLProjectCard({
   idx,
   activeNode,
   totalNodes,
+  isVisible,
   onClick
 }: {
   project: Project;
   idx: number;
   activeNode: number;
   totalNodes: number;
+  isVisible: boolean;
   onClick: () => void;
 }) {
   const safeTags = project.tags || [];
@@ -57,6 +59,7 @@ function WebGLProjectCard({
   const isSelected = activeNode === idx;
 
   useFrame(() => {
+    if (!isVisible) return;
     if (!groupRef.current) return;
 
     // Infinite looping offset math
@@ -81,8 +84,8 @@ function WebGLProjectCard({
 
     // Dim inactive cards
     const targetOpacity = Math.abs(offset) > 3 ? 0 : 1;
-    const isVisible = Math.abs(offset) <= 3;
-    groupRef.current.visible = isVisible;
+    const isInRange = Math.abs(offset) <= 3;
+    groupRef.current.visible = isInRange;
 
     if (materialRef.current) {
       materialRef.current.opacity = THREE.MathUtils.lerp(materialRef.current.opacity, targetOpacity, 0.08);
@@ -191,13 +194,15 @@ function ProjectCarousel3D({
   onSelectProject,
   activeNode,
   setActiveNode,
-  setIsAutoPlaying
+  setIsAutoPlaying,
+  isVisible
 }: {
   projects: Project[];
   onSelectProject: (p: Project) => void;
   activeNode: number;
   setActiveNode: (n: number) => void;
   setIsAutoPlaying: (v: boolean) => void;
+  isVisible: boolean;
 }) {
   return (
     <group>
@@ -208,6 +213,7 @@ function ProjectCarousel3D({
           idx={idx}
           activeNode={activeNode}
           totalNodes={projects.length}
+          isVisible={isVisible}
           onClick={() => {
             setIsAutoPlaying(false);
             if (activeNode === idx) {
@@ -227,12 +233,31 @@ export default function Projects() {
   const [activeNode, setActiveNode] = useState<number>(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [canvasKey, setCanvasKey] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   // High-performance drag tracking variables
   const dragStartX = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const SWIPE_THRESHOLD = 80;
 
   const projects = portfolioData.projects as unknown as Project[];
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(el);
+    return () => {
+      observer.unobserve(el);
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -247,7 +272,7 @@ export default function Projects() {
 
     const interval = setInterval(() => {
       setActiveNode((prev) => (prev + 1) % projects.length);
-    }, 3500);
+    }, 2500);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, selectedProject, projects.length, isMobile]);
@@ -299,6 +324,7 @@ export default function Projects() {
 
       {/* Wrapper Div handles global DOM swipe events so clicking empty space still drags */}
       <div
+        ref={containerRef}
         className="relative w-full h-[650px] rounded-3xl border border-white/5 bg-transparent overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -308,7 +334,18 @@ export default function Projects() {
         {!isMobile ? (
           <>
             {/* The Canvas itself ignores global pointer events to prevent conflict */}
-            <Canvas camera={{ position: [0, 0, 8.5], fov: 45 }} className="w-full h-full pointer-events-none">
+            <Canvas
+              key={canvasKey}
+              camera={{ position: [0, 0, 8.5], fov: 45 }}
+              className="w-full h-full pointer-events-none"
+              onCreated={({ gl }) => {
+                const handleContextLost = (e: Event) => {
+                  e.preventDefault();
+                  setCanvasKey((prev) => prev + 1);
+                };
+                gl.domElement.addEventListener("webglcontextlost", handleContextLost);
+              }}
+            >
               <ambientLight intensity={0.6} />
               <pointLight position={[10, 10, 10]} intensity={1.2} />
               {/* Wrapping group restores pointer events specifically for the cards */}
@@ -320,6 +357,7 @@ export default function Projects() {
                     activeNode={activeNode}
                     setActiveNode={setActiveNode}
                     setIsAutoPlaying={setIsAutoPlaying}
+                    isVisible={isVisible}
                   />
                 </Suspense>
               </group>
@@ -330,11 +368,11 @@ export default function Projects() {
             {/* Mobile swipe indicator */}
             <div className="absolute top-6 flex items-center gap-2 text-[#10B981] text-[10px] font-mono tracking-[0.2em] font-bold animate-pulse z-20 pointer-events-none uppercase">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 18l-6-6 6-6"/>
+                <path d="M15 18l-6-6 6-6" />
               </svg>
               Swipe to explore
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 18l6-6-6-6"/>
+                <path d="M9 18l6-6-6-6" />
               </svg>
             </div>
 
@@ -342,47 +380,47 @@ export default function Projects() {
               className="w-full h-full flex items-center overflow-x-auto snap-x snap-mandatory px-6 gap-6 hide-scrollbar pt-12 pb-6 touch-pan-x"
               onPointerDown={(e) => e.stopPropagation()} // Stop mobile native scroll from conflicting
             >
-            {projects.map((project, idx) => {
-              const safeTags = project.tags || [];
-              const color = getGlowColor(safeTags);
-              return (
-                <div
-                  key={project.id}
-                  onClick={() => setSelectedProject(project)}
-                  className="snap-center shrink-0 w-[260px] h-[440px] rounded-2xl border border-white/10 bg-[#070707]/90 p-4 flex flex-col justify-between"
-                >
-                  <div className="relative w-full h-[180px] rounded-lg overflow-hidden border border-white/5">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      width={228}
-                      height={180}
-                      className="object-cover opacity-80 w-full h-full"
-                      priority={idx < 2}
-                    />
-                    <div
-                      className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold tracking-widest text-black"
-                      style={{ background: color }}
-                    >
-                      0{idx + 1}
+              {projects.map((project, idx) => {
+                const safeTags = project.tags || [];
+                const color = getGlowColor(safeTags);
+                return (
+                  <div
+                    key={project.id}
+                    onClick={() => setSelectedProject(project)}
+                    className="snap-center shrink-0 w-[260px] h-[440px] rounded-2xl border border-white/10 bg-[#070707]/90 p-4 flex flex-col justify-between"
+                  >
+                    <div className="relative w-full h-[180px] rounded-lg overflow-hidden border border-white/5">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        width={228}
+                        height={180}
+                        className="object-cover opacity-80 w-full h-full"
+                        priority={idx < 2}
+                      />
+                      <div
+                        className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold tracking-widest text-black"
+                        style={{ background: color }}
+                      >
+                        0{idx + 1}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex-1 flex flex-col justify-between mt-4">
-                    <div>
-                      <h4 className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">
+                    <div className="flex-1 flex flex-col justify-between mt-4">
+                      <div>
+                        <h4 className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">
                         // {project.id.split("-")[0].toUpperCase()}
-                      </h4>
-                      <h3 className="text-sm font-bold text-white mt-1 leading-snug line-clamp-2">
-                        {project.title}
-                      </h3>
-                      <p className="text-[11px] text-[#a3a3a3] mt-2 line-clamp-3 leading-relaxed">
-                        {project.description}
-                      </p>
+                        </h4>
+                        <h3 className="text-sm font-bold text-white mt-1 leading-snug line-clamp-2">
+                          {project.title}
+                        </h3>
+                        <p className="text-[11px] text-[#a3a3a3] mt-2 line-clamp-3 leading-relaxed">
+                          {project.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
             </div>
           </div>
         )}
@@ -410,120 +448,120 @@ export default function Projects() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#0A0A0A]/85 backdrop-blur-md z-[99999] flex items-center justify-center p-4 sm:p-6"
-            onClick={() => setSelectedProject(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 20, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 350 }}
-              className="bg-[#121212] border border-[#262626] rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 relative shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col gap-6 m-auto"
-              onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 bg-[#0A0A0A]/85 backdrop-blur-md z-[99999] flex items-center justify-center p-4 sm:p-6"
+              onClick={() => setSelectedProject(null)}
             >
-              <div className="absolute top-5 right-5 flex items-center gap-2 z-20">
-                {selectedProject.github && (
-                  <a href={selectedProject.github} target="_blank" rel="noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#262626] hover:border-[#10B981] text-[10px] uppercase tracking-wider font-bold text-[#EDEDED] bg-[#0A0A0A]/80 hover:bg-[#10b981]/10 backdrop-blur-md transition-all duration-300">
-                    <GithubIcon /> Source
-                  </a>
-                )}
-                {selectedProject.demo && (
-                  <a href={selectedProject.demo} target="_blank" rel="noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#10B981]/80 hover:bg-[#10B981] text-[10px] uppercase tracking-wider font-bold text-[#000000] backdrop-blur-md transition-all duration-300">
-                    Demo ↗
-                  </a>
-                )}
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="text-[#a3a3a3] hover:text-[#ef4444] transition-colors p-1.5 border border-[#262626] rounded-full hover:border-[#ef4444]/20 bg-[#0A0A0A]/80 backdrop-blur-md cursor-pointer ml-1"
-                >
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
-              </div>
-
-              <div>
-                <span className="font-mono text-[10px] text-[#a3a3a3] tracking-widest block uppercase mb-1">PROJECT SPECIFICATIONS</span>
-                <h3 className="text-2xl font-extrabold text-[#EDEDED] tracking-tight">{selectedProject.title}</h3>
-                
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {(selectedProject.tags || []).map((tag) => (
-                    <span key={tag} className="px-2.5 py-1 text-[10px] font-mono text-[#10B981] bg-[#10B981]/10 border border-[#10B981]/20 rounded-md uppercase tracking-widest font-semibold">
-                      {tag}
-                    </span>
-                  ))}
+              <motion.div
+                initial={{ scale: 0.95, y: 20, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 0.95, y: 20, opacity: 0 }}
+                transition={{ type: "spring", damping: 25, stiffness: 350 }}
+                className="bg-[#121212] border border-[#262626] rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 relative shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col gap-6 m-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="absolute top-5 right-5 flex items-center gap-2 z-20">
+                  {selectedProject.github && (
+                    <a href={selectedProject.github} target="_blank" rel="noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#262626] hover:border-[#10B981] text-[10px] uppercase tracking-wider font-bold text-[#EDEDED] bg-[#0A0A0A]/80 hover:bg-[#10b981]/10 backdrop-blur-md transition-all duration-300">
+                      <GithubIcon /> Source
+                    </a>
+                  )}
+                  {selectedProject.demo && (
+                    <a href={selectedProject.demo} target="_blank" rel="noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#10B981]/80 hover:bg-[#10B981] text-[10px] uppercase tracking-wider font-bold text-[#000000] backdrop-blur-md transition-all duration-300">
+                      Demo ↗
+                    </a>
+                  )}
+                  <button
+                    onClick={() => setSelectedProject(null)}
+                    className="text-[#a3a3a3] hover:text-[#ef4444] transition-colors p-1.5 border border-[#262626] rounded-full hover:border-[#ef4444]/20 bg-[#0A0A0A]/80 backdrop-blur-md cursor-pointer ml-1"
+                  >
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
                 </div>
-              </div>
 
-              <div className="w-full h-48 sm:h-56 rounded-xl overflow-hidden relative border border-[#262626]/60">
-                <Image
-                  src={selectedProject.image}
-                  alt={selectedProject.title}
-                  fill
-                  sizes="(max-width: 768px) 95vw, 600px"
-                  className="object-cover"
-                />
-              </div>
+                <div>
+                  <span className="font-mono text-[10px] text-[#a3a3a3] tracking-widest block uppercase mb-1">PROJECT SPECIFICATIONS</span>
+                  <h3 className="text-2xl font-extrabold text-[#EDEDED] tracking-tight">{selectedProject.title}</h3>
 
-              <div className="space-y-2">
-                <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// SUMMARY</h4>
-                <p className="text-sm text-[#d4d4d4] leading-relaxed">{selectedProject.description}</p>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="text-[10px] font-mono text-[#10B981] tracking-widest uppercase font-bold">// ARCHITECTURE & LAYERS</h4>
-                <div className="flex flex-wrap gap-2">
-                  {(selectedProject.architecture || []).map((layer) => (
-                    <span key={layer} className="px-2.5 py-1 text-[11px] font-mono text-[#EDEDED] bg-[#0A0A0A] border border-[#262626] rounded-md">
-                      {layer}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {selectedProject.id === "ai-portfolio" && (
-                <div className="space-y-2">
-                  <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// SYSTEM ARCHITECTURE DIAGRAM</h4>
-                  <div className="p-4 rounded-xl bg-[#0A0A0A] border border-[#262626]">
-                    <ArchitectureDiagram />
-                  </div>
-                </div>
-              )}
-
-              {selectedProject.impact && (
-                <div className="space-y-2">
-                  <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// OUTCOME & IMPACT</h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {selectedProject.impact.map((metric, i) => (
-                      <div key={i} className="p-3 rounded-xl bg-[#0A0A0A] border border-[#262626] flex flex-col justify-center">
-                        <p className="text-[10px] font-mono text-[#a3a3a3] uppercase mb-1">{metric.label}</p>
-                        <p className="text-xl font-bold text-[#EDEDED]">
-                          <span className="text-[#10B981]">{metric.value}</span>
-                          {metric.unit && <span className="text-sm text-[#a3a3a3] ml-0.5">{metric.unit}</span>}
-                        </p>
-                      </div>
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {(selectedProject.tags || []).map((tag) => (
+                      <span key={tag} className="px-2.5 py-1 text-[10px] font-mono text-[#10B981] bg-[#10B981]/10 border border-[#10B981]/20 rounded-md uppercase tracking-widest font-semibold">
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 </div>
-              )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-[#ef4444]/5 border border-[#ef4444]/15 space-y-2">
-                  <h5 className="text-[11px] font-mono text-red-400 font-bold uppercase tracking-wider">CHALLENGE</h5>
-                  <p className="text-xs text-[#a3a3a3] leading-relaxed">{selectedProject.challenges}</p>
+                <div className="w-full h-48 sm:h-56 rounded-xl overflow-hidden relative border border-[#262626]/60">
+                  <Image
+                    src={selectedProject.image}
+                    alt={selectedProject.title}
+                    fill
+                    sizes="(max-width: 768px) 95vw, 600px"
+                    className="object-cover"
+                  />
                 </div>
-                <div className="p-4 rounded-xl bg-[#10b981]/5 border border-[#10b981]/15 space-y-2">
-                  <h5 className="text-[11px] font-mono text-emerald-400 font-bold uppercase tracking-wider">SOLUTION</h5>
-                  <p className="text-xs text-[#a3a3a3] leading-relaxed">{selectedProject.solutions}</p>
+
+                <div className="space-y-2">
+                  <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// SUMMARY</h4>
+                  <p className="text-sm text-[#d4d4d4] leading-relaxed">{selectedProject.description}</p>
                 </div>
-              </div>
+
+                <div className="space-y-2">
+                  <h4 className="text-[10px] font-mono text-[#10B981] tracking-widest uppercase font-bold">// ARCHITECTURE & LAYERS</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {(selectedProject.architecture || []).map((layer) => (
+                      <span key={layer} className="px-2.5 py-1 text-[11px] font-mono text-[#EDEDED] bg-[#0A0A0A] border border-[#262626] rounded-md">
+                        {layer}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {selectedProject.id === "ai-portfolio" && (
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// SYSTEM ARCHITECTURE DIAGRAM</h4>
+                    <div className="p-4 rounded-xl bg-[#0A0A0A] border border-[#262626]">
+                      <ArchitectureDiagram />
+                    </div>
+                  </div>
+                )}
+
+                {selectedProject.impact && (
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-mono text-[#3B82F6] tracking-widest uppercase font-bold">// OUTCOME & IMPACT</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {selectedProject.impact.map((metric, i) => (
+                        <div key={i} className="p-3 rounded-xl bg-[#0A0A0A] border border-[#262626] flex flex-col justify-center">
+                          <p className="text-[10px] font-mono text-[#a3a3a3] uppercase mb-1">{metric.label}</p>
+                          <p className="text-xl font-bold text-[#EDEDED]">
+                            <span className="text-[#10B981]">{metric.value}</span>
+                            {metric.unit && <span className="text-sm text-[#a3a3a3] ml-0.5">{metric.unit}</span>}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-[#ef4444]/5 border border-[#ef4444]/15 space-y-2">
+                    <h5 className="text-[11px] font-mono text-red-400 font-bold uppercase tracking-wider">CHALLENGE</h5>
+                    <p className="text-xs text-[#a3a3a3] leading-relaxed">{selectedProject.challenges}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[#10b981]/5 border border-[#10b981]/15 space-y-2">
+                    <h5 className="text-[11px] font-mono text-emerald-400 font-bold uppercase tracking-wider">SOLUTION</h5>
+                    <p className="text-xs text-[#a3a3a3] leading-relaxed">{selectedProject.solutions}</p>
+                  </div>
+                </div>
 
 
+              </motion.div>
             </motion.div>
-          </motion.div>
           )}
         </AnimatePresence>,
         document.body
