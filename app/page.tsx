@@ -1,16 +1,24 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
 import { motion, AnimatePresence, useScroll, useSpring, useMotionValue, useTransform } from "framer-motion";
-import gsap from "gsap";
-import MatrixRainBackground from "../components/canvas/MatrixRainBackground";
+import dynamic from "next/dynamic";
+
+const MatrixRainBackground = dynamic(() => import("../components/canvas/MatrixRainBackground"), { ssr: false });
+const Projects = dynamic(() => import("../components/ui/Projects"), {
+  ssr: false,
+  loading: () => (
+    <div className="py-20 text-center font-mono text-xs text-neutral-500">
+      Loading Projects Engine...
+    </div>
+  ),
+});
+const CustomCursor = dynamic(() => import("../components/ui/CustomCursor"), { ssr: false });
+
 import About from "../components/ui/About";
 import Skills from "../components/ui/Skills";
-import Projects from "../components/ui/Projects";
 import Contact from "../components/ui/Contact";
 import FloatingCTA from "../components/ui/FloatingCTA";
-import CustomCursor from "../components/ui/CustomCursor";
 import MagneticButton from "../components/ui/MagneticButton";
 import MorphingBlob from "../components/ui/MorphingBlob";
 import RadialStat from "../components/ui/RadialStat";

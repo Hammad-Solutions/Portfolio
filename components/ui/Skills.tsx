@@ -2,7 +2,16 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Canvas } from "@react-three/fiber";
 import { Sprout } from "lucide-react";
-import SkillsGlobe from "../canvas/SkillsGlobe";
+import dynamic from "next/dynamic";
+
+const SkillsGlobe = dynamic(() => import("../canvas/SkillsGlobe"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center text-xs font-mono text-neutral-500">
+      Loading Capabilities Globe...
+    </div>
+  ),
+});
 
 const tagContainerVariants = {
   hidden: {},
