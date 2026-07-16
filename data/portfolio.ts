@@ -58,7 +58,7 @@ export const portfolioData = {
     },
     {
       id: "previous-portfolio",
-      title: "Personal Portfolio v1",
+      title: "Personal Portfolio",
       description: "Reduced landing page load time to <150ms and zeroed out hosting overhead by deploying a personal portfolio built in pure HTML5, CSS3, and vanilla JS. Achieved maximum asset optimization and zero third-party dependencies.",
       tags: ["HTML", "CSS", "JavaScript", "Responsive Design"],
       image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=600&auto=format&fit=crop",
@@ -73,10 +73,10 @@ export const portfolioData = {
     },
     {
       id: "student-management",
-      title: "Student Record Engine — C++ Binary I/O System",
+      title: "Student Record Engine",
       description: "Saved registrar staff 15+ hours per week of manual data entry with a multi-tier C++ record management engine. Implemented copy-on-write atomic staging using temporary buffer files to handle concurrent mutations without index corruption — guaranteeing 100% CRUD integrity across 500+ records.",
       tags: ["C++", "STL", "Binary I/O", "RBAC"],
-      image: "https://cdn4.slideserve.com/9079189/student-information-system-n.jpg",
+      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/Student-Management-System-Cpp-File-Handling",
       architecture: ["C++ 17 Runtime", "STL File Stream Pipeline", "Atomic Staging Buffer", "Role-Based Access Controller"],
       challenges: "Ensuring data consistency during concurrent record updates on flat-file storage without DBMS transaction support, where naive read-modify-write cycles caused index mismatch corruption.",
@@ -89,8 +89,8 @@ export const portfolioData = {
     },
     {
       id: "bank-management",
-      title: "Transaction Processing Engine — ACID-Compliant C++ System",
-      description: "Secured simulated financial transactions with zero balance corruption events by building an ACID-compliant C++ file stream transaction manager. Implemented dynamic validation checkpoints and stream-state pointers to ensure transaction rollback capabilities with zero data loss.",
+      title: "Transaction Processing Engine",
+      description: "Secured simulated financial transactions with zero balance corruption events by building an ACID-compliant C++ file stream transaction manager. Implemented dynamic validation checkpoints and stream-state pointers to ensure transaction rollback capabilities with zero data loss.ACID-Compliant C++ System",
       tags: ["C++", "Binary I/O", "ACID Transactions", "Stream Validation"],
       image: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/Bank-Management-System-Cpp-File-Handling",
@@ -105,7 +105,7 @@ export const portfolioData = {
     },
     {
       id: "hotel-management",
-      title: "Resource Allocation Engine — Polymorphic C++ Architecture",
+      title: "Resource Allocation Engine",
       description: "Eliminated memory leaks (0 bytes lost) in dynamic OOP room assignments by architecting a polymorphic C++ resource scheduler with dynamic dispatch and RAII resource manager wrapper destructors, saving hours of debugging time.",
       tags: ["C++", "OOP", "Polymorphism", "RAII"],
       image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=600&auto=format&fit=crop",

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef, Suspense } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Image as DreiImage, Text, Loader } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Image as DreiImage, Text, Loader, RoundedBox, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { portfolioData, Project } from "../../data/portfolio";
 import Image from "next/image";
@@ -25,217 +26,256 @@ const GithubIcon = () => (
   </svg>
 );
 
-// Camera zoom and positioning script
-function CameraController({
-  activeNode,
-  projectsCount
-}: {
-  activeNode: number | null;
-  projectsCount: number;
-}) {
-  const { camera } = useThree();
-
-  useFrame(() => {
-    let targetX = 0;
-    let targetY = 0.2;
-    let targetZ = 9.0; // Pushed camera back to Z=9.0 for perfect readability
-
-    if (activeNode !== null) {
-      const angle = (activeNode / projectsCount) * Math.PI * 2;
-      const radius = 5.0;
-      // Focus camera closely on the selected node
-      targetX = Math.sin(angle) * (radius - 2.8);
-      targetZ = Math.cos(angle) * (radius - 2.8);
-      targetY = 0.05;
-    }
-
-    camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), 0.08);
-  });
-
-  return null;
-}
-
-// Interactive holographic WebGL card component
 function WebGLProjectCard({
   project,
   idx,
   activeNode,
-  hoveredNode,
-  setHoveredNode,
+  totalNodes,
   onClick
 }: {
   project: Project;
   idx: number;
-  activeNode: number | null;
-  hoveredNode: number | null;
-  setHoveredNode: (n: number | null) => void;
+  activeNode: number;
+  totalNodes: number;
   onClick: () => void;
 }) {
-  const color = getGlowColor(project.tags);
+  const safeTags = project.tags || [];
+  const safeDesc = project.description || "";
+  const color = getGlowColor(safeTags);
+
+  const groupRef = useRef<THREE.Group>(null);
+  const materialRef = useRef<THREE.MeshStandardMaterial>(null);
+  const textRefs = useRef<any[]>([]);
+
+  const cardWidth = 3.2;
+  const cardHeight = 5.0;
+  const imgHeight = 2.2;
+
+  const isMultiLineTitle = project.title.length > 22;
+  const descY = isMultiLineTitle ? -0.85 : -0.60;
+
   const isSelected = activeNode === idx;
-  const isHovered = hoveredNode === idx;
+
+  useFrame(() => {
+    if (!groupRef.current) return;
+
+    // Infinite looping offset math
+    let offset = idx - activeNode;
+    if (offset > totalNodes / 2) offset -= totalNodes;
+    if (offset < -totalNodes / 2) offset += totalNodes;
+
+    // Cover Flow Transformations
+    const targetX = offset === 0 ? 0 : (offset > 0 ? offset * 1.8 + 0.8 : offset * 1.8 - 0.8);
+    const targetZ = offset === 0 ? 1.5 : -Math.abs(offset) * 1.2;
+    const targetRotY = offset === 0 ? 0 : (offset > 0 ? -Math.PI / 6 : Math.PI / 6);
+    const targetScale = offset === 0 ? 0.8 : 0.65;
+
+    // Smooth interpolations
+    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetX, 0.08);
+    groupRef.current.position.z = THREE.MathUtils.lerp(groupRef.current.position.z, targetZ, 0.08);
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotY, 0.08);
+
+    const currentScale = groupRef.current.scale.x;
+    const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.08);
+    groupRef.current.scale.set(newScale, newScale, newScale);
+
+    // Dim inactive cards
+    const targetOpacity = Math.abs(offset) > 3 ? 0 : 1;
+    const isVisible = Math.abs(offset) <= 3;
+    groupRef.current.visible = isVisible;
+
+    if (materialRef.current) {
+      materialRef.current.opacity = THREE.MathUtils.lerp(materialRef.current.opacity, targetOpacity, 0.08);
+      // Brighten the center card slightly
+      const targetColor = isSelected ? new THREE.Color("#161616") : new THREE.Color("#080808");
+      materialRef.current.color.lerp(targetColor, 0.1);
+    }
+
+    textRefs.current.forEach(text => {
+      if (text) {
+        text.fillOpacity = THREE.MathUtils.lerp(text.fillOpacity || 0, targetOpacity, 0.08);
+      }
+    });
+  });
 
   return (
     <group
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHoveredNode(idx);
-      }}
-      onPointerOut={() => setHoveredNode(null)}
+      ref={groupRef}
       onClick={(e) => {
         e.stopPropagation();
+        // Prevent click trigger if the user was dragging the card (delta measures drag distance)
+        if (e.delta > 5) return;
         onClick();
       }}
     >
-      {/* 1. Fully Transparent Background Card Backing */}
-      <mesh>
-        <planeGeometry args={[2.2, 3.2]} />
-        <meshBasicMaterial transparent opacity={0} material-side={THREE.FrontSide} />
-      </mesh>
-
-      {/* 2. Floating Thumbnail Image */}
-      <group position={[0, 0.65, 0.01]}>
-        <DreiImage
-          url={project.image}
-          transparent
-          opacity={isHovered || isSelected ? 0.95 : 0.45}
-          scale={[2.0, 1.25]}
-          material-side={THREE.FrontSide}
+      {/* Premium Solid Card Backing */}
+      <RoundedBox args={[cardWidth, cardHeight, 0.1]} radius={0.12} smoothness={4}>
+        <meshStandardMaterial
+          ref={materialRef}
+          color="#080808"
+          roughness={0.4}
+          metalness={0.6}
+          transparent={true}
         />
+      </RoundedBox>
+
+      {/* Subtle Neon Edge Glow for Active Card */}
+      {isSelected && (
+        <RoundedBox args={[cardWidth + 0.06, cardHeight + 0.06, 0.05]} radius={0.14} position={[0, 0, -0.06]}>
+          <meshBasicMaterial color={color} transparent opacity={0.3} />
+        </RoundedBox>
+      )}
+
+      {/* Structured Content Layout */}
+      <group position={[0, 0, 0.06]}>
+
+        {/* 1. Image */}
+        <group position={[0, 1.25, 0]}>
+          <DreiImage
+            url={project.image}
+            transparent
+            scale={[cardWidth - 0.3, imgHeight]}
+            material-side={THREE.FrontSide}
+          />
+        </group>
+
+        {/* Tags removed from card per request, moved to details modal */}
+
+        {/* 3. Title */}
+        <Text
+          ref={(el) => { textRefs.current[3] = el; }}
+          position={[-cardWidth / 2 + 0.25, -0.15, 0]}
+          anchorX="left"
+          anchorY="top"
+          fontSize={0.21}
+          fontWeight="bold"
+          color="#FFFFFF"
+          maxWidth={cardWidth - 0.5}
+          lineHeight={1.15}
+        >
+          {project.title}
+        </Text>
+
+        {/* 4. Description */}
+        <Text
+          ref={(el) => { textRefs.current[4] = el; }}
+          position={[-cardWidth / 2 + 0.25, descY, 0]}
+          anchorX="left"
+          anchorY="top"
+          fontSize={0.13}
+          color="#a3a3a3"
+          maxWidth={cardWidth - 0.5}
+          lineHeight={1.4}
+        >
+          {safeDesc.length > 180 ? safeDesc.slice(0, 180) + "..." : safeDesc}
+        </Text>
+
+        {/* 5. CTA Footer */}
+        <Text
+          ref={(el) => { textRefs.current[5] = el; }}
+          position={[-cardWidth / 2 + 0.25, -2.15, 0]}
+          anchorX="left"
+          anchorY="center"
+          fontSize={0.11}
+          color={isSelected ? "#10B981" : "#555555"}
+        >
+          {isSelected ? "Click to view architectural case study →" : "Click or Drag to navigate"}
+        </Text>
       </group>
-
-      {/* 3. Category Monospace Subheading */}
-      <Text
-        position={[-1.0, -0.2, 0.02]}
-        anchorX="left"
-        fontSize={0.08}
-        color={color}
-        material-side={THREE.FrontSide}
-      >
-        {`// 0${idx + 1}`}
-      </Text>
-
-      {/* 4. Project Title Text */}
-      <Text
-        position={[-1.0, -0.42, 0.02]}
-        anchorX="left"
-        fontSize={0.13}
-        fontWeight="bold"
-        color="#FFFFFF"
-        maxWidth={2.0}
-        material-side={THREE.FrontSide}
-      >
-        {project.title}
-      </Text>
-
-      {/* 5. Outcome-focused Description */}
-      <Text
-        position={[-1.0, -0.85, 0.02]}
-        anchorX="left"
-        fontSize={0.085}
-        color="#a3a3a3"
-        maxWidth={2.0}
-        lineHeight={1.4}
-        material-side={THREE.FrontSide}
-      >
-        {project.description}
-      </Text>
-
-      {/* 6. Tags (Render first two tags) */}
-      <Text
-        position={[-1.0, -1.35, 0.02]}
-        anchorX="left"
-        fontSize={0.075}
-        color={color}
-        maxWidth={2.0}
-        material-side={THREE.FrontSide}
-      >
-        {project.tags.slice(0, 2).join(" · ")}
-      </Text>
-
-      {/* 7. Case Study Action Indicator */}
-      <Text
-        position={[-1.0, -1.52, 0.02]}
-        anchorX="left"
-        fontSize={0.07}
-        color="#EDEDED"
-        material-side={THREE.FrontSide}
-      >
-        {isSelected ? "Active Case Study" : "Click to view case study →"}
-      </Text>
     </group>
   );
 }
 
-// 3D Carousel component containing project card meshes
 function ProjectCarousel3D({
   projects,
   onSelectProject,
   activeNode,
-  setActiveNode
+  setActiveNode,
+  setIsAutoPlaying
 }: {
   projects: Project[];
   onSelectProject: (p: Project) => void;
-  activeNode: number | null;
-  setActiveNode: (n: number | null) => void;
+  activeNode: number;
+  setActiveNode: (n: number) => void;
+  setIsAutoPlaying: (v: boolean) => void;
 }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const [hoveredNode, setHoveredNode] = useState<number | null>(null);
-
-  useFrame((state) => {
-    if (groupRef.current && activeNode === null && hoveredNode === null) {
-      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.12;
-    }
-  });
-
-  const radius = 5.0; // Scaled down carousel radius for perfect visual framing
-
   return (
-    <group ref={groupRef}>
-      {projects.map((project, idx) => {
-        const angle = (idx / projects.length) * Math.PI * 2;
-        const x = Math.sin(angle) * radius;
-        const z = Math.cos(angle) * radius;
-
-        return (
-          <group
-            key={project.id}
-            position={[x, 0, z]}
-            rotation={[0, -angle, 0]}
-          >
-            <WebGLProjectCard
-              project={project}
-              idx={idx}
-              activeNode={activeNode}
-              hoveredNode={hoveredNode}
-              setHoveredNode={setHoveredNode}
-              onClick={() => {
-                setActiveNode(idx);
-                onSelectProject(project);
-              }}
-            />
-          </group>
-        );
-      })}
+    <group>
+      {projects.map((project, idx) => (
+        <WebGLProjectCard
+          key={project.id}
+          project={project}
+          idx={idx}
+          activeNode={activeNode}
+          totalNodes={projects.length}
+          onClick={() => {
+            setIsAutoPlaying(false);
+            if (activeNode === idx) {
+              onSelectProject(project);
+            } else {
+              setActiveNode(idx);
+            }
+          }}
+        />
+      ))}
     </group>
   );
 }
 
 export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [activeNode, setActiveNode] = useState<number | null>(null);
+  const [activeNode, setActiveNode] = useState<number>(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  // High-performance drag tracking variables
+  const dragStartX = useRef<number | null>(null);
+  const SWIPE_THRESHOLD = 80;
 
   const projects = portfolioData.projects as unknown as Project[];
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Auto-Rotation Timer
+  useEffect(() => {
+    if (!isAutoPlaying || selectedProject || isMobile) return;
+
+    const interval = setInterval(() => {
+      setActiveNode((prev) => (prev + 1) % projects.length);
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, selectedProject, projects.length, isMobile]);
+
+  // Global Drag Handlers
+  const handlePointerDown = (e: React.PointerEvent) => {
+    dragStartX.current = e.clientX;
+    setIsAutoPlaying(false);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (dragStartX.current === null) return;
+    const diff = e.clientX - dragStartX.current;
+
+    // Continuous swipe checking
+    if (diff > SWIPE_THRESHOLD) {
+      setActiveNode((prev) => (prev - 1 + projects.length) % projects.length);
+      dragStartX.current = e.clientX; // Reset anchor to allow continuous sliding
+    } else if (diff < -SWIPE_THRESHOLD) {
+      setActiveNode((prev) => (prev + 1) % projects.length);
+      dragStartX.current = e.clientX; // Reset anchor to allow continuous sliding
+    }
+  };
+
+  const handlePointerUp = () => {
+    dragStartX.current = null;
+    setIsAutoPlaying(true);
+  };
 
   return (
     <section id="projects" className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10">
@@ -257,38 +297,59 @@ export default function Projects() {
         </span>
       </div>
 
-      {/* R3F WebGL Spatial Canvas for Desktop / CSS Scroll-Snap for Mobile */}
-      <div className="relative w-full h-[550px] rounded-3xl border border-white/10 bg-[#070707] overflow-hidden flex items-center justify-center">
+      {/* Wrapper Div handles global DOM swipe events so clicking empty space still drags */}
+      <div
+        className="relative w-full h-[650px] rounded-3xl border border-white/5 bg-transparent overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+      >
         {!isMobile ? (
-          <Suspense fallback={
-            <div className="text-xs font-mono text-neutral-400 flex flex-col items-center gap-3">
-              <span className="w-6 h-6 border-2 border-[#10B981] border-t-transparent rounded-full animate-spin"></span>
-              Initializing spatial coordinate grid...
-            </div>
-          }>
-            <Canvas camera={{ position: [0, 0.2, 9], fov: 45 }} className="w-full h-full">
-              <ambientLight intensity={0.4} />
-              <pointLight position={[10, 10, 10]} intensity={0.8} />
-              <ProjectCarousel3D
-                projects={projects}
-                onSelectProject={(p) => setSelectedProject(p)}
-                activeNode={activeNode}
-                setActiveNode={setActiveNode}
-              />
-              <CameraController activeNode={activeNode} projectsCount={projects.length} />
+          <>
+            {/* The Canvas itself ignores global pointer events to prevent conflict */}
+            <Canvas camera={{ position: [0, 0, 8.5], fov: 45 }} className="w-full h-full pointer-events-none">
+              <ambientLight intensity={0.6} />
+              <pointLight position={[10, 10, 10]} intensity={1.2} />
+              {/* Wrapping group restores pointer events specifically for the cards */}
+              <group className="pointer-events-auto">
+                <Suspense fallback={null}>
+                  <ProjectCarousel3D
+                    projects={projects}
+                    onSelectProject={(p) => setSelectedProject(p)}
+                    activeNode={activeNode}
+                    setActiveNode={setActiveNode}
+                    setIsAutoPlaying={setIsAutoPlaying}
+                  />
+                </Suspense>
+              </group>
             </Canvas>
-            <Loader />
-          </Suspense>
+          </>
         ) : (
-          /* Gracefully degraded Mobile CSS Scroll-Snap Container */
-          <div className="w-full h-full flex items-center overflow-x-auto snap-x snap-mandatory px-6 gap-6 hide-scrollbar py-6">
+          <div className="relative w-full h-full flex flex-col items-center justify-center pointer-events-auto">
+            {/* Mobile swipe indicator */}
+            <div className="absolute top-6 flex items-center gap-2 text-[#10B981] text-[10px] font-mono tracking-[0.2em] font-bold animate-pulse z-20 pointer-events-none uppercase">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+              Swipe to explore
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </div>
+
+            <div
+              className="w-full h-full flex items-center overflow-x-auto snap-x snap-mandatory px-6 gap-6 hide-scrollbar pt-12 pb-6 touch-pan-x"
+              onPointerDown={(e) => e.stopPropagation()} // Stop mobile native scroll from conflicting
+            >
             {projects.map((project, idx) => {
-              const color = getGlowColor(project.tags);
+              const safeTags = project.tags || [];
+              const color = getGlowColor(safeTags);
               return (
                 <div
                   key={project.id}
                   onClick={() => setSelectedProject(project)}
-                  className="snap-center shrink-0 w-[280px] h-[420px] rounded-2xl border border-white/10 bg-black/90 p-5 flex flex-col justify-between"
+                  className="snap-center shrink-0 w-[260px] h-[440px] rounded-2xl border border-white/10 bg-[#070707]/90 p-4 flex flex-col justify-between"
                 >
                   <div className="relative w-full h-[180px] rounded-lg overflow-hidden border border-white/5">
                     <Image
@@ -297,6 +358,7 @@ export default function Projects() {
                       fill
                       sizes="250px"
                       className="object-cover opacity-80"
+                      priority={idx < 2}
                     />
                     <div
                       className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold tracking-widest text-black"
@@ -310,36 +372,29 @@ export default function Projects() {
                       <h4 className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">
                         // {project.id.split("-")[0].toUpperCase()}
                       </h4>
-                      <h3 className="text-sm font-bold text-white mt-1 leading-snug line-clamp-1">
+                      <h3 className="text-sm font-bold text-white mt-1 leading-snug line-clamp-2">
                         {project.title}
                       </h3>
                       <p className="text-[11px] text-[#a3a3a3] mt-2 line-clamp-3 leading-relaxed">
                         {project.description}
                       </p>
                     </div>
-                    <div className="flex flex-wrap gap-1 mt-4">
-                      {project.tags.slice(0, 3).map((t) => (
-                        <span key={t} className="text-[9px] font-mono px-2 py-0.5 rounded border border-white/10 text-[#a3a3a3]">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
                   </div>
                 </div>
               );
             })}
+            </div>
           </div>
         )}
       </div>
 
-      {/* SEO & Screen Reader Accessibility Layer */}
       <div className="sr-only">
         {projects.map((project) => (
           <article key={project.id}>
             <h3>{project.title}</h3>
             <p>{project.description}</p>
             <ul>
-              {project.tags.map((tag) => (
+              {(project.tags || []).map((tag) => (
                 <li key={tag}>{tag}</li>
               ))}
             </ul>
@@ -347,43 +402,60 @@ export default function Projects() {
         ))}
       </div>
 
-      {/* ── Project Detail Case Study Modal ── */}
-      <AnimatePresence>
-        {selectedProject && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#0A0A0A]/85 backdrop-blur-md z-[999] flex items-center justify-center p-4 sm:p-6"
-            onClick={() => {
-              setSelectedProject(null);
-              setActiveNode(null);
-            }}
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {selectedProject && (
+            <motion.div
+              key="project-modal"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#0A0A0A]/85 backdrop-blur-md z-[99999] flex items-center justify-center p-4 sm:p-6"
+            onClick={() => setSelectedProject(null)}
           >
             <motion.div
               initial={{ scale: 0.95, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.95, y: 20, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 350 }}
-              className="bg-[#121212] border border-[var(--glass-border)] rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 relative shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col gap-6"
+              className="bg-[#121212] border border-[#262626] rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 relative shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col gap-6 m-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                onClick={() => {
-                  setSelectedProject(null);
-                  setActiveNode(null);
-                }}
-                className="absolute top-5 right-5 text-[#a3a3a3] hover:text-[#EDEDED] transition-colors p-1.5 border border-[#262626] rounded-full hover:border-[#EDEDED]/20 bg-[#0A0A0A]/50 cursor-pointer"
-              >
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
+              <div className="absolute top-5 right-5 flex items-center gap-2 z-20">
+                {selectedProject.github && (
+                  <a href={selectedProject.github} target="_blank" rel="noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#262626] hover:border-[#10B981] text-[10px] uppercase tracking-wider font-bold text-[#EDEDED] bg-[#0A0A0A]/80 hover:bg-[#10b981]/10 backdrop-blur-md transition-all duration-300">
+                    <GithubIcon /> Source
+                  </a>
+                )}
+                {selectedProject.demo && (
+                  <a href={selectedProject.demo} target="_blank" rel="noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#10B981]/80 hover:bg-[#10B981] text-[10px] uppercase tracking-wider font-bold text-[#000000] backdrop-blur-md transition-all duration-300">
+                    Demo ↗
+                  </a>
+                )}
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="text-[#a3a3a3] hover:text-[#ef4444] transition-colors p-1.5 border border-[#262626] rounded-full hover:border-[#ef4444]/20 bg-[#0A0A0A]/80 backdrop-blur-md cursor-pointer ml-1"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
 
               <div>
                 <span className="font-mono text-[10px] text-[#a3a3a3] tracking-widest block uppercase mb-1">PROJECT SPECIFICATIONS</span>
                 <h3 className="text-2xl font-extrabold text-[#EDEDED] tracking-tight">{selectedProject.title}</h3>
+                
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {(selectedProject.tags || []).map((tag) => (
+                    <span key={tag} className="px-2.5 py-1 text-[10px] font-mono text-[#10B981] bg-[#10B981]/10 border border-[#10B981]/20 rounded-md uppercase tracking-widest font-semibold">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               <div className="w-full h-48 sm:h-56 rounded-xl overflow-hidden relative border border-[#262626]/60">
@@ -394,7 +466,6 @@ export default function Projects() {
                   sizes="(max-width: 768px) 95vw, 600px"
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent opacity-60" />
               </div>
 
               <div className="space-y-2">
@@ -405,7 +476,7 @@ export default function Projects() {
               <div className="space-y-2">
                 <h4 className="text-[10px] font-mono text-[#10B981] tracking-widest uppercase font-bold">// ARCHITECTURE & LAYERS</h4>
                 <div className="flex flex-wrap gap-2">
-                  {selectedProject.architecture.map((layer) => (
+                  {(selectedProject.architecture || []).map((layer) => (
                     <span key={layer} className="px-2.5 py-1 text-[11px] font-mono text-[#EDEDED] bg-[#0A0A0A] border border-[#262626] rounded-md">
                       {layer}
                     </span>
@@ -450,24 +521,13 @@ export default function Projects() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-[#262626]/50">
-                {selectedProject.github && (
-                  <a href={selectedProject.github} target="_blank" rel="noreferrer"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#262626] hover:border-[#10B981] text-xs font-bold text-[#EDEDED] bg-[#0A0A0A] hover:bg-[#10b981]/5 transition-all duration-300">
-                    <GithubIcon /> Source Code
-                  </a>
-                )}
-                {selectedProject.demo && (
-                  <a href={selectedProject.demo} target="_blank" rel="noreferrer"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#10B981] hover:bg-[#10b981]/90 text-xs font-bold text-[#000000] transition-all duration-300">
-                    Live Demo ↗
-                  </a>
-                )}
-              </div>
+
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </section>
   );
 }

@@ -93,62 +93,6 @@ export default function SocialProof() {
           </motion.div>
         ))}
       </div>
-
-      {/* Testimonial — frameless editorial quote, centered */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.2 }}
-        className="relative flex flex-col items-center text-center py-10 px-4"
-      >
-        {/* Giant decorative quote mark — faint, centered behind */}
-        <span
-          className="absolute top-0 left-1/2 -translate-x-1/2 font-serif leading-none select-none pointer-events-none"
-          aria-hidden="true"
-          style={{
-            fontSize: "clamp(200px, 30vw, 320px)",
-            color: "#10B981",
-            opacity: 0.04,
-            lineHeight: 1,
-            top: "-40px",
-          }}
-        >
-          &ldquo;
-        </span>
-
-        {/* Stars */}
-        <div className="flex gap-1.5 mb-8 relative z-10" aria-label="5 star rating">
-          {[...Array(5)].map((_, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 + i * 0.07 }}
-              className="text-amber-400 text-lg"
-            >
-              ★
-            </motion.span>
-          ))}
-        </div>
-
-        {/* Quote text */}
-        <blockquote className="relative z-10 text-[#d4d4d4] text-base md:text-xl leading-[1.9] italic max-w-3xl font-light tracking-wide mb-10">
-          &ldquo;{testimonial.quote}&rdquo;
-        </blockquote>
-
-        {/* Thin divider */}
-        <div className="w-10 h-[1px] bg-[#10B981] opacity-50 mb-6" />
-
-        {/* Attribution */}
-        <div className="relative z-10 flex flex-col items-center gap-1">
-          <p className="text-sm font-bold text-[#EDEDED] tracking-wide">{testimonial.name}</p>
-          <p className="text-[11px] font-mono text-[#a3a3a3]">
-            {testimonial.role} &middot; {testimonial.org}
-          </p>
-        </div>
-      </motion.div>
     </section>
   );
 }
