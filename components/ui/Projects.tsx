@@ -500,9 +500,10 @@ export default function Projects() {
                   <Image
                     src={selectedProject.image}
                     alt={selectedProject.title}
-                    fill
-                    sizes="(max-width: 768px) 95vw, 600px"
-                    className="object-cover"
+                    width={600}
+                    height={224}
+                    className="object-cover w-full h-full"
+                    priority
                   />
                 </div>
 
