@@ -175,7 +175,7 @@ function WebGLProjectCard({
           ref={(el) => { textRefs.current[5] = el; }}
           position={[-cardWidth / 2 + 0.25, -2.15, 0]}
           anchorX="left"
-          anchorY="center"
+          anchorY="middle"
           fontSize={0.11}
           color={isSelected ? "#10B981" : "#555555"}
         >
@@ -312,7 +312,7 @@ export default function Projects() {
               <ambientLight intensity={0.6} />
               <pointLight position={[10, 10, 10]} intensity={1.2} />
               {/* Wrapping group restores pointer events specifically for the cards */}
-              <group className="pointer-events-auto">
+              <group>
                 <Suspense fallback={null}>
                   <ProjectCarousel3D
                     projects={projects}
