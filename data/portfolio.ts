@@ -46,7 +46,7 @@ export const portfolioData = {
       tags: ["Next.js", "AI (RAG)", "Three.js (WebGL)", "Framer Motion", "GSAP"],
       image: "/ai_portfolio_cover.png",
       github: "https://github.com/Hammad-Solutions/Portfolio",
-      demo: "https://hammad-solutions-portfolio.vercel.app",
+      demo: "https://hammadsolutions.vercel.app",
       architecture: ["Next.js (App Router)", "Tailwind CSS & CSS Modules", "Three.js & React Three Fiber (R3F)", "Framer Motion & GSAP", "Vector Embeddings & RAG Engine"],
       challenges: "Implementing an interactive 3D particle skills globe with HTML overlays that stays performant on low-end mobile devices and doesn't block scroll snapping.",
       solutions: "Created a visibility-aware render pipeline using IntersectionObserver that completely pauses the 3D physics loop and style updates when scrolled off-screen.",

@@ -355,9 +355,9 @@ export default function Projects() {
                     <Image
                       src={project.image}
                       alt={project.title}
-                      fill
-                      sizes="250px"
-                      className="object-cover opacity-80"
+                      width={228}
+                      height={180}
+                      className="object-cover opacity-80 w-full h-full"
                       priority={idx < 2}
                     />
                     <div

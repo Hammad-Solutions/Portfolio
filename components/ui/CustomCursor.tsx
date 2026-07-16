@@ -4,83 +4,59 @@ import React, { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function CustomCursor() {
-  const [cursorState, setCursorState] = useState<"default" | "hover">("default");
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
-
-  // Mouse position
+  const [isDesktop, setIsDesktop] = useState(false);
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Smooth springs for cursor outer ring
-  const springConfig = { damping: 28, stiffness: 350, mass: 0.5 };
+  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    // Detect touch device
-    const checkTouch = () => {
-      setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
-    };
-    checkTouch();
-    
-    if (isTouchDevice) return;
-    
-    document.body.classList.add("cursor-hidden");
-
-    const moveCursor = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
+    // Check if device is desktop by screen width and touch capability
+    const handleResize = () => {
+      const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      setIsDesktop(window.innerWidth >= 768 && !isTouch);
     };
 
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target) return;
-      
-      const tagName = target.tagName.toLowerCase();
-      const isInteractive = 
-        tagName === 'a' || 
-        tagName === 'button' || 
-        target.closest('a') || 
-        target.closest('button') || 
-        window.getComputedStyle(target).cursor === 'pointer';
-        
-      if (isInteractive) {
-        setCursorState("hover");
-      } else {
-        setCursorState("default");
-      }
-    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
 
-    window.addEventListener("mousemove", moveCursor);
-    window.addEventListener("mouseover", handleMouseOver);
+    if (isDesktop) {
+      document.documentElement.style.cursor = "none";
+      const moveCursor = (e: MouseEvent) => {
+        mouseX.set(e.clientX);
+        mouseY.set(e.clientY);
+      };
+      window.addEventListener("mousemove", moveCursor);
 
-    return () => {
-      document.body.classList.remove("cursor-hidden");
-      window.removeEventListener("mousemove", moveCursor);
-      window.removeEventListener("mouseover", handleMouseOver);
-    };
-  }, [mouseX, mouseY, isTouchDevice]);
+      return () => {
+        document.documentElement.style.cursor = "auto";
+        window.removeEventListener("mousemove", moveCursor);
+      };
+    }
+  }, [isDesktop, mouseX, mouseY]);
 
-  if (isTouchDevice) return null;
+  // If mobile/tablet, do not render anything
+  if (!isDesktop) return null;
 
   return (
     <motion.div
-      className="fixed top-0 left-0 pointer-events-none z-[9999] flex items-center justify-center pointer-events-none"
-      style={{ x: cursorX, y: cursorY }}
+      className="fixed top-0 left-0 z-[9999] pointer-events-none flex items-center justify-center"
+      style={{
+        x: cursorX,
+        y: cursorY,
+        translateX: "-50%",
+        translateY: "-50%"
+      }}
     >
       <motion.div
-        animate={{
-          width: cursorState === "hover" ? 54 : 8,
-          height: cursorState === "hover" ? 54 : 8,
-          x: cursorState === "hover" ? -27 : -4,
-          y: cursorState === "hover" ? -27 : -4,
-          backgroundColor: "rgba(255, 255, 255, 1)",
-        }}
+        className="rounded-full bg-white"
         style={{
+          width: 16, // Adjusted to your preferred size
+          height: 16,
           mixBlendMode: "difference",
         }}
-        transition={{ type: "spring", stiffness: 350, damping: 25, mass: 0.5 }}
-        className="absolute rounded-full origin-center"
       />
     </motion.div>
   );
