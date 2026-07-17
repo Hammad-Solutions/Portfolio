@@ -43,7 +43,7 @@ export default function FloatingCTA() {
           style={{ willChange: "transform" }}
         >
           <a
-            href="mailto:m6784104@gmail.com?subject=Project%20Inquiry%20-%20Muhammad%20Hammad"
+            href="mailto:hammadsolutions.support@gmail.com?subject=Project%20Inquiry%20-%20Muhammad%20Hammad"
             className="block"
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}

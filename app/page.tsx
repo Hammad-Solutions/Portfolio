@@ -793,7 +793,7 @@ export default function Home() {
                         </motion.a>
 
                         <motion.a
-                          href="mailto:m6784104@gmail.com"
+                          href="hammadsolutions.support@gmail.com"
                           whileHover={{ borderColor: "#10B981", color: "#10B981", boxShadow: "0 0 10px rgba(16,185,129,0.2)" }}
                           className={styles.socialIcon}
                           style={{ width: "2.5rem", height: "2.5rem" }}
@@ -942,7 +942,7 @@ export default function Home() {
                     {[
                       { href: "https://github.com/Hammad-Solutions", label: "GitHub", color: "#10B981" },
                       { href: "https://linkedin.com/in/hammad-solution", label: "LinkedIn", color: "#A855F7" },
-                      { href: "mailto:m6784104@gmail.com", label: "Email", color: "#3B82F6" },
+                      { href: "hammadsolutions.support@gmail.com", label: "Email", color: "#3B82F6" },
                     ].map((s) => (
                       <a
                         key={s.label}
@@ -988,10 +988,10 @@ export default function Home() {
                       Currently accepting selective client engagements and consulting.
                     </p>
                     <a
-                      href="mailto:m6784104@gmail.com"
+                      href="hammadsolutions.support@gmail.com"
                       className="text-[11px] font-mono text-[#EDEDED] hover:text-[#10B981] transition-colors duration-300 underline underline-offset-2"
                     >
-                      m6784104@gmail.com
+                      hammadsolutions.support@gmail.com
                     </a>
                   </div>
                 </div>

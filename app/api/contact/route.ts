@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
     const { error } = await resend.emails.send({
       from: "Portfolio Contact <onboarding@resend.dev>",   // free Resend sender (no domain needed)
-      to: ["m6784104@gmail.com"],
+      to: ["hammadsolutions.support@gmail.com"],
       replyTo: email,
       subject: `New Message from ${name} via Portfolio`,
       html: `
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
             <div style="padding: 16px; background-color: #f9fafb; border-left: 4px solid #10B981; border-radius: 6px; font-size: 14px; color: #374151; white-space: pre-wrap; line-height: 1.5; margin: 0;">${message}</div>
           </div>
           <div style="text-align: center; font-size: 11px; color: #9ca3af; border-top: 1px solid #f3f4f6; padding-top: 16px; margin-top: 32px;">
-            Sent from your portfolio contact form at <strong>m6784104@gmail.com</strong>
+            Sent from your portfolio contact form at <strong>hammadsolutions.support@gmail.com</strong>
           </div>
         </div>
       `,

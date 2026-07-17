@@ -44,14 +44,14 @@ function SuccessParticle({ x, y, color, delay }: ParticleProps) {
 }
 
 const PARTICLES = [
-  { x: 60,  y: -60,  color: "#10B981", delay: 0 },
-  { x: -55, y: -55,  color: "#14B8A6", delay: 0.04 },
-  { x: 70,  y: 20,   color: "#10B981", delay: 0.08 },
-  { x: -70, y: 25,   color: "#A855F7", delay: 0.02 },
-  { x: 20,  y: -75,  color: "#3B82F6", delay: 0.06 },
-  { x: -25, y: -70,  color: "#10B981", delay: 0.1 },
-  { x: 45,  y: 65,   color: "#14B8A6", delay: 0.05 },
-  { x: -50, y: 60,   color: "#3B82F6", delay: 0.03 },
+  { x: 60, y: -60, color: "#10B981", delay: 0 },
+  { x: -55, y: -55, color: "#14B8A6", delay: 0.04 },
+  { x: 70, y: 20, color: "#10B981", delay: 0.08 },
+  { x: -70, y: 25, color: "#A855F7", delay: 0.02 },
+  { x: 20, y: -75, color: "#3B82F6", delay: 0.06 },
+  { x: -25, y: -70, color: "#10B981", delay: 0.1 },
+  { x: 45, y: 65, color: "#14B8A6", delay: 0.05 },
+  { x: -50, y: 60, color: "#3B82F6", delay: 0.03 },
 ];
 
 export default function Contact() {
@@ -64,7 +64,7 @@ export default function Contact() {
     e.preventDefault();
     setStatus("sending");
     setErrorMessage("");
-    
+
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -98,7 +98,7 @@ export default function Contact() {
   return (
     <section id="contact" className="py-16 px-6 md:px-12 max-w-5xl mx-auto relative z-10">
       <div className="text-center mb-12">
-        <motion.span 
+        <motion.span
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -106,7 +106,7 @@ export default function Contact() {
         >
           04 // ACQUISITION
         </motion.span>
-        <motion.h2 
+        <motion.h2
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -119,7 +119,7 @@ export default function Contact() {
         </p>
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 40, scale: 0.98 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -195,21 +195,20 @@ export default function Contact() {
                 type="submit"
                 id="contact-submit-btn"
                 disabled={status === "sending" || status === "success"}
-                whileHover={status === "idle" || status === "error" ? { 
-                  y: -2, 
-                  scale: 1.02, 
-                  boxShadow: status === "error" 
-                    ? "0 0 25px rgba(239,68,68,0.3)" 
-                    : "0 0 30px rgba(16,185,129,0.4)" 
+                whileHover={status === "idle" || status === "error" ? {
+                  y: -2,
+                  scale: 1.02,
+                  boxShadow: status === "error"
+                    ? "0 0 25px rgba(239,68,68,0.3)"
+                    : "0 0 30px rgba(16,185,129,0.4)"
                 } : {}}
                 whileTap={status === "idle" || status === "error" ? { scale: 0.98 } : {}}
-                className={`px-10 py-4 font-bold text-sm rounded-full tracking-wide transition-all duration-300 shadow-md w-full sm:w-auto ${
-                  status === "error"
+                className={`px-10 py-4 font-bold text-sm rounded-full tracking-wide transition-all duration-300 shadow-md w-full sm:w-auto ${status === "error"
                     ? "bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500/30 cursor-pointer"
                     : status === "success"
-                    ? "bg-[var(--accent-emerald)]/80 text-[var(--bg-midnight)] cursor-default"
-                    : "bg-[var(--accent-emerald)] hover:bg-[#0ea5e9]/10 hover:text-[var(--accent-emerald)] disabled:bg-[var(--accent-emerald)]/40 text-[var(--bg-midnight)] cursor-pointer"
-                }`}
+                      ? "bg-[var(--accent-emerald)]/80 text-[var(--bg-midnight)] cursor-default"
+                      : "bg-[var(--accent-emerald)] hover:bg-[#0ea5e9]/10 hover:text-[var(--accent-emerald)] disabled:bg-[var(--accent-emerald)]/40 text-[var(--bg-midnight)] cursor-pointer"
+                  }`}
               >
                 {status === "idle" && "Send Message"}
                 {status === "sending" && "Processing..."}
@@ -254,8 +253,8 @@ export default function Contact() {
             href="https://github.com/Hammad-Solutions"
             target="_blank"
             rel="noreferrer"
-            whileHover={{ 
-              borderColor: "#10B981", 
+            whileHover={{
+              borderColor: "#10B981",
               color: "#10B981",
               boxShadow: "0 0 16px rgba(16,185,129,0.3)"
             }}
@@ -269,8 +268,8 @@ export default function Contact() {
             href="https://linkedin.com/in/hammad-solution"
             target="_blank"
             rel="noreferrer"
-            whileHover={{ 
-              borderColor: "#C084FC", 
+            whileHover={{
+              borderColor: "#C084FC",
               color: "#C084FC",
               boxShadow: "0 0 16px rgba(192,132,252,0.3)"
             }}
@@ -281,9 +280,9 @@ export default function Contact() {
           </motion.a>
 
           <motion.a
-            href="mailto:m6784104@gmail.com"
-            whileHover={{ 
-              borderColor: "#10B981", 
+            href="mailto:hammadsolutions.support@gmail.com"
+            whileHover={{
+              borderColor: "#10B981",
               color: "#10B981",
               boxShadow: "0 0 16px rgba(16,185,129,0.3)"
             }}
@@ -295,7 +294,7 @@ export default function Contact() {
 
           {/* Email text */}
           <span className="text-xs font-mono text-[var(--text-muted)] hidden sm:inline">
-            m6784104@gmail.com
+            hammadsolutions.support@gmail.com
           </span>
         </div>
       </motion.div>
