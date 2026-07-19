@@ -17,17 +17,17 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://hammad-solutions-portfolio.vercel.app"),
-  title: "Muhammad Hammad | Full-Stack Developer & AI Engineer",
+  metadataBase: new URL("https://hammadsolutions.vercel.app"),
+  title: "Muhammad Hammad | Full-Stack Software Engineer",
   description:
-    "I turn complex problems into products users love — shipped fast, built to scale. Full-stack developer specializing in React.js, Next.js, Node.js, and AI-integrated applications.",
+    "Full-Stack Software Engineer specializing in React.js, Next.js, Node.js, and C++ systems architecture. Building high-performance web applications and scalable software.",
   keywords: [
     "Muhammad Hammad",
     "Full-Stack Developer",
     "React Developer",
     "Next.js Engineer",
     "Node.js",
-    "AI Engineer",
+    "C++ Developer",
     "Portfolio",
     "Pakistan",
     "Air University Islamabad",
@@ -38,26 +38,26 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://hammad-solutions-portfolio.vercel.app",
-    title: "Muhammad Hammad | Full-Stack Developer & AI Engineer",
+    url: "https://hammadsolutions.vercel.app",
+    title: "Muhammad Hammad | Full-Stack Software Engineer",
     description:
-      "I turn complex problems into products users love — shipped fast, built to scale. 15+ shipped projects in React, Next.js, Node.js & AI.",
+      "Full-Stack Software Engineer specializing in React.js, Next.js, Node.js, and C++ systems architecture.",
     siteName: "Muhammad Hammad Portfolio",
     images: [
       {
-        url: "/og-image.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Muhammad Hammad — Full-Stack Developer & AI Engineer",
+        alt: "Muhammad Hammad — Full-Stack Software Engineer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Muhammad Hammad | Full-Stack Developer & AI Engineer",
+    title: "Muhammad Hammad | Full-Stack Software Engineer",
     description:
-      "Full-stack dev shipping React, Next.js & AI-powered apps. 15+ projects. Open to work.",
-    images: ["/og-image.png"],
+      "Full-Stack Software Engineer specializing in React.js, Next.js, Node.js, and C++ systems architecture.",
+    images: ["/opengraph-image"],
     creator: "@hammad_solutions",
   },
   robots: {
