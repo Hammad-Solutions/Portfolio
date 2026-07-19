@@ -18,47 +18,60 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://hammadsolutions.vercel.app"),
-  title: "Muhammad Hammad | Full-Stack Software Engineer",
+  title: {
+    default: "Muhammad Hammad | AI Integration Specialist & Full-Stack Next.js Developer",
+    template: "%s | Muhammad Hammad",
+  },
   description:
-    "Full-Stack Software Engineer specializing in React.js, Next.js, Node.js, and C++ systems architecture. Building high-performance web applications and scalable software.",
+    "Full-Stack Software Engineer & AI Integration Specialist in Islamabad, Pakistan. Specializing in Next.js, React, Agentic AI, Node.js, C++, Supabase, and real-time systems architecture.",
   keywords: [
     "Muhammad Hammad",
+    "AI Integration Specialist",
     "Full-Stack Developer",
+    "Next.js Developer",
     "React Developer",
-    "Next.js Engineer",
+    "Agentic AI",
     "Node.js",
-    "C++ Developer",
-    "Portfolio",
+    "C++",
+    "Supabase",
+    "Tailwind CSS",
+    "Islamabad",
     "Pakistan",
     "Air University Islamabad",
     "Software Engineering",
   ],
   authors: [{ name: "Muhammad Hammad" }],
   creator: "Muhammad Hammad",
+  alternates: {
+    canonical: "https://hammadsolutions.vercel.app",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://hammadsolutions.vercel.app",
-    title: "Muhammad Hammad | Full-Stack Software Engineer",
+    title: "Muhammad Hammad | AI Integration Specialist & Full-Stack Next.js Developer",
     description:
-      "Full-Stack Software Engineer specializing in React.js, Next.js, Node.js, and C++ systems architecture.",
+      "Full-Stack Software Engineer & AI Integration Specialist specializing in Next.js, React, Agentic AI, Node.js, C++, Supabase, and real-time systems.",
     siteName: "Muhammad Hammad Portfolio",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Muhammad Hammad — Full-Stack Software Engineer",
+        alt: "Muhammad Hammad — AI Integration Specialist & Full-Stack Next.js Developer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Muhammad Hammad | Full-Stack Software Engineer",
+    title: "Muhammad Hammad | AI Integration Specialist & Full-Stack Next.js Developer",
     description:
-      "Full-Stack Software Engineer specializing in React.js, Next.js, Node.js, and C++ systems architecture.",
+      "Full-Stack Software Engineer & AI Integration Specialist specializing in Next.js, React, Agentic AI, Node.js, C++, Supabase, and real-time systems.",
     images: ["/opengraph-image"],
     creator: "@hammad_solutions",
+  },
+  verification: {
+    google: "googlec6785102920bcca9.html",
   },
   robots: {
     index: true,
@@ -85,27 +98,30 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "Muhammad Hammad",
-    "jobTitle": "Full-Stack Software Engineer — Systems & AI",
-    "url": "https://hammad-solutions-portfolio.vercel.app",
+    "jobTitle": "AI Integration Specialist & Full-Stack Next.js Developer",
+    "url": "https://hammadsolutions.vercel.app",
     "sameAs": [
       "https://github.com/Hammad-Solutions",
       "https://linkedin.com/in/hammad-solution"
     ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Islamabad",
+      "addressCountry": "Pakistan"
+    },
     "alumniOf": {
       "@type": "EducationalOrganization",
       "name": "Air University Islamabad"
     },
     "knowsAbout": [
-      "React.js",
       "Next.js",
-      "TypeScript",
+      "React",
+      "Agentic AI",
       "Node.js",
       "C++",
-      "Artificial Intelligence",
-      "Retrieval-Augmented Generation (RAG)",
-      "WebGL",
-      "Software Architecture",
-      "SOLID Principles"
+      "Supabase",
+      "Tailwind CSS",
+      "Systems Architecture"
     ],
     "email": "mailto:hammadsolutions.support@gmail.com"
   };
