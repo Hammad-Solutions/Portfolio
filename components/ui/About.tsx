@@ -172,7 +172,7 @@ export default function About() {
             viewport={{ once: true }}
             className="text-4xl font-extrabold tracking-tight mb-6 text-[var(--text-primary)]"
           >
-            About Me
+            Technical Expertise &amp; Systems Architecture
           </motion.h2>
 
           {/* Interactive Navigation Tab switch */}

@@ -134,7 +134,7 @@ export default function Contact() {
           viewport={{ once: true }}
           className="text-4xl font-extrabold tracking-tight mb-4 text-[var(--text-primary)]"
         >
-          Get In Touch
+          Technical Collaboration &amp; Engineering Contact
         </motion.h2>
         <p className="text-[var(--text-secondary)] text-sm md:text-base max-w-md mx-auto">
           Have a project in mind or want to collaborate? Drop me a message and let's build something exceptional.

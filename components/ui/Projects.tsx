@@ -324,7 +324,7 @@ export default function Projects() {
 
       <div className="flex items-center gap-6 mb-12">
         <h2 className="text-4xl font-extrabold tracking-tight shrink-0 text-[var(--text-primary)]">
-          Featured Projects
+          Engineered Systems &amp; Software Projects
         </h2>
         <span className="font-mono text-[var(--text-secondary)] text-sm font-semibold tracking-wider shrink-0">
           ({projects.length})
@@ -468,18 +468,21 @@ export default function Projects() {
                 <div className="absolute top-5 right-5 flex items-center gap-2 z-20">
                   {selectedProject.github && (
                     <a href={selectedProject.github} target="_blank" rel="noreferrer"
+                      aria-label={`View ${selectedProject.title} repository source code on GitHub`}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#262626] hover:border-[#10B981] text-[10px] uppercase tracking-wider font-bold text-[#EDEDED] bg-[#0A0A0A]/80 hover:bg-[#10b981]/10 backdrop-blur-md transition-all duration-300">
                       <GithubIcon /> Source
                     </a>
                   )}
                   {selectedProject.demo && (
                     <a href={selectedProject.demo} target="_blank" rel="noreferrer"
+                      aria-label={`Launch live demo of ${selectedProject.title} application`}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#10B981]/80 hover:bg-[#10B981] text-[10px] uppercase tracking-wider font-bold text-[#000000] backdrop-blur-md transition-all duration-300">
                       Demo ↗
                     </a>
                   )}
                   <button
                     onClick={() => setSelectedProject(null)}
+                    aria-label="Close project modal specification dialog"
                     className="text-[#a3a3a3] hover:text-[#ef4444] transition-colors p-1.5 border border-[#262626] rounded-full hover:border-[#ef4444]/20 bg-[#0A0A0A]/80 backdrop-blur-md cursor-pointer ml-1"
                   >
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none">
@@ -505,11 +508,11 @@ export default function Projects() {
                 <div className="w-full h-48 sm:h-56 rounded-xl overflow-hidden relative border border-[#262626]/60">
                   <Image
                     src={selectedProject.image}
-                    alt={selectedProject.title}
+                    alt={`Architecture preview and layout of ${selectedProject.title} built with ${(selectedProject.tags || []).join(", ")}`}
                     width={600}
                     height={224}
                     className="object-cover w-full h-full"
-                    priority
+                    loading="lazy"
                   />
                 </div>
 

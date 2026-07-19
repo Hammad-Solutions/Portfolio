@@ -208,7 +208,8 @@ function HeroAvatar() {
       {!useFallback ? (
         <img
           src={imgSrc}
-          alt="Muhammad Hammad"
+          alt="Muhammad Hammad — Next.js & React Developer | Agentic AI Specialist"
+          fetchPriority="high"
           onError={handleError}
           className={styles.profilePhotoImg}
           style={{
