@@ -1,6 +1,6 @@
-# 🌌 Agent OS: Next-Gen Developer Portfolio & AI Interface
+# 🌌 Hammad AI Concierge: Next-Gen Developer Portfolio & AI Interface
 
-An immersive, high-class interactive developer portfolio I built to showcase my projects, skills, and professional experience as a Software Engineering student and developer. The application features a hybrid visual-terminal interface powered by advanced WebGL canvas animations and includes an embedded NLP RAG AI Assistant that acts as my digital support agent.
+An immersive, high-class interactive developer portfolio built to showcase projects, skills, and professional experience as a Software Engineering student and systems developer. The application features a hybrid visual-terminal interface powered by advanced WebGL canvas animations and includes an embedded NLP RAG AI Assistant ("Hammad AI Concierge") that acts as a digital technical support agent.
 
 ---
 
@@ -9,7 +9,7 @@ An immersive, high-class interactive developer portfolio I built to showcase my 
 - **🎮 Dual-Interface System**:
   - **Visual Mode**: A premium, sleek glassmorphic modern UI with smooth GSAP animations, fluid transitions, and responsive grid layouts.
   - **Hacker Terminal Mode**: A fully interactive, retro-futuristic command-line interface (CLI). Execute commands like `help`, `about`, `projects`, `clear`, and interact directly with the file structure.
-- **🤖 Embedded RAG AI Assistant ("Agent OS")**:
+- **🤖 Embedded RAG AI Assistant ("Hammad AI Concierge")**:
   - Powered by **Groq Cloud (Llama-3.1-8b-instant)**.
   - Uses localized Retrieval-Augmented Generation (RAG) constraints to answer questions strictly about Hammad's skills, qualifications, project repository links, and availability.
   - Hardened with system-instruction injection guards to prevent prompt-injection and general-purpose LLM overrides.

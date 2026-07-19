@@ -49,12 +49,11 @@ function WebGLProjectCard({
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
   const textRefs = useRef<any[]>([]);
 
-  const cardWidth = 3.2;
-  const cardHeight = 5.0;
-  const imgHeight = 2.2;
+  const cardWidth = 3.6;
+  const cardHeight = 5.5;
+  const imgHeight = 3.0;
 
   const isMultiLineTitle = project.title.length > 22;
-  const descY = isMultiLineTitle ? -0.85 : -0.60;
 
   const isSelected = activeNode === idx;
 
@@ -124,63 +123,71 @@ function WebGLProjectCard({
 
       {/* Subtle Neon Edge Glow for Active Card */}
       {isSelected && (
-        <RoundedBox args={[cardWidth + 0.06, cardHeight + 0.06, 0.05]} radius={0.14} position={[0, 0, -0.06]}>
-          <meshBasicMaterial color={color} transparent opacity={0.3} />
+        <RoundedBox args={[cardWidth + 0.08, cardHeight + 0.08, 0.05]} radius={0.14} position={[0, 0, -0.06]}>
+          <meshBasicMaterial color={color} transparent opacity={0.35} />
         </RoundedBox>
       )}
 
       {/* Structured Content Layout */}
       <group position={[0, 0, 0.06]}>
 
-        {/* 1. Image */}
-        <group position={[0, 1.25, 0]}>
+        {/* 1. Image (Proportionally centered in top half of card) */}
+        <group position={[0, 1.02, 0]}>
           <DreiImage
             url={project.image}
             transparent
-            scale={[cardWidth - 0.3, imgHeight]}
+            radius={0.08}
+            scale={[cardWidth - 0.4, imgHeight]}
             material-side={THREE.FrontSide}
           />
         </group>
 
-        {/* Tags removed from card per request, moved to details modal */}
-
-        {/* 3. Title */}
+        {/* 2. Title */}
         <Text
           ref={(el) => { textRefs.current[3] = el; }}
-          position={[-cardWidth / 2 + 0.25, -0.15, 0]}
+          position={[-cardWidth / 2 + 0.3, -0.64, 0]}
           anchorX="left"
           anchorY="top"
-          fontSize={0.21}
+          fontSize={0.24}
           fontWeight="bold"
-          color="#FFFFFF"
-          maxWidth={cardWidth - 0.5}
-          lineHeight={1.15}
+          letterSpacing={-0.02}
+          color="#F8FAFC"
+          maxWidth={cardWidth - 0.6}
+          lineHeight={1.2}
         >
           {project.title}
         </Text>
 
-        {/* 4. Description */}
+        {/* Decorative Divider Line */}
+        <mesh position={[0, isMultiLineTitle ? -1.24 : -0.98, 0]}>
+          <planeGeometry args={[cardWidth - 0.6, 0.015]} />
+          <meshBasicMaterial color={isSelected ? color : "#333333"} transparent opacity={0.5} />
+        </mesh>
+
+        {/* 3. Description */}
         <Text
           ref={(el) => { textRefs.current[4] = el; }}
-          position={[-cardWidth / 2 + 0.25, descY, 0]}
+          position={[-cardWidth / 2 + 0.3, isMultiLineTitle ? -1.36 : -1.10, 0]}
           anchorX="left"
           anchorY="top"
-          fontSize={0.13}
-          color="#a3a3a3"
-          maxWidth={cardWidth - 0.5}
-          lineHeight={1.4}
+          fontSize={0.135}
+          letterSpacing={0.01}
+          color="#94A3B8"
+          maxWidth={cardWidth - 0.6}
+          lineHeight={1.45}
         >
-          {safeDesc.length > 180 ? safeDesc.slice(0, 180) + "..." : safeDesc}
+          {safeDesc.length > 170 ? safeDesc.slice(0, 170) + "..." : safeDesc}
         </Text>
 
-        {/* 5. CTA Footer */}
+        {/* 4. CTA Footer */}
         <Text
           ref={(el) => { textRefs.current[5] = el; }}
-          position={[-cardWidth / 2 + 0.25, -2.15, 0]}
+          position={[-cardWidth / 2 + 0.3, -2.42, 0]}
           anchorX="left"
           anchorY="middle"
-          fontSize={0.11}
-          color={isSelected ? "#10B981" : "#555555"}
+          fontSize={0.125}
+          letterSpacing={0.02}
+          color={isSelected ? color : "#6B7280"}
         >
           {isSelected ? "Click to view architectural case study →" : "Click or Drag to navigate"}
         </Text>
@@ -303,7 +310,7 @@ export default function Projects() {
   };
 
   return (
-    <section id="projects" className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10">
+    <section id="projects" className="py-12 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10">
       <motion.span
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Layers, Gauge, GitBranch, Cpu } from "lucide-react";
+import SystemArchitectureVisualizer from "./SystemArchitectureVisualizer";
+import EngineeringTelemetry from "./EngineeringTelemetry";
 
 const containerVariants = {
   hidden: {},
@@ -151,7 +153,7 @@ export default function About() {
   const [activeTab, setActiveTab] = useState<"story" | "timeline">("story");
 
   return (
-    <section id="about" className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 bg-transparent">
+    <section id="about" className="py-12 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 bg-transparent">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
         {/* Left column: Text Content / Tabs */}
@@ -315,6 +317,11 @@ export default function About() {
           ))}
         </motion.div>
 
+      </div>
+
+      {/* Interactive System Architecture Explorer */}
+      <div className="mt-10">
+        <SystemArchitectureVisualizer />
       </div>
     </section>
   );

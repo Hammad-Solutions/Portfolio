@@ -81,12 +81,47 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Muhammad Hammad",
+    "jobTitle": "Full-Stack Software Engineer — Systems & AI",
+    "url": "https://hammad-solutions-portfolio.vercel.app",
+    "sameAs": [
+      "https://github.com/Hammad-Solutions",
+      "https://linkedin.com/in/hammad-solution"
+    ],
+    "alumniOf": {
+      "@type": "EducationalOrganization",
+      "name": "Air University Islamabad"
+    },
+    "knowsAbout": [
+      "React.js",
+      "Next.js",
+      "TypeScript",
+      "Node.js",
+      "C++",
+      "Artificial Intelligence",
+      "Retrieval-Augmented Generation (RAG)",
+      "WebGL",
+      "Software Architecture",
+      "SOLID Principles"
+    ],
+    "email": "mailto:hammadsolutions.support@gmail.com"
+  };
+
   return (
     <html
       lang="en"
       className={`${plusJakarta.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

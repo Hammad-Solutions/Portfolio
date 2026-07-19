@@ -23,6 +23,14 @@ const MailIcon = () => (
   </svg>
 );
 
+const DownloadIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+    <polyline points="7 10 12 15 17 10"></polyline>
+    <line x1="12" y1="15" x2="12" y2="3"></line>
+  </svg>
+);
+
 // Particle component for success burst
 interface ParticleProps {
   x: number;
@@ -59,6 +67,20 @@ export default function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [showParticles, setShowParticles] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleCopyEmail = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    const email = "hammadsolutions.support@gmail.com";
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(email);
+    }
+    setToastMessage("Email copied to clipboard! 📋");
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+    window.location.href = `mailto:${email}?subject=Project%20Inquiry%20-%20Muhammad%20Hammad`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +118,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-16 px-6 md:px-12 max-w-5xl mx-auto relative z-10">
+    <section id="contact" className="py-12 px-6 md:px-12 max-w-5xl mx-auto relative z-10">
       <div className="text-center mb-12">
         <motion.span
           initial={{ opacity: 0, y: 10 }}
@@ -281,23 +303,62 @@ export default function Contact() {
 
           <motion.a
             href="mailto:hammadsolutions.support@gmail.com"
+            onClick={handleCopyEmail}
             whileHover={{
               borderColor: "#10B981",
               color: "#10B981",
               boxShadow: "0 0 16px rgba(16,185,129,0.3)"
             }}
-            className="w-11 h-11 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-[var(--text-secondary)] transition-all duration-300"
+            className="w-11 h-11 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-[var(--text-secondary)] transition-all duration-300 cursor-pointer"
             aria-label="Email"
+            title="Click to copy email address"
           >
             <MailIcon />
           </motion.a>
 
+          <motion.a
+            href="/Muhammad_Hammad_Resume.docx"
+            download="Muhammad_Hammad_Resume.docx"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{
+              borderColor: "#3B82F6",
+              color: "#3B82F6",
+              boxShadow: "0 0 16px rgba(59,130,246,0.3)"
+            }}
+            className="w-11 h-11 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-[var(--text-secondary)] transition-all duration-300"
+            aria-label="Download Resume"
+            title="Download CV / Resume"
+          >
+            <DownloadIcon />
+          </motion.a>
+
           {/* Email text */}
-          <span className="text-xs font-mono text-[var(--text-muted)] hidden sm:inline">
+          <span
+            onClick={handleCopyEmail}
+            className="text-xs font-mono text-[var(--text-muted)] hidden sm:inline cursor-pointer hover:text-[#10B981] transition-colors"
+            title="Click to copy email address"
+          >
             hammadsolutions.support@gmail.com
           </span>
         </div>
       </motion.div>
+
+      {/* Floating Copy Toast Notification */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 25, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 25, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="fixed bottom-8 right-8 z-[999] flex items-center gap-3 px-5 py-3 rounded-xl bg-[#0F172A] border border-[#10B981]/40 shadow-[0_0_25px_rgba(16,185,129,0.3)] text-white font-mono text-xs font-semibold select-none"
+          >
+            <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

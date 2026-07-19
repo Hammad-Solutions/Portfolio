@@ -23,6 +23,9 @@ import MagneticButton from "../components/ui/MagneticButton";
 import MorphingBlob from "../components/ui/MorphingBlob";
 import RadialStat from "../components/ui/RadialStat";
 import SocialProof from "../components/ui/SocialProof";
+import CommandPalette from "../components/ui/CommandPalette";
+import RecruiterModeModal from "../components/ui/RecruiterModeModal";
+import { Volume2, VolumeX } from "lucide-react";
 import { getBotResponse } from "../lib/rag";
 import styles from "./page.module.css";
 import PageLoader, { usePageLoader } from "../components/ui/PageLoader";
@@ -282,12 +285,98 @@ export default function Home() {
     {
       id: "init",
       sender: "bot",
-      text: "Hammad's AI Assistant. Ask me anything about his experience, stack, or availability."
+      text: "Welcome! I'm Hammad AI Concierge. Ask me anything about Hammad's systems architecture, stack, or availability."
     }
   ]);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const hasInteractedRef = useRef(false);
+
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isRecruiterModalOpen, setIsRecruiterModalOpen] = useState(false);
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
+
+  // Global hotkey for Cmd+K / Ctrl+K Command Palette
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Pre-fetch voices for Web SpeechSynthesis
+  useEffect(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+      const handleVoicesChanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+      window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+      return () => {
+        window.speechSynthesis.onvoiceschanged = null;
+      };
+    }
+  }, []);
+
+  const handleSpeak = (text: string) => {
+    if (!isVoiceEnabled || typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+
+    const cleanText = text
+      .replace(/https?:\/\/\S+/g, "")
+      .replace(/[*_#`[\]()]/g, " ")
+      .replace(/[-•]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!cleanText) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    const voices = window.speechSynthesis.getVoices();
+
+    const preferredKeywords = [
+      "Google US English",
+      "Google UK English Female",
+      "Microsoft Aria",
+      "Microsoft Jenny",
+      "Microsoft Guy",
+      "Samantha",
+      "Karen",
+      "Daniel",
+      "Alex",
+      "Natural"
+    ];
+
+    let selectedVoice = null;
+    for (const kw of preferredKeywords) {
+      const match = voices.find((v) => v.name.includes(kw) || v.voiceURI.includes(kw));
+      if (match) {
+        selectedVoice = match;
+        break;
+      }
+    }
+
+    if (!selectedVoice && voices.length > 0) {
+      selectedVoice =
+        voices.find((v) => v.lang === "en-US" || v.lang === "en-GB") ||
+        voices.find((v) => v.lang.startsWith("en")) ||
+        voices[0];
+    }
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -375,6 +464,7 @@ export default function Home() {
         sender: "bot",
         text: response
       }]);
+      handleSpeak(response);
     } catch (error) {
       console.error("Failed to fetch bot response:", error);
       setChatHistory(prev => [...prev, {
@@ -472,49 +562,83 @@ export default function Home() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className={styles.navbar}
           >
-            <span className={styles.logo}>
-              <span className="hidden sm:inline">MUHAMMAD HAMMAD</span>
-              <span className="inline sm:hidden">M. HAMMAD</span>
-            </span>
+            {/* Left Brand Logo */}
+            <div className="flex items-center gap-2.5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span className={styles.logo}>
+                <span className="hidden sm:inline">MUHAMMAD HAMMAD</span>
+                <span className="inline sm:hidden">M. HAMMAD</span>
+              </span>
+            </div>
 
-            <div className="flex items-center gap-3 sm:gap-8">
-              <div className={styles.navLinks}>
-                {["home", "about", "skills", "projects", "contact"].map((link) => (
-                  <a
-                    key={link}
-                    href={`#${link}`}
-                    className={`${styles.navLink} transition-all duration-300 ${activeSection === link
-                      ? "text-white font-medium"
-                      : "text-neutral-400 hover:text-white"
-                      }`}
-                    onClick={(e) => {
-                      if (mode !== "visual") {
-                        e.preventDefault();
-                        setMode("visual");
-                        setTimeout(() => {
-                          const target = document.getElementById(link);
-                          target?.scrollIntoView({ behavior: "smooth" });
-                        }, 100);
-                      }
-                    }}
-                  >
-                    {link}
-                  </a>
-                ))}
-              </div>
+            {/* Center Section Navigation Links Capsule (Desktop) */}
+            <div className="hidden lg:flex items-center gap-1 bg-[#121212]/90 border border-white/10 rounded-full px-4 py-1.5 backdrop-blur-md shadow-lg">
+              {["home", "about", "skills", "projects", "contact"].map((link) => (
+                <a
+                  key={link}
+                  href={`#${link}`}
+                  className={`relative px-3.5 py-1 text-[11px] font-mono tracking-wider uppercase transition-all duration-300 rounded-full ${
+                    activeSection === link
+                      ? "text-white font-bold bg-white/10 border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]"
+                      : "text-neutral-400 hover:text-white hover:bg-white/5"
+                  }`}
+                  onClick={(e) => {
+                    if (mode !== "visual") {
+                      e.preventDefault();
+                      setMode("visual");
+                      setTimeout(() => {
+                        const target = document.getElementById(link);
+                        target?.scrollIntoView({ behavior: "smooth" });
+                      }, 100);
+                    }
+                  }}
+                >
+                  {link}
+                </a>
+              ))}
+            </div>
 
-              {/* Mode Switch [ VISUAL | SUPPORT BOT ] */}
-              <div className="flex bg-[#262626] rounded-full p-1 relative select-none items-center">
+            {/* Right Action Group */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Visual Divider (Desktop) */}
+              <div className="hidden lg:block h-5 w-[1px] bg-white/15 mx-1" />
+
+              {/* 30s Recruiter View Button */}
+              <button
+                onClick={() => setIsRecruiterModalOpen(true)}
+                className="relative px-2.5 sm:px-4 py-1.5 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider transition-all duration-300 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105 cursor-pointer shrink-0"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="hidden md:inline">30s RECRUITER VIEW</span>
+                <span className="inline md:hidden text-[9px]">RECRUITER</span>
+              </button>
+
+              {/* Cmd+K Search Command Palette Button */}
+              <button
+                onClick={() => setIsCommandPaletteOpen(true)}
+                className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 text-[10px] font-mono text-slate-300 hover:text-white bg-[#1E293B]/80 hover:bg-[#1E293B] border border-slate-700/80 hover:border-slate-500 rounded-full transition-all shadow-md cursor-pointer hover:scale-105"
+                title="Open Command Palette (Cmd+K)"
+              >
+                <span>Search</span>
+                <kbd className="px-1.5 py-0.5 text-[9px] rounded bg-slate-800 text-slate-300 border border-slate-700 font-bold">⌘K</kbd>
+              </button>
+
+              {/* Mode Switcher [ VISUAL | AI CONCIERGE ] */}
+              <div className="flex bg-[#121212] border border-white/10 rounded-full p-1 relative select-none items-center shrink-0 shadow-lg">
                 <button
                   onClick={() => setMode("visual")}
-                  className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${mode === "visual" ? "text-white font-medium" : "text-neutral-400 hover:text-white"
-                    }`}
+                  className={`relative px-3 sm:px-4 py-1 sm:py-1.5 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${
+                    mode === "visual" ? "text-white font-medium" : "text-neutral-400 hover:text-white"
+                  }`}
                 >
                   VISUAL
                   {mode === "visual" && (
                     <motion.div
                       layoutId="activePill"
-                      className="absolute inset-0 bg-neutral-800 rounded-full -z-10"
+                      className="absolute inset-0 bg-neutral-800 rounded-full -z-10 border border-white/10"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       style={{ boxShadow: "0 0 12px rgba(16, 185, 129, 0.4)" }}
                     />
@@ -526,15 +650,16 @@ export default function Home() {
                     setMode("terminal");
                     setIsChatOpen(true);
                   }}
-                  className={`relative px-4 py-1.5 text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${mode === "terminal" ? "text-white font-medium" : "text-neutral-400 hover:text-white"
-                    }`}
+                  className={`relative px-3 sm:px-4 py-1 sm:py-1.5 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${
+                    mode === "terminal" ? "text-white font-medium" : "text-neutral-400 hover:text-white"
+                  }`}
                 >
-                  <span className="hidden sm:inline">SUPPORT BOT</span>
-                  <span className="inline sm:hidden">BOT</span>
+                  <span className="hidden sm:inline">AI CONCIERGE</span>
+                  <span className="inline sm:hidden">AI</span>
                   {mode === "terminal" && (
                     <motion.div
                       layoutId="activePill"
-                      className="absolute inset-0 bg-neutral-800 rounded-full -z-10"
+                      className="absolute inset-0 bg-neutral-800 rounded-full -z-10 border border-white/10"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       style={{ boxShadow: "0 0 12px rgba(59, 130, 246, 0.4)" }}
                     />
@@ -542,7 +667,7 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* Hamburger Button */}
+              {/* Mobile Hamburger Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className={styles.hamburger}
@@ -752,7 +877,7 @@ export default function Home() {
                             </motion.button>
                           </MagneticButton>
                         </a>
-                        <a href="/Muhammad Hammad.docx" download="Muhammad Hammad.docx" className="w-full">
+                        <a href="/Muhammad_Hammad_Resume.docx" download="Muhammad_Hammad_Resume.docx" target="_blank" rel="noopener noreferrer" className="w-full">
                           <MagneticButton className="w-full">
                             <motion.button
                               whileHover={{
@@ -793,10 +918,11 @@ export default function Home() {
                         </motion.a>
 
                         <motion.a
-                          href="hammadsolutions.support@gmail.com"
+                          href="mailto:hammadsolutions.support@gmail.com"
                           whileHover={{ borderColor: "#10B981", color: "#10B981", boxShadow: "0 0 10px rgba(16,185,129,0.2)" }}
                           className={styles.socialIcon}
                           style={{ width: "2.5rem", height: "2.5rem" }}
+                          aria-label="Email"
                         >
                           <MailIcon />
                         </motion.a>
@@ -942,7 +1068,7 @@ export default function Home() {
                     {[
                       { href: "https://github.com/Hammad-Solutions", label: "GitHub", color: "#10B981" },
                       { href: "https://linkedin.com/in/hammad-solution", label: "LinkedIn", color: "#A855F7" },
-                      { href: "hammadsolutions.support@gmail.com", label: "Email", color: "#3B82F6" },
+                      { href: "mailto:hammadsolutions.support@gmail.com", label: "Email", color: "#3B82F6" },
                     ].map((s) => (
                       <a
                         key={s.label}
@@ -988,7 +1114,7 @@ export default function Home() {
                       Currently accepting selective client engagements and consulting.
                     </p>
                     <a
-                      href="hammadsolutions.support@gmail.com"
+                      href="mailto:hammadsolutions.support@gmail.com"
                       className="text-[11px] font-mono text-[#EDEDED] hover:text-[#10B981] transition-colors duration-300 underline underline-offset-2"
                     >
                       hammadsolutions.support@gmail.com
@@ -1023,11 +1149,35 @@ export default function Home() {
                       <div className="w-3 h-3 rounded-full bg-[#f59e0b] opacity-80" />
                       <div className="w-3 h-3 rounded-full bg-[#10b981] opacity-80" />
                     </div>
-                    <span className="font-mono text-[10px] text-[#a3a3a3] tracking-widest uppercase">agent_support_chat</span>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          const next = !isVoiceEnabled;
+                          setIsVoiceEnabled(next);
+                          if (!next && typeof window !== "undefined" && "speechSynthesis" in window) {
+                            window.speechSynthesis.cancel();
+                          }
+                        }}
+                        className={`px-2 py-1 rounded transition-colors text-[10px] font-mono flex items-center gap-1.5 border cursor-pointer ${
+                          isVoiceEnabled
+                            ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
+                            : "text-neutral-400 hover:text-neutral-200 border-neutral-800 bg-neutral-900"
+                        }`}
+                        title={isVoiceEnabled ? "Mute Voice Narration" : "Enable Voice Narration"}
+                      >
+                        {isVoiceEnabled ? <Volume2 className="w-3.5 h-3.5 text-emerald-400" /> : <VolumeX className="w-3.5 h-3.5" />}
+                        <span className="hidden sm:inline">{isVoiceEnabled ? "Voice On" : "Mute"}</span>
+                      </button>
+                      <span className="font-mono text-[10px] text-[#a3a3a3] tracking-widest uppercase">hammad_ai_concierge</span>
+                    </div>
+
                     <button
                       onClick={() => {
                         setIsChatOpen(false);
                         setMode("visual");
+                        if (typeof window !== "undefined" && "speechSynthesis" in window) {
+                          window.speechSynthesis.cancel();
+                        }
                         sessionStorage.setItem("hasInteracted", "true");
                       }}
                       className="text-[#a3a3a3] hover:text-[#EDEDED] transition-colors bg-transparent border-none cursor-pointer p-0"
@@ -1046,7 +1196,7 @@ export default function Home() {
                       <div key={msg.id} className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className={`font-bold uppercase tracking-wider ${msg.sender === "bot" ? "text-[#3B82F6]" : "text-[#a3a3a3]"}`}>
-                            {msg.sender === "bot" ? "[AGENT OS]" : "[USER]"}
+                            {msg.sender === "bot" ? "[HAMMAD AI CONCIERGE]" : "[USER]"}
                           </span>
                         </div>
                         <p className="whitespace-pre-line pl-4 border-l border-[#262626] text-[#EDEDED] opacity-90">
@@ -1058,7 +1208,7 @@ export default function Home() {
                     {/* Pulsing Electric Blue Loading state cursor */}
                     {isTyping && (
                       <div className="space-y-1">
-                        <span className="font-bold text-[#3B82F6] uppercase tracking-wider">[AGENT OS]</span>
+                        <span className="font-bold text-[#3B82F6] uppercase tracking-wider">[HAMMAD AI CONCIERGE]</span>
                         <div className="flex items-center pl-4 border-l border-[#262626] gap-1 text-[#a3a3a3]">
                           <span>Thinking</span>
                           <span className="w-1.5 h-3.5 bg-[#3B82F6] animate-pulse inline-block" />
@@ -1140,6 +1290,58 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Global Command Palette (Cmd+K / Ctrl+K) */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onSelectSection={(sectionId) => {
+          setMode("visual");
+          const target = document.getElementById(sectionId);
+          target?.scrollIntoView({ behavior: "smooth" });
+        }}
+        onOpenChat={() => {
+          setMode("terminal");
+          setIsChatOpen(true);
+        }}
+        onDownloadCV={() => {
+          const a = document.createElement("a");
+          a.href = "/Muhammad_Hammad_Resume.docx";
+          a.download = "Muhammad_Hammad_Resume.docx";
+          a.target = "_blank";
+          a.click();
+        }}
+        onCopyEmail={() => {
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText("hammadsolutions.support@gmail.com");
+          }
+          window.location.href = "mailto:hammadsolutions.support@gmail.com";
+        }}
+        onOpenRecruiterView={() => setIsRecruiterModalOpen(true)}
+      />
+
+      {/* 30-Sec Recruiter Executive View Modal */}
+      <RecruiterModeModal
+        isOpen={isRecruiterModalOpen}
+        onClose={() => setIsRecruiterModalOpen(false)}
+        onDownloadCV={() => {
+          const a = document.createElement("a");
+          a.href = "/Muhammad_Hammad_Resume.docx";
+          a.download = "Muhammad_Hammad_Resume.docx";
+          a.target = "_blank";
+          a.click();
+        }}
+        onCopyEmail={() => {
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText("hammadsolutions.support@gmail.com");
+          }
+          window.location.href = "mailto:hammadsolutions.support@gmail.com";
+        }}
+        onOpenChat={() => {
+          setMode("terminal");
+          setIsChatOpen(true);
+        }}
+      />
     </PageLoader>
   );
 }

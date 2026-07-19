@@ -41,7 +41,7 @@ export default function SocialProof() {
   return (
     <section
       id="social-proof"
-      className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10"
+      className="py-10 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10"
     >
       {/* Section label */}
       <motion.span
@@ -57,13 +57,13 @@ export default function SocialProof() {
         initial={{ opacity: 0, y: 15 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-3xl md:text-4xl font-extrabold tracking-tight mb-10 text-[var(--text-primary)]"
+        className="text-3xl md:text-4xl font-extrabold tracking-tight mb-6 text-[var(--text-primary)]"
       >
         Numbers That Speak
       </motion.h2>
 
       {/* Metric cards — frameless floating stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-20">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-0">
         {metrics.map((m, i) => (
           <motion.div
             key={m.label}

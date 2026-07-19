@@ -54,7 +54,7 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" className="py-16 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 bg-transparent">
+    <section id="skills" className="py-12 px-6 md:px-12 max-w-[1440px] mx-auto relative z-10 bg-transparent">
       <motion.span
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
