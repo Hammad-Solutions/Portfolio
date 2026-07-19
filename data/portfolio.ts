@@ -20,52 +20,52 @@ export interface Project {
 
 export const portfolioData = {
   name: "Muhammad Hammad",
-  title: "Full-Stack Software Engineer — Systems & AI",
+  title: "Full-Stack Software Engineer — Web & Systems",
   university: "Air University Islamabad",
-  about: "Software Engineer with 4+ years shipping production systems across React/Next.js, Node.js, C++, and AI-integrated interfaces. I architect component-driven, type-safe systems with strict SOLID principles — from real-time IoT telemetry pipelines to RAG-powered LLM interfaces. Every project ships with automated CI/CD, comprehensive error boundaries, and zero tolerance for technical debt.",
+  about: "Full-Stack Software Engineer with 4+ years of experience building modern web applications and systems using React, Next.js, Node.js, and C++. I focus on writing clean, maintainable code, responsive user interfaces, and reliable API integrations.",
   softSkills: [
-    { title: "Software Architecture", description: "SOLID principles, component-driven React/TypeScript design, domain-driven modular structures with strict separation of concerns." },
-    { title: "Performance Engineering", description: "Next.js ISR/SSG with Vercel edge caching, React.lazy code-splitting, WebGL memory lifecycle management, sub-second inference pipelines." },
-    { title: "Infrastructure & CI/CD", description: "Automated deployment via Vercel + GitHub Actions. Supabase/Firebase backend integration with row-level security and real-time subscriptions." },
-    { title: "Systems Programming", description: "C++ STL-based binary I/O with ACID-style transaction rollback, deterministic memory management, and RAII-pattern resource cleanup." }
+    { title: "Software Architecture", description: "Modular React and TypeScript component design built on SOLID principles, clean code structure, and maintainable state management." },
+    { title: "Performance Engineering", description: "Next.js server rendering, fast page loads, code splitting, optimized asset loading, and smooth 60fps animations." },
+    { title: "Infrastructure & CI/CD", description: "Automated website deployments with Vercel and GitHub Actions. Seamless integration with Supabase and Firebase backends." },
+    { title: "Systems Programming", description: "Clean C++ application development, file stream handling, data structures, and efficient memory management." }
   ],
-  traits: ["SOLID Principles", "CI/CD Automation", "Performance-First", "Type-Safe Systems", "Edge-Deployed"],
+  traits: ["SOLID Principles", "Clean Architecture", "Performance-First", "Type-Safe Systems", "Responsive Design"],
   technologies: [
     "React.js", "Next.js", "TypeScript", "Node.js", "C++", "Java", "Firebase", "Git", "Tailwind CSS", "API Integration", "Supabase", "GSAP"
   ],
   currentlyLearning: [
-    "React Native Cross-Platform Deployment",
-    "Advanced Next.js & Supabase Architecture",
-    "Cloud-Native Infrastructure (AWS/GCP)"
+    "React Native Mobile Apps",
+    "Advanced Next.js Architecture",
+    "Cloud Computing (AWS/GCP)"
   ],
   projects: [
     {
       id: "ai-portfolio",
-      title: "Autonomous AI-Agent & Developer Interface",
-      description: "Saved recruiter screening time by 40% using an integrated RAG AI Chatbot that parses project archives in <800ms. Boosted session engagement by 2.5x with a custom WebGL Skills Globe and physics-based interactions, serving as a high-performing live proof-of-concept.",
-      tags: ["Next.js", "AI (RAG)", "Three.js (WebGL)", "Framer Motion", "GSAP"],
+      title: "Interactive AI-Powered Portfolio",
+      description: "Built an interactive web portfolio using Next.js, TypeScript, and Three.js. Integrated an embedded AI assistant to instantly answer client and recruiter queries about my technical stack and projects.",
+      tags: ["Next.js", "TypeScript", "Three.js", "Tailwind CSS", "AI Integration"],
       image: "/ai_portfolio_cover.png",
       github: "https://github.com/Hammad-Solutions/Portfolio",
       demo: "https://hammadsolutions.vercel.app",
-      architecture: ["Next.js (App Router)", "Tailwind CSS & CSS Modules", "Three.js & React Three Fiber (R3F)", "Framer Motion & GSAP", "Vector Embeddings & RAG Engine"],
-      challenges: "Implementing an interactive 3D particle skills globe with HTML overlays that stays performant on low-end mobile devices and doesn't block scroll snapping.",
-      solutions: "Created a visibility-aware render pipeline using IntersectionObserver that completely pauses the 3D physics loop and style updates when scrolled off-screen.",
+      architecture: ["Next.js App Router", "TypeScript", "Tailwind CSS & CSS Modules", "Three.js & React Three Fiber", "RAG AI Knowledge Engine"],
+      challenges: "Rendering interactive 3D elements while maintaining fast page load speeds and smooth scrolling on mobile devices.",
+      solutions: "Optimized 3D rendering with lazy loading and paused physics loops when off-screen to keep mobile performance smooth.",
       impact: [
         { label: "Lighthouse Score", value: "98", unit: "/100" },
-        { label: "RAG Latency", value: "<800", unit: "ms" },
+        { label: "AI Response", value: "<800", unit: "ms" },
         { label: "Build Time", value: "<16", unit: "s" }
       ]
     },
     {
       id: "previous-portfolio",
-      title: "Personal Portfolio",
-      description: "Reduced landing page load time to <150ms and zeroed out hosting overhead by deploying a personal portfolio built in pure HTML5, CSS3, and vanilla JS. Achieved maximum asset optimization and zero third-party dependencies.",
+      title: "Personal Portfolio Site",
+      description: "Created a lightweight, responsive portfolio with HTML5, CSS3, and JavaScript. Focused on semantic markup, fast load times, and cross-browser compatibility without external heavy frameworks.",
       tags: ["HTML", "CSS", "JavaScript", "Responsive Design"],
       image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/hammad-solutions.github.io",
-      architecture: ["HTML5 Semantic Markup", "Vanilla CSS3 Grid/Flexbox", "Custom Javascript DOM Engine"],
-      challenges: "Achieving dynamic, glassmorphic layouts without external styling frameworks, ensuring fast loading and standard responsiveness.",
-      solutions: "Designed custom CSS variables and media query breakpoint sheets to ensure smooth responsive reflows.",
+      architecture: ["HTML5 Semantic Markup", "Vanilla CSS3 Flexbox/Grid", "JavaScript DOM Interactions"],
+      challenges: "Designing glassmorphic UI elements and responsive layouts using pure CSS without third-party frameworks.",
+      solutions: "Built custom CSS variables and responsive media query breakpoints for smooth mobile reflows.",
       impact: [
         { label: "Bundle Size", value: "0", unit: "KB" },
         { label: "Dependencies", value: "None", unit: "" }
@@ -73,79 +73,76 @@ export const portfolioData = {
     },
     {
       id: "student-management",
-      title: "Student Record Engine",
-      description: "Saved registrar staff 15+ hours per week of manual data entry with a multi-tier C++ record management engine. Implemented copy-on-write atomic staging using temporary buffer files to handle concurrent mutations without index corruption — guaranteeing 100% CRUD integrity across 500+ records.",
-      tags: ["C++", "STL", "Binary I/O", "RBAC"],
+      title: "Student Management System",
+      description: "Built a C++ record management system for student data. Used structured file handling and input validation checks to manage records efficiently without data corruption.",
+      tags: ["C++", "File Handling", "Data Structures", "CLI"],
       image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/Student-Management-System-Cpp-File-Handling",
-      architecture: ["C++ 17 Runtime", "STL File Stream Pipeline", "Atomic Staging Buffer", "Role-Based Access Controller"],
-      challenges: "Ensuring data consistency during concurrent record updates on flat-file storage without DBMS transaction support, where naive read-modify-write cycles caused index mismatch corruption.",
-      solutions: "Designed a copy-on-write staging mechanism using temporary file streams. All mutations execute against a staging buffer; only after full validation does an atomic rename replace the production data file — guaranteeing zero partial-write corruption.",
+      architecture: ["C++17 Console Application", "File Stream Pipeline", "Record Buffer Manager"],
+      challenges: "Preventing file record corruption during updates on flat text storage files.",
+      solutions: "Created temporary buffer files during modifications to validate data before saving updates permanently.",
       impact: [
-        { label: "Access Tiers", value: "3", unit: "RBAC" },
-        { label: "Data Integrity", value: "100", unit: "%" },
-        { label: "Memory Leaks", value: "0", unit: "Detected" }
+        { label: "Access Control", value: "Role-Based", unit: "" },
+        { label: "Data Safety", value: "100", unit: "%" }
       ]
     },
     {
       id: "bank-management",
-      title: "Transaction Processing Engine",
-      description: "Secured simulated financial transactions with zero balance corruption events by building an ACID-compliant C++ file stream transaction manager. Implemented dynamic validation checkpoints and stream-state pointers to ensure transaction rollback capabilities with zero data loss.ACID-Compliant C++ System",
-      tags: ["C++", "Binary I/O", "ACID Transactions", "Stream Validation"],
+      title: "Bank Management System",
+      description: "Developed a C++ banking application for secure account operations. Implemented error checking and file stream validation to handle account deposits, withdrawals, and balance updates.",
+      tags: ["C++", "Binary I/O", "File Handling", "Validation"],
       image: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/Bank-Management-System-Cpp-File-Handling",
-      architecture: ["C++ 17 Runtime", "Binary Object Serialization Layer", "Stream-State Validator", "Transaction Rollback Controller"],
-      challenges: "Preventing balance data corruption when serializing account objects directly to binary disk during concurrent virtual sessions, where incomplete writes left orphaned file pointers.",
-      solutions: "Implemented strict stream-state validation after every I/O operation with automatic rollback on failbit/badbit detection. File pointer positions are checkpointed before each transaction; on failure, the stream rewinds to the last known-good state.",
+      architecture: ["C++17 Engine", "Binary Object Serialization", "Transaction Validator"],
+      challenges: "Ensuring balance accuracy during binary file serialization of user accounts.",
+      solutions: "Added error detection checks after every file read/write operation to ensure safe transaction logging.",
       impact: [
-        { label: "Transactions", value: "ACID", unit: "Compliant" },
-        { label: "Seek Complexity", value: "O(1)", unit: "Direct" },
-        { label: "Data Loss", value: "0", unit: "Events" }
+        { label: "Transaction Safety", value: "Verified", unit: "" },
+        { label: "Data Integrity", value: "100", unit: "%" }
       ]
     },
     {
       id: "hotel-management",
-      title: "Resource Allocation Engine",
-      description: "Eliminated memory leaks (0 bytes lost) in dynamic OOP room assignments by architecting a polymorphic C++ resource scheduler with dynamic dispatch and RAII resource manager wrapper destructors, saving hours of debugging time.",
-      tags: ["C++", "OOP", "Polymorphism", "RAII"],
+      title: "Hotel Management System",
+      description: "Created an object-oriented C++ hotel reservation system to handle room bookings, customer records, and dynamic billing calculations using clean OOP architecture.",
+      tags: ["C++", "OOP", "Polymorphism", "Data Management"],
       image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/Hotel-Management-System-CPP",
-      architecture: ["C++ 17 Runtime", "Polymorphic Class Hierarchy", "RAII Resource Manager", "Virtual Dispatch Controller"],
-      challenges: "Modeling hierarchical room-type variants with runtime state transitions across an inheritance tree, where naive new/delete cycles caused memory leaks during type downcasting.",
-      solutions: "Applied RAII-pattern destructors to guarantee deterministic cleanup. Used polymorphic base pointers with virtual dispatch for booking operations, ensuring type-safe state transitions without manual memory management.",
+      architecture: ["C++ OOP Hierarchy", "Dynamic Room Allocation", "Billing Engine"],
+      challenges: "Managing room availability states and customer booking histories across different room tiers.",
+      solutions: "Used C++ class inheritance and virtual methods for flexible room booking and price calculations.",
       impact: [
-        { label: "Architecture", value: "OOP", unit: "Polymorphic" },
-        { label: "Memory Leaks", value: "0", unit: "Detected" },
-        { label: "Room Types", value: "3", unit: "Variants" }
+        { label: "Architecture", value: "OOP", unit: "Clean" },
+        { label: "Room Tiers", value: "Multiple", unit: "Supported" }
       ]
     },
     {
       id: "weather-app",
-      title: "WeatherApp with API Integration",
-      description: "Achieved 100% application uptime (0% crash rate) for weather lookup sessions by building a robust React interface with API validation and error boundary wrappers, delivering forecasts in <350ms.",
-      tags: ["React.js", "API Integration", "JavaScript"],
+      title: "Weather App with API Integration",
+      description: "Built a dynamic React weather dashboard that connects to OpenWeatherMap API. Implemented real-time city search, 5-day forecasts, and error handling for invalid locations.",
+      tags: ["React.js", "API Integration", "JavaScript", "Tailwind CSS"],
       image: "https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=600&auto=format&fit=crop",
-      architecture: ["React.js Context", "OpenWeatherMap API", "CSS Grid Forecast Cards"],
-      challenges: "Handling asynchronous API request errors and loading states gracefully when querying weather for non-existent locations.",
-      solutions: "Implemented robust boundary checks, default error fallbacks, and a custom loading spinner state.",
+      architecture: ["React.js", "OpenWeatherMap REST API", "CSS Forecast Grid"],
+      challenges: "Gracefully handling slow API responses and unexpected search queries.",
+      solutions: "Added responsive loading state spinners and fallback error cards for non-existent city names.",
       impact: [
         { label: "API Latency", value: "<350", unit: "ms" },
-        { label: "Crash Rate", value: "0", unit: "%" }
+        { label: "Uptime", value: "100", unit: "%" }
       ]
     },
     {
       id: "collaborative-team-work",
-      title: "For Collaborative Team Work",
-      description: "Reduced code integration conflicts by 90% and accelerated team velocity by implementing pre-commit check pipelines and feature-branch workflows inside collaborative team repositories.",
-      tags: ["HTML", "Git", "Collaboration"],
+      title: "Collaborative Team Workflows",
+      description: "Structured Git feature-branch workflows and repository guidelines for team projects, ensuring clean version control and preventing code integration conflicts.",
+      tags: ["HTML", "Git", "GitHub", "Team Collaboration"],
       image: "https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?q=80&w=600&auto=format&fit=crop",
       github: "https://github.com/Hammad-Solutions/For-collaborative-Team-Work",
-      architecture: ["HTML5 Structures", "Git Version Control", "Feature-Branch Workflow"],
-      challenges: "Coordinating team commits and resolving complex merge conflicts across shared HTML document templates.",
-      solutions: "Adopted a structured feature-branch workflow with pre-commit checklists to isolate changes and review PRs before merging.",
+      architecture: ["HTML5 Structure", "Git Version Control", "Feature Branching"],
+      challenges: "Resolving merge conflicts and coordinating code submissions across multiple team contributors.",
+      solutions: "Implemented pull request checklists and branch protection rules to keep the main branch stable.",
       impact: [
-        { label: "Conflicts", value: "Resolved", unit: "" },
-        { label: "Team Sync", value: "100", unit: "%" }
+        { label: "Merge Conflicts", value: "Minimized", unit: "" },
+        { label: "Workflow", value: "Structured", unit: "" }
       ]
     }
   ]

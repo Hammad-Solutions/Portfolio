@@ -61,7 +61,7 @@ export default function Skills() {
         viewport={{ once: true }}
         className="text-[10px] font-mono tracking-[0.25em] text-[#3B82F6] uppercase block mb-3 font-black"
       >
-        02 // CAPABILITIES
+        02 // SKILLS &amp; TECH
       </motion.span>
 
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">

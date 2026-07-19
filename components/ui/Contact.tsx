@@ -126,7 +126,7 @@ export default function Contact() {
           viewport={{ once: true }}
           className="text-[10px] font-mono tracking-[0.25em] text-[#A855F7] uppercase block mb-3 font-black"
         >
-          04 // ACQUISITION
+          04 // LET&apos;S BUILD SOMETHING
         </motion.span>
         <motion.h2
           initial={{ opacity: 0, y: 15 }}
@@ -146,7 +146,7 @@ export default function Contact() {
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ type: "spring", stiffness: 50, damping: 15 }}
-        className="p-8 md:p-10 border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-xl rounded-2xl shadow-lg"
+        className="p-8 md:p-12 lg:p-14 border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-xl rounded-2xl shadow-lg"
       >
         {/* Trust Signals */}
         <div className="flex flex-wrap justify-center gap-3 mb-8">

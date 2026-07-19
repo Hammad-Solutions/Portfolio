@@ -49,11 +49,13 @@ function WebGLProjectCard({
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
   const textRefs = useRef<any[]>([]);
 
-  const cardWidth = 3.6;
-  const cardHeight = 5.5;
-  const imgHeight = 3.0;
+  const cardWidth = 3.8;
+  const cardHeight = 5.8;
+  const imgHeight = 2.6;
 
-  const isMultiLineTitle = project.title.length > 22;
+  // Title is multi-line if title string length is greater than 15 characters
+  const isMultiLineTitle = project.title.length > 15;
+  const shortDesc = safeDesc.length > 125 ? safeDesc.slice(0, 125).trim().replace(/\s+\S*$/, '') + "..." : safeDesc;
 
   const isSelected = activeNode === idx;
 
@@ -67,7 +69,7 @@ function WebGLProjectCard({
     if (offset < -totalNodes / 2) offset += totalNodes;
 
     // Cover Flow Transformations
-    const targetX = offset === 0 ? 0 : (offset > 0 ? offset * 1.8 + 0.8 : offset * 1.8 - 0.8);
+    const targetX = offset === 0 ? 0 : (offset > 0 ? offset * 1.9 + 0.8 : offset * 1.9 - 0.8);
     const targetZ = offset === 0 ? 1.5 : -Math.abs(offset) * 1.2;
     const targetRotY = offset === 0 ? 0 : (offset > 0 ? -Math.PI / 6 : Math.PI / 6);
     const targetScale = offset === 0 ? 0.8 : 0.65;
@@ -89,7 +91,7 @@ function WebGLProjectCard({
     if (materialRef.current) {
       materialRef.current.opacity = THREE.MathUtils.lerp(materialRef.current.opacity, targetOpacity, 0.08);
       // Brighten the center card slightly
-      const targetColor = isSelected ? new THREE.Color("#161616") : new THREE.Color("#080808");
+      const targetColor = isSelected ? new THREE.Color("#141414") : new THREE.Color("#080808");
       materialRef.current.color.lerp(targetColor, 0.1);
     }
 
@@ -111,7 +113,7 @@ function WebGLProjectCard({
       }}
     >
       {/* Premium Solid Card Backing */}
-      <RoundedBox args={[cardWidth, cardHeight, 0.1]} radius={0.12} smoothness={4}>
+      <RoundedBox args={[cardWidth, cardHeight, 0.1]} radius={0.14} smoothness={4}>
         <meshStandardMaterial
           ref={materialRef}
           color="#080808"
@@ -123,7 +125,7 @@ function WebGLProjectCard({
 
       {/* Subtle Neon Edge Glow for Active Card */}
       {isSelected && (
-        <RoundedBox args={[cardWidth + 0.08, cardHeight + 0.08, 0.05]} radius={0.14} position={[0, 0, -0.06]}>
+        <RoundedBox args={[cardWidth + 0.08, cardHeight + 0.08, 0.05]} radius={0.16} position={[0, 0, -0.06]}>
           <meshBasicMaterial color={color} transparent opacity={0.35} />
         </RoundedBox>
       )}
@@ -131,8 +133,8 @@ function WebGLProjectCard({
       {/* Structured Content Layout */}
       <group position={[0, 0, 0.06]}>
 
-        {/* 1. Image (Proportionally centered in top half of card) */}
-        <group position={[0, 1.02, 0]}>
+        {/* 1. Image (Centered in top half of card) */}
+        <group position={[0, 1.18, 0]}>
           <DreiImage
             url={project.image}
             transparent
@@ -145,51 +147,51 @@ function WebGLProjectCard({
         {/* 2. Title */}
         <Text
           ref={(el) => { textRefs.current[3] = el; }}
-          position={[-cardWidth / 2 + 0.3, -0.64, 0]}
+          position={[-cardWidth / 2 + 0.3, -0.32, 0]}
           anchorX="left"
           anchorY="top"
-          fontSize={0.24}
+          fontSize={0.22}
           fontWeight="bold"
-          letterSpacing={-0.02}
-          color="#F8FAFC"
+          letterSpacing={-0.01}
+          color="#FFFFFF"
           maxWidth={cardWidth - 0.6}
-          lineHeight={1.2}
+          lineHeight={1.15}
         >
           {project.title}
         </Text>
 
         {/* Decorative Divider Line */}
-        <mesh position={[0, isMultiLineTitle ? -1.24 : -0.98, 0]}>
-          <planeGeometry args={[cardWidth - 0.6, 0.015]} />
-          <meshBasicMaterial color={isSelected ? color : "#333333"} transparent opacity={0.5} />
+        <mesh position={[0, isMultiLineTitle ? -0.96 : -0.68, 0]}>
+          <planeGeometry args={[cardWidth - 0.6, 0.012]} />
+          <meshBasicMaterial color={isSelected ? color : "#333333"} transparent opacity={0.6} />
         </mesh>
 
-        {/* 3. Description */}
+        {/* 3. Description (Balanced preview text) */}
         <Text
           ref={(el) => { textRefs.current[4] = el; }}
-          position={[-cardWidth / 2 + 0.3, isMultiLineTitle ? -1.36 : -1.10, 0]}
+          position={[-cardWidth / 2 + 0.3, isMultiLineTitle ? -1.02 : -0.76, 0]}
           anchorX="left"
           anchorY="top"
-          fontSize={0.135}
+          fontSize={0.15}
           letterSpacing={0.01}
-          color="#94A3B8"
+          color="#CBD5E1"
           maxWidth={cardWidth - 0.6}
-          lineHeight={1.45}
+          lineHeight={1.42}
         >
-          {safeDesc.length > 170 ? safeDesc.slice(0, 170) + "..." : safeDesc}
+          {shortDesc}
         </Text>
 
         {/* 4. CTA Footer */}
         <Text
           ref={(el) => { textRefs.current[5] = el; }}
-          position={[-cardWidth / 2 + 0.3, -2.42, 0]}
+          position={[-cardWidth / 2 + 0.3, -2.35, 0]}
           anchorX="left"
           anchorY="middle"
-          fontSize={0.125}
+          fontSize={0.13}
           letterSpacing={0.02}
-          color={isSelected ? color : "#6B7280"}
+          color={isSelected ? "#10B981" : "#64748B"}
         >
-          {isSelected ? "Click to view architectural case study →" : "Click or Drag to navigate"}
+          {isSelected ? "View Case Study →" : "Click to view"}
         </Text>
       </group>
     </group>
@@ -317,12 +319,12 @@ export default function Projects() {
         viewport={{ once: true }}
         className="text-[10px] font-mono tracking-[0.25em] text-[#14B8A6] uppercase block mb-3 font-black"
       >
-        03 // PORTFOLIO
+        03 // FEATURED PROJECTS
       </motion.span>
 
       <div className="flex items-center gap-6 mb-12">
         <h2 className="text-4xl font-extrabold tracking-tight shrink-0 text-[var(--text-primary)]">
-          Spatial Showcase
+          Featured Projects
         </h2>
         <span className="font-mono text-[var(--text-secondary)] text-sm font-semibold tracking-wider shrink-0">
           ({projects.length})
@@ -394,19 +396,19 @@ export default function Projects() {
                   <div
                     key={project.id}
                     onClick={() => setSelectedProject(project)}
-                    className="snap-center shrink-0 w-[260px] h-[440px] rounded-2xl border border-white/10 bg-[#070707]/90 p-4 flex flex-col justify-between"
+                    className="snap-center shrink-0 w-[290px] h-[460px] rounded-2xl border border-white/10 bg-[#070707]/90 p-5 flex flex-col justify-between"
                   >
-                    <div className="relative w-full h-[180px] rounded-lg overflow-hidden border border-white/5">
+                    <div className="relative w-full h-[190px] rounded-lg overflow-hidden border border-white/5">
                       <Image
                         src={project.image}
                         alt={project.title}
-                        width={228}
-                        height={180}
-                        className="object-cover opacity-80 w-full h-full"
+                        width={250}
+                        height={190}
+                        className="object-cover opacity-85 w-full h-full"
                         priority={idx < 2}
                       />
                       <div
-                        className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold tracking-widest text-black"
+                        className="absolute top-2 left-2 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-widest text-black"
                         style={{ background: color }}
                       >
                         0{idx + 1}
@@ -414,13 +416,10 @@ export default function Projects() {
                     </div>
                     <div className="flex-1 flex flex-col justify-between mt-4">
                       <div>
-                        <h4 className="text-[9px] font-mono text-[#a3a3a3] uppercase tracking-widest">
-                        // {project.id.split("-")[0].toUpperCase()}
-                        </h4>
-                        <h3 className="text-sm font-bold text-white mt-1 leading-snug line-clamp-2">
+                        <h3 className="text-base font-bold text-white leading-snug line-clamp-2">
                           {project.title}
                         </h3>
-                        <p className="text-[11px] text-[#a3a3a3] mt-2 line-clamp-3 leading-relaxed">
+                        <p className="text-xs text-[#CBD5E1] mt-2 line-clamp-3 leading-relaxed">
                           {project.description}
                         </p>
                       </div>

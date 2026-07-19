@@ -128,23 +128,23 @@ function CapabilityCard({ skill }: { skill: typeof engineeringCapabilities[0] })
       variants={cardVariants}
       whileHover={{ y: -5 }}
       whileTap={{ y: -3 }}
-      className="p-6 border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[12px] rounded-xl flex flex-col justify-between min-h-[180px] h-auto transition-all duration-300 relative overflow-hidden group select-none"
+      className="p-8 md:p-9 border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[12px] rounded-xl flex flex-col justify-between min-h-[200px] h-auto transition-all duration-300 relative overflow-hidden group select-none"
     >
       {/* Gradient top accent line */}
       <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${skill.gradient} opacity-60 group-hover:opacity-100 transition-opacity duration-300`} />
       
       {/* Icon */}
-      <div className="mb-3 relative z-10">
-        <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${skill.gradient} bg-opacity-10 flex items-center justify-center mb-3 border border-white/10`}>
-          <skill.Icon size={18} className="text-white opacity-90" strokeWidth={1.8} />
+      <div className="mb-4 relative z-10">
+        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${skill.gradient} bg-opacity-10 flex items-center justify-center mb-3.5 border border-white/10`}>
+          <skill.Icon size={19} className="text-white opacity-90" strokeWidth={1.8} />
         </div>
-        <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">
+        <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1.5">
           <span className="soft-skill-title">
             {skill.title}
           </span>
         </h3>
       </div>
-      <p className="text-[13px] text-[#a3a3a3] leading-relaxed flex-grow relative z-10">{skill.desc}</p>
+      <p className="text-[13px] text-[#a3a3a3] leading-relaxed md:leading-loose flex-grow relative z-10">{skill.desc}</p>
     </motion.div>
   );
 }
@@ -164,7 +164,7 @@ export default function About() {
             viewport={{ once: true }}
             className="text-[10px] font-mono tracking-[0.25em] text-[#10B981] uppercase block mb-3 font-black"
           >
-            01 // PROFILE
+            01 // ABOUT ME
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: 15 }}

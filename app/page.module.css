@@ -96,7 +96,7 @@
   right: 0;
   z-index: 50;
   width: 100%;
-  padding: 1.5rem 3rem;
+  padding: 1rem 2.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -252,7 +252,7 @@
 }
 
 .gradientText {
-  background: linear-gradient(135deg, #4ADE80 0%, #10B981 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 55%, #CBD5E1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
@@ -515,7 +515,7 @@
 .bentoContainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 1.5rem;
+  grid-gap: 1.75rem;
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
@@ -536,7 +536,7 @@
     padding: 0 0.5rem;
   }
   .bentoCard {
-    padding: 1.5rem;
+    padding: 2rem;
   }
 }
 
@@ -545,7 +545,7 @@
   backdrop-filter: blur(28px) saturate(140%);   /* Heavy glass blur + saturation boost */
   border: 1px solid var(--glass-border);         /* Crisp glass border */
   border-radius: 1.5rem;
-  padding: 2.25rem;
+  padding: 2.75rem;
   position: relative;
   overflow: hidden;
   display: flex;

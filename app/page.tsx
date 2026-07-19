@@ -127,12 +127,12 @@ const itemVariants = {
   }
 };
 
-// Roles that cycle automatically
+// Roles that cycle automatically with harmonized accent colors
 const ROLES = [
   { text: "Software Architect", color: "#10B981" },
   { text: "Full-Stack Engineer", color: "#14B8A6" },
-  { text: "Systems Designer", color: "#3B82F6" },
-  { text: "AI Integration Specialist", color: "#A855F7" },
+  { text: "Systems Designer", color: "#06B6D4" },
+  { text: "AI Integration Specialist", color: "#34D399" },
 ];
 
 function TypewriterRoles() {
@@ -146,10 +146,23 @@ function TypewriterRoles() {
   }, []);
 
   const role = ROLES[roleIndex];
+  const startsWithVowel = /^[aeiou]/i.test(role.text);
+  const article = startsWithVowel ? "I'm an" : "I'm a";
 
   return (
     <div className="flex flex-wrap items-center justify-start gap-2">
-      <span className="text-[var(--text-primary)]">I&apos;m a</span>
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={`article-${roleIndex}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="text-[#d4d4d4]"
+        >
+          {article}
+        </motion.span>
+      </AnimatePresence>
       <AnimatePresence mode="wait">
         <motion.span
           key={roleIndex}
@@ -601,46 +614,32 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Right Action Group */}
+            {/* Right Action Group - Clean & Compact */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Visual Divider (Desktop) */}
-              <div className="hidden lg:block h-5 w-[1px] bg-white/15 mx-1" />
-
-              {/* 30s Recruiter View Button */}
-              <button
-                onClick={() => setIsRecruiterModalOpen(true)}
-                className="relative px-2.5 sm:px-4 py-1.5 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider transition-all duration-300 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105 cursor-pointer shrink-0"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="hidden md:inline">30s RECRUITER VIEW</span>
-                <span className="inline md:hidden text-[9px]">RECRUITER</span>
-              </button>
-
               {/* Cmd+K Search Command Palette Button */}
               <button
                 onClick={() => setIsCommandPaletteOpen(true)}
-                className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 text-[10px] font-mono text-slate-300 hover:text-white bg-[#1E293B]/80 hover:bg-[#1E293B] border border-slate-700/80 hover:border-slate-500 rounded-full transition-all shadow-md cursor-pointer hover:scale-105"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-full transition-all cursor-pointer"
                 title="Open Command Palette (Cmd+K)"
               >
-                <span>Search</span>
-                <kbd className="px-1.5 py-0.5 text-[9px] rounded bg-slate-800 text-slate-300 border border-slate-700 font-bold">⌘K</kbd>
+                <span className="opacity-60 font-bold">⌘K</span>
+                <span className="hidden md:inline">Search</span>
               </button>
 
-              {/* Mode Switcher [ VISUAL | AI CONCIERGE ] */}
-              <div className="flex bg-[#121212] border border-white/10 rounded-full p-1 relative select-none items-center shrink-0 shadow-lg">
+              {/* Mode Switcher [ VISUAL | AGENT ] */}
+              <div className="flex bg-[#121212]/90 border border-white/10 rounded-full p-1 relative select-none items-center shrink-0">
                 <button
                   onClick={() => setMode("visual")}
-                  className={`relative px-3 sm:px-4 py-1 sm:py-1.5 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${
-                    mode === "visual" ? "text-white font-medium" : "text-neutral-400 hover:text-white"
+                  className={`relative px-3 sm:px-4 py-1 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${
+                    mode === "visual" ? "text-white" : "text-neutral-400 hover:text-white"
                   }`}
                 >
                   VISUAL
                   {mode === "visual" && (
                     <motion.div
                       layoutId="activePill"
-                      className="absolute inset-0 bg-neutral-800 rounded-full -z-10 border border-white/10"
+                      className="absolute inset-0 bg-white/10 rounded-full -z-10 border border-white/10"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      style={{ boxShadow: "0 0 12px rgba(16, 185, 129, 0.4)" }}
                     />
                   )}
                 </button>
@@ -650,18 +649,16 @@ export default function Home() {
                     setMode("terminal");
                     setIsChatOpen(true);
                   }}
-                  className={`relative px-3 sm:px-4 py-1 sm:py-1.5 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${
-                    mode === "terminal" ? "text-white font-medium" : "text-neutral-400 hover:text-white"
+                  className={`relative px-3 sm:px-4 py-1 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider transition-colors duration-300 z-10 rounded-full ${
+                    mode === "terminal" ? "text-white" : "text-neutral-400 hover:text-white"
                   }`}
                 >
-                  <span className="hidden sm:inline">AI CONCIERGE</span>
-                  <span className="inline sm:hidden">AI</span>
+                  <span>AI AGENT</span>
                   {mode === "terminal" && (
                     <motion.div
                       layoutId="activePill"
-                      className="absolute inset-0 bg-neutral-800 rounded-full -z-10 border border-white/10"
+                      className="absolute inset-0 bg-white/10 rounded-full -z-10 border border-white/10"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      style={{ boxShadow: "0 0 12px rgba(59, 130, 246, 0.4)" }}
                     />
                   )}
                 </button>
@@ -767,7 +764,7 @@ export default function Home() {
 
                   {/* Main Title */}
                   <h1 className={styles.heading}>
-                    <span className={`${styles.gradientText} bento-title-highlight`} style={{ "--accent-color": "#10B981" } as React.CSSProperties}>
+                    <span className={styles.gradientText}>
                       Muhammad Hammad
                     </span>
                   </h1>
